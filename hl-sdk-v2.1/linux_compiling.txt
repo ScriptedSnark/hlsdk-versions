@@ -1,0 +1,42 @@
+HL SDK 2.0
+
+Linux compile notes
+-------------------
+
+The source code distributed with the HL SDK 2.0 contains two
+portions that may be compiled under Linux: the game DLL and the
+server launcher.  The game DLL code is located in the dlls/
+directory and the server launcher code is located in the
+dedicated/ directory.  A Makefile has been provided for each of
+these.
+
+One issue that needs to be addressed before compiling under Linux
+is DOS style carriage return (^M) characters.  DOS (and hence
+MS Windows) text files contain this carriage return character at
+the end of every line, in addition to the standard linefeed
+character.  Most compilers, preprocessors, and make utilities that
+are used under Linux are confused by these characters, emitting
+strange warning and error messages when compiling is attempted.
+The solution is to remove these characters from all source,
+header, and makefile files.  One way to do this is to use an FTP
+utility to transfer each source, header, and makefile file
+individually in ASCII transfer mode (as opposed to binary mode,
+which is often the default) to the Linux development machine.
+Another way of removing these unwanted characters is using an
+application designed specifically to remove them.  Many people
+have written programs to do this.  A simple search on any major
+Internet search site (such as http://www.google.com) for
+'dos2unix' or other related keywords should turn up useful
+information about obtaining one of these programs.
+
+The other area of concern when compiling under Linux is the
+compiler itself.  The Half-Life source code seems to be
+problematic for many compiler versions.  The recommended compiler
+to use is EGCS 1.1.2, or a GCC version based on EGCS 1.1.2 (if
+using gcc, try 'gcc -v' to see version information).  Newer and/or
+older versions of GCC/EGCS (or other compilers) may or may not
+work.  If problems are encountered with another compiler version,
+the EGCS 1.1.2 compiler can be found on the GCC project's FTP
+server, or on any of its mirrors.  A mirror list can be found at
+http://gcc.gnu.org/mirrors.html.  EGCS 1.1.2 will be located in an
+'old-releases' section on any mirror site.

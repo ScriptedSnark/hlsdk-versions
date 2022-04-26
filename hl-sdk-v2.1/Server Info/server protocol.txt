@@ -1,0 +1,219 @@
+Game servers will answer the following messages:
+Messages are sent to the server by sending 4 consecutive bytes of 255 (32-bit integer -1) and then the string command followed by a zero byte to terminate it
+
+"ping"
+	Server responds with a single byte code ASCII 'j'
+
+"info"
+	Server responds with the following packet:
+	(int32)		-1
+	(byte)		ASCII 'C' (info response, S2A_INFO)
+	(string)		net address of server
+	(string)		name of the host / server
+	(string)		name of the map
+	(string)		game directory (i.e. valve/)
+	(string)		Game description (e.g. "half-life multiplay")
+	(byte)		active client count
+	(byte)		maximum clients allowed
+	(byte)		protocol version (currently 7)
+
+"players"
+	Server responds with the following packet:
+	(int32)		-1
+	(byte)		ASCII 'D' (players response, S2A_PLAYER)
+	(byte)		active client count
+
+	for each active client
+		(byte)		client number / index
+		(string)		player name
+		(int32)		client's frag total
+		(float32)		client's total time in-game
+
+"rules"
+	Server responds with the following packet:
+	(int32)		-1
+	(byte)		ASCII 'E' (rules response, S2A_RULES)
+	(int16)		number of rules
+
+	for each rule
+		(string)		rule name
+		(string)		rule value
+
+
+-------------------
+
+Master server query protocol:
+
+Sent to master:
+
+(byte)    ASCII 'c' ( A2M_GET_SERVERS )
+
+Response from master:
+
+(int32)  -1
+(byte)   ASCII 'd' ( M2A_SERVERS )
+(byte)   unused
+
+// This is followed by as many 6 byte ip addresses as will fit in the message.  The master currently feeds about 2K worth of IP address ( 300+ or so ), but we may up that # significantly in the near future.
+
+(4 x byte) ip address
+(int16)  port #
+
+
+
+The old protocol is still valid, but there is a new, extended protocol:
+
+Here are both the old and new protocols ( the new one is the "details" message ):
+
+"info"
+	Server responds with the following packet:
+	(int32)		-1
+	(byte)		ASCII 'C' (info response, S2A_INFO)
+	(string)		net address of server
+	(string)		name of the host / server
+	(string)		name of the map
+	(string)		game directory (i.e. valve/)
+	(string)		Game description (e.g. "half-life multiplay")
+	(byte)		active client count
+	(byte)		maximum clients allowed
+	(byte)		protocol version (currently 37)
+
+"details"
+	(int32)    		-1
+	(byte)		ASCII 'm' ( S2A_INFO_DETAILED )
+	(string)		net address of server
+	(string)		name of the host / server
+	(string)		name of the map
+	(string)		game directory (i.e. valve/)
+	(string)		Game description (e.g. "half-life multiplay")
+	(byte)		active client count
+	(byte)		maximum clients allowed
+	(byte)		protocol version (currently 37)
+	(byte)		type of server == 'l' for listen or 'd' for dedicated
+	(byte)		os of server == 'w' for win32 or 'l' for linux
+	(byte)		password on server == 1 or yes, 0, for no
+	(byte)		is server running a mod? == 1 for yes, 0 for no
+
+	IFF the server is running mod byte was 1:
+
+	(string)		URL for mod's "info" website
+	(string)		URL for mod's download ftp server
+	(int32)		mod version #
+	(int32)		mod download size ( in bytes, approx. )
+	(byte)		is the mod a server side only mod?  1 == yes, 0 == no
+	(byte)		does this server require you to have a custom client side .dll ( client.dll )?  1 == yes, 0 == no.
+
+
+
+Here is some code that uses the new protocol.  The first function starts the protocol and the second services the message and requests more ip addresses:
+
+/*
+==================
+Host_GetBatchServerList_f
+
+  Request full server list from HL master server.
+==================
+*/
+void Host_GetBatchServerList_f( void )
+{
+	unsigned char c[10];
+	adrlist_t *p;
+	int i = 0;
+
+	// Request a server list from the master servers.
+	NET_Config( true ); // Initialize networking
+
+	if ( gfNoMasterServer )
+		return;
+
+	if ( !valvemaster_adr )
+		return;
+
+	c[0] = A2M_GET_SERVERS_BATCH;  // ascii 'e'
+	i++;
+
+	*(int *)&c[1] = 0; // Request first batch.
+	i += sizeof( int );
+
+	p = valvemaster_adr;
+
+	while ( p )
+	{
+		// send to valve master
+		Con_Printf ("Requesting batch server list from %s\n", NET_AdrToString ( p->adr) );
+		NET_SendPacket (NS_CLIENT, i, c, p->adr );
+		p = p->next;
+	}
+}
+
+// Upon receiving ( 5 bytes, 4 for the -1 and 1 byte for the 'f' character ):
+int32  -1
+M2A_SERVER_BATCH               // Ascii 'f', the response to the above
+
+void CL_ParseBatchServerList( void )
+{
+	char szAddress[128] = "";
+	unsigned char cIP[4];
+	int i;
+	unsigned short iIPPort;
+	int nNumAddresses;
+	int count = 1;
+	int unique = 0;
+
+	MSG_ReadByte(); // Skip \r
+
+	unique = MSG_ReadLong();
+
+	// So far we have read 6 chars.  Remainder of message length is iBytesRead - 6
+	nNumAddresses = net_message.cursize - sizeof(int) - sizeof(unsigned char) - sizeof(byte);
+	
+	// Each address is 6 bytes long
+	// 
+	nNumAddresses /= 6;
+
+	while (nNumAddresses-- > 0)
+	{
+		memset(szAddress, 0, 128);
+
+		for (i = 0; i < 4; i++)
+			cIP[i] = MSG_ReadByte();
+
+		sprintf( szAddress, "%i.%i.%i.%i"
+			, (int)cIP[0]
+			, (int)cIP[1]
+			, (int)cIP[2]
+			, (int)cIP[3]
+		);
+
+		iIPPort = BigShort((unsigned short)MSG_ReadShort());
+		
+		//if ( count <= 100 )
+		//	Con_Printf( "%4i:  %s:%i\n", count, szAddress, iIPPort );
+		
+		count++;
+	}
+
+	Con_Printf( "%i servers\n", count );
+
+	if ( unique != 0 ) // More servers left, send another request to master
+	{
+		unsigned char c[10];
+		int i = 0;
+
+		// Request a server list from the master servers.
+		NET_Config( true ); // Initialize networking
+
+		c[0] = A2M_GET_SERVERS_BATCH;
+		i++;
+
+		*(int *)&c[1] = unique; // Request servers starting after this unique id.
+		i += sizeof( int );
+
+		// send to valve master
+		Con_DPrintf ("Requesting next batch ( %i ) server list from %s\n", unique, NET_AdrToString ( net_from ) );
+		NET_SendPacket (NS_CLIENT, i, c, net_from );
+	}
+	else
+		Con_Printf( "Done.\n" );
+}
+
