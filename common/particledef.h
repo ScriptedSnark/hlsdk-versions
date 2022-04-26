@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -49,8 +49,8 @@ typedef struct particle_s
 
 	// for pt_clientcusttom, we'll call this function each frame
 	void		(*callback)( struct particle_s *particle, float frametime );
-
-	// for deathfunc, etc.
+	
+	// For deathfunc, etc.
 	unsigned char context;
 } particle_t;
 

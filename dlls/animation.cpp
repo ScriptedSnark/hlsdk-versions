@@ -23,6 +23,7 @@ typedef int qboolean;
 typedef unsigned char byte;
 #include "../utils/common/mathlib.h"
 #include "const.h"
+
 #include "progdefs.h"
 #include "edict.h"
 #include "eiface.h"

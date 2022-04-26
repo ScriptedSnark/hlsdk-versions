@@ -1434,6 +1434,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 					WRITE_COORD( tr.vecEndPos.y );
 					WRITE_COORD( tr.vecEndPos.z );
 				MESSAGE_END();
+
 				break;
 			}
 		}

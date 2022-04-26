@@ -55,7 +55,7 @@ public:
 	int AddToPlayer( CBasePlayer *pPlayer );
 
 	BOOL Deploy( void );
-	void Holster( int skiplocal = 0  );
+	void Holster( int skiplocal = 0 );
 
 	void PrimaryAttack( void );
 	void SecondaryAttack( void );
@@ -82,7 +82,6 @@ private:
 	unsigned short m_usGaussFire;
 	unsigned short m_usGaussSpin;
 };
-
 LINK_ENTITY_TO_CLASS( weapon_gauss, CGauss );
 
 
@@ -313,7 +312,7 @@ void CGauss::SecondaryAttack()
 			ALERT( at_console, "sound state %d\n", m_iSoundState );
 
 		PLAYBACK_EVENT_FULL( 0, m_pPlayer->edict(), m_usGaussSpin, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, pitch, 0, ( m_iSoundState == SND_CHANGE_PITCH ) ? 1 : 0, 0 );
-
+		
 		m_iSoundState = SND_CHANGE_PITCH; // hack for going through level transitions
 
 		m_pPlayer->m_iWeaponVolume = GAUSS_PRIMARY_CHARGE_VOLUME;
@@ -410,6 +409,9 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 
 	pentIgnore = ENT( m_pPlayer->pev );
 
+	// Pass in correct values here
+	PLAYBACK_EVENT_FULL( FEV_RELIABLE, m_pPlayer->edict(), m_usGaussFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, flDamage, 0.0, 0, 0, m_fPrimaryFire ? 1 : 0, 0 );
+
 	/*
 	ALERT( at_console, "%f %f %f\n%f %f %f\n", 
 		vecSrc.x, vecSrc.y, vecSrc.z, 
@@ -417,9 +419,6 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 	*/
 
 	// ALERT( at_console, "%f %f\n", tr.flFraction, flMaxFrac );
-
-	// Pass in correct values here
-	PLAYBACK_EVENT_FULL( FEV_RELIABLE, m_pPlayer->edict(), m_usGaussFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, flDamage, 0.0, 0, 0, m_fPrimaryFire ? 1 : 0, 0 );
 
 	while (flDamage > 10 && nMaxHits > 0)
 	{
@@ -440,11 +439,9 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 		{
 			m_pPlayer->pev->effects |= EF_MUZZLEFLASH;
 			fFirstBeam = 0;
-			nTotal += 26;
 		}
 		else
 		{
-			nTotal += 26;
 		}
 
 		if (pEntity->pev->takedamage)
@@ -478,19 +475,13 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 
 				// explode a bit
 				m_pPlayer->RadiusDamage( tr.vecEndPos, pev, m_pPlayer->pev, flDamage * n, CLASS_NONE, DMG_BLAST );
-
-				nTotal += 13;
-
-				nTotal += 21;
-
+				
 				// lose energy
 				if (n == 0) n = 0.1;
 				flDamage = flDamage * (1 - n);
 			}
 			else
 			{
-				nTotal += 13;
-
 				// limit it to one hole punch
 				if (fHasPunched)
 					break;
@@ -512,8 +503,6 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 							if (n == 0) n = 1;
 							flDamage -= n;
 
-							// ALERT( at_console, "punch %f\n", n );
-
 							// exit blast damage
 							//m_pPlayer->RadiusDamage( beam_tr.vecEndPos + vecDir * 8, pev, m_pPlayer->pev, flDamage, CLASS_NONE, DMG_BLAST );
 							float damage_radius;
@@ -529,7 +518,7 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 
 							::RadiusDamage( beam_tr.vecEndPos + vecDir * 8, pev, m_pPlayer->pev, flDamage, damage_radius, CLASS_NONE, DMG_BLAST );
 							CSoundEnt::InsertSound ( bits_SOUND_COMBAT, pev->origin, NORMAL_EXPLOSION_VOLUME, 3.0 );
-
+							
 							vecSrc = beam_tr.vecEndPos + vecDir;
 						}
 					}
@@ -610,6 +599,11 @@ void CGauss::WeaponIdle( void )
 		
 	}
 }
+
+
+
+
+
 
 class CGaussAmmo : public CBasePlayerAmmo
 {

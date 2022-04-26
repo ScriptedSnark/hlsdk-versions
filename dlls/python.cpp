@@ -51,7 +51,6 @@ public:
 	float m_flSoundDelay;
 
 	BOOL m_fInZoom;// don't save this. 
-
 private:
 	unsigned short m_usFirePython;
 };
@@ -200,7 +199,6 @@ void CPython::PrimaryAttack()
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
-
 	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
 
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
@@ -215,7 +213,6 @@ void CPython::PrimaryAttack()
 
 	m_flNextPrimaryAttack = gpGlobals->time + 0.75;
 	m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
-
 }
 
 

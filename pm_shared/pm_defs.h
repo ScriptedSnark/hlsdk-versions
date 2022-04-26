@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -195,7 +195,7 @@ struct playermove_s
 	int				(*PM_TruePointContents) (vec3_t p);
 	int				(*PM_HullPointContents) ( struct hull_s *hull, int num, vec3_t p);   
 	pmtrace_t		(*PM_PlayerTrace) (vec3_t start, vec3_t end, int traceFlags, int ignore_pe );
-	struct pmtrace_s *(*PM_TraceLine)( float *start, float *end, int flags, int usehulll, int ignore_pe );
+	struct pmtrace_s *(*PM_TraceLine)( float *start, float *end, int flags, int usehull, int ignore_pe );
 	long			(*RandomLong)( long lLow, long lHigh );
 	float			(*RandomFloat)( float flLow, float flHigh );
 	int				(*PM_GetModelType)( struct model_s *mod );

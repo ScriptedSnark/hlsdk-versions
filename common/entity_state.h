@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -49,9 +49,9 @@ struct entity_state_s
 	short		solid;
 	int			effects;
 	float		scale;
-	
-	byte		eflags;
 
+	byte		eflags;
+	
 	// Render information
 	int			rendermode;
 	int			renderamt;

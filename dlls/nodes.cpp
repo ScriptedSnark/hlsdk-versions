@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -31,6 +31,11 @@
 // any given node is allowed to 'see' in the first stage of graph creation "LinkVisibleNodes()".
 #define	MAX_NODE_INITIAL_LINKS	128
 #define	MAX_NODES               1024
+
+#ifndef _WIN32
+#include <unistd.h>
+#define CreateDirectory(p, n) mkdir(p, 0777)
+#endif
 
 extern DLL_GLOBAL edict_t		*g_pBodyQueueHead;
 

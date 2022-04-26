@@ -827,7 +827,7 @@ int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer )
 	{
 		bSend = TRUE;
 	}
-	
+
 	if ( bSend )
 	{
 		MESSAGE_BEGIN( MSG_ONE, gmsgCurWeapon, NULL, pPlayer->pev );
@@ -1494,3 +1494,5 @@ void CWeaponBox::SetObjectCollisionBox( void )
 void CBasePlayerWeapon::PrintState( void )
 {
 }
+
+

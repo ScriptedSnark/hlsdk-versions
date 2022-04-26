@@ -861,9 +861,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	}
 
 	SetAnimation( PLAYER_DIE );
-		
-	m_iRespawnFrames = 0;
-
+	
 	pev->modelindex = g_ulModelIndexPlayer;    // don't use eyes
 
 	pev->deadflag		= DEAD_DYING;
@@ -902,6 +900,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	if ( ( pev->health < -40 && iGib != GIB_NEVER ) || iGib == GIB_ALWAYS )
 	{
 		pev->solid			= SOLID_NOT;
+
 		GibMonster();	// This clears pev->model
 		pev->effects |= EF_NODRAW;
 		return;
@@ -1533,7 +1532,7 @@ void CBasePlayer::Jump()
 	if ( FBitSet(pev->flags, FL_DUCKING ) || FBitSet(m_afPhysicsFlags, PFLAG_DUCKING) )
 	{
 		if ( m_fLongJump && (pev->button & IN_DUCK) && gpGlobals->time - m_flDuckTime < 1 && pev->velocity.Length() > 50 )
-		{
+		{// If jump pressed within a second of duck while moving, long jump!
 			SetAnimation( PLAYER_SUPERJUMP );
 		}
 	}
@@ -2741,7 +2740,6 @@ void CBasePlayer::PostThink()
 		}
 		else if ( m_flFallVelocity > PLAYER_MAX_SAFE_FALL_SPEED )
 		{// after this point, we start doing damage
-			
 			float flFallDamage = g_pGameRules->FlPlayerFallDamage( this );
 
 			if ( flFallDamage > pev->health )
@@ -3970,7 +3968,7 @@ void CBasePlayer::ItemPostFrame()
 	if ( m_pTank != NULL )
 		return;
 
- #if defined( CLIENT_WEAPONS )
+#if defined( CLIENT_WEAPONS )
     if ( m_flNextAttack > 0 )
 #else
     if ( gpGlobals->time < m_flNextAttack )

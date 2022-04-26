@@ -654,6 +654,18 @@ void ClientPrecache( void )
 }
 
 /*
+================
+Sys_Error
+
+Engine is going to shut down, allows setting a breakpoint in game .dll to catch that occasion
+================
+*/
+void Sys_Error( const char *error_string )
+{
+	// Default case, do nothing.  MOD AUTHORS:  Add code ( e.g., _asm { int 3 }; here to cause a breakpoint for debugging your game .dlls
+}
+
+/*
 ===============
 const char *GetGameDescription()
 
@@ -666,18 +678,6 @@ const char *GetGameDescription()
 		return g_pGameRules->GetGameDescription();
 	else
 		return "Half-Life";
-}
-
-/*
-================
-Sys_Error
-
-Engine is going to shut down, allows setting a breakpoint in game .dll to catch that occasion
-================
-*/
-void Sys_Error( const char *error_string )
-{
-	// Default case, do nothing.  MOD AUTHORS:  Add code ( e.g., _asm { int 3 }; here to cause a breakpoint for debugging your game .dlls
 }
 
 /*
@@ -769,7 +769,6 @@ void SpectatorThink( edict_t *pEntity )
 	if (pPlayer)
 		pPlayer->SpectatorThink( );
 }
-
 
 ////////////////////////////////////////////////////////
 // PAS and PVS routines for client messaging
