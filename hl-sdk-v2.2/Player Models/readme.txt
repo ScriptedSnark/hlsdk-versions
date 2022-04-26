@@ -1,0 +1,3 @@
+Supplied are the source files to the player models that shipped with Half-Life.  These should serve as good templates for building custom deathmatch models for use in Half-Life.
+
+Note that the paths referenced in the .qc file for each model are not necessarily the paths of the directory structure on your machine.  Alter each .qc file as appropriate to not only reflect your new model names but also your directory structure.
