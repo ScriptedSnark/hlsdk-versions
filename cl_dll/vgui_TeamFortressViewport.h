@@ -1,3 +1,9 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
 
 #ifndef TEAMFORTRESSVIEWPORT_H
 #define TEAMFORTRESSVIEWPORT_H
@@ -45,21 +51,18 @@ class CClassMenuPanel;
 class CTeamMenuPanel;
 
 char* GetVGUITGAName(const char *pszName);
-BitmapTGA *LoadTGA( const char* pImageName );
+BitmapTGA *LoadTGAForRes(const char* pImageName);
 void ScaleColors( int &r, int &g, int &b, int a );
 extern char *sTFClassSelection[];
 extern int sTFValidClassInts[];
 extern char *sLocalisedClasses[];
 extern int iTeamColors[5][3];
+extern int iNumberOfTeamColors;
 
 #define MAX_SERVERNAME_LENGTH	32
 
-// Use this to set any co-ords in 640x480 space
-#define XRES(x)					(x  * ((float)ScreenWidth / 640))
-#define YRES(y)					(y  * ((float)ScreenHeight / 480))
-
 // Command Menu positions 
-#define MAX_MENUS				40
+#define MAX_MENUS				80
 #define MAX_BUTTONS				100
 
 #define BUTTON_SIZE_Y			YRES(30)
@@ -268,6 +271,7 @@ private:
 	int			 m_iCurrentPlayerClass;
 	int			 m_iUser1;
 	int			 m_iUser2;
+	int			 m_iUser3;
 
 	// VGUI Menus
 	void		 CreateTeamMenu( void );
@@ -295,6 +299,7 @@ private:
 	// Spectator "menu"
 	CTransparentPanel	*m_pSpectatorMenu;
 	Label				*m_pSpectatorLabel;
+	Label				*m_pSpectatorHelpLabel;
 	int					m_iAllowSpectators;
 
 	// Data for specific sections of the Command Menu
@@ -385,6 +390,7 @@ public:
 	virtual void paintBackground();
 
 	CSchemeManager *GetSchemeManager( void ) { return &m_SchemeManager; }
+	ScorePanel *GetScoreBoard( void ) { return m_pScoreBoard; }
 
 	void *operator new( size_t stAllocateBlock );
 

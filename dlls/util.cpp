@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -25,19 +25,12 @@
 #include "cbase.h"
 #include "saverestore.h"
 #include <time.h>
-#include "../engine/shake.h"
+#include "shake.h"
 #include "decals.h"
 #include "player.h"
 #include "weapons.h"
 #include "gamerules.h"
 
-/*
-=====================
-UTIL_WeaponTimeBase
-
-Time basis for weapons ( zero based of predicting client weapons )
-=====================
-*/
 float UTIL_WeaponTimeBase( void )
 {
 #if defined( CLIENT_WEAPONS )
@@ -89,7 +82,6 @@ UTIL_SharedRandomLong
 */
 int UTIL_SharedRandomLong( unsigned int seed, int low, int high )
 {
-
 	unsigned int range;
 
 	U_Srand( (int)seed + low + high );
@@ -1774,7 +1766,8 @@ void CSaveRestoreBuffer :: BufferRewind( int size )
 
 #ifndef _WIN32
 extern "C" {
-    unsigned _rotr ( unsigned val, int shift) {
+unsigned _rotr ( unsigned val, int shift)
+{
         register unsigned lobit;        /* non-zero means lo bit set */
         register unsigned num = val;    /* number to rotate */
 
@@ -1789,7 +1782,7 @@ extern "C" {
         }
 
         return num;
-    }
+}
 }
 #endif
 
@@ -2547,3 +2540,4 @@ int	CRestore::BufferCheckZString( const char *string )
 	}
 	return 0;
 }
+

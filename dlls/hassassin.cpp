@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -26,6 +26,7 @@
 #include	"squadmonster.h"
 #include	"weapons.h"
 #include	"soundent.h"
+#include	"game.h"
 
 extern DLL_GLOBAL int  g_iSkillLevel;
 
@@ -637,7 +638,7 @@ BOOL CHAssassin :: CheckMeleeAttack1 ( float flDot, float flDist )
 			return FALSE;
 		}
 
-		float flGravity = CVAR_GET_FLOAT( "sv_gravity" );
+		float flGravity = g_psv_gravity->value;
 
 		float time = sqrt( 160 / (0.5 * flGravity));
 		float speed = flGravity * time / 160;

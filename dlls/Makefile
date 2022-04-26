@@ -1,7 +1,7 @@
 #
-# Half-Life ProSDK 2.0 hl_i386.so Makefile for i386 Linux
+# Half-Life Full SDK 2.2 hl_i386.so Makefile for x86 Linux
 #
-# April 2000 by Leon Hartwig (jehannum@planethalflife.com)
+# August 2001 by Leon Hartwig (hartwig@valvesoftware.com)
 #
 
 DLLNAME=hl
@@ -12,27 +12,32 @@ ARCH=i386
 CC=gcc
 
 DLL_SRCDIR=.
+ENGINE_SRCDIR=../engine
+COMMON_SRCDIR=../common
 WPN_SHARED_SRCDIR=./wpn_shared
 PM_SHARED_SRCDIR=../pm_shared
+GAME_SHARED_SRCDIR=../game_shared
 
 DLL_OBJDIR=$(DLL_SRCDIR)/obj
 WPN_SHARED_OBJDIR=$(WPN_SHARED_SRCDIR)/obj
 PM_SHARED_OBJDIR=$(PM_SHARED_SRCDIR)/obj
+GAME_SHARED_OBJDIR=$(GAME_SHARED_SRCDIR)/obj
 
-BASE_CFLAGS=-Dstricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp
+BASE_CFLAGS=	-Dstricmp=strcasecmp -D_strnicmp=strncasecmp -Dstrnicmp=strncasecmp \
+		-DCLIENT_WEAPONS
 
 #safe optimization
 CFLAGS=$(BASE_CFLAGS) -w -m486 -O1
 
 #full optimization
-#CFLAGS=$(BASE_CFLAGS) -w -m486 -O2 -ffast-math -funroll-loops \
-	-fomit-frame-pointer -fexpensive-optimizations -malign-loops=2 \
-	-malign-jumps=2 -malign-functions=2
+#CFLAGS=$(BASE_CFLAGS) -w -O1 -m486 -ffast-math -funroll-loops \
+	-fomit-frame-pointer -fexpensive-optimizations \
+	-malign-loops=2 -malign-jumps=2 -malign-functions=2
 
 #use these when debugging 
 #CFLAGS=$(BASE_CFLAGS) -g
 
-INCLUDEDIRS=-I. -I../engine -I../common -I../pm_shared
+INCLUDEDIRS=-I. -I$(ENGINE_SRCDIR) -I$(COMMON_SRCDIR) -I$(PM_SHARED_SRCDIR) -I$(GAME_SHARED_SRCDIR)
 
 LDFLAGS=
 
@@ -51,6 +56,9 @@ $(DLL_OBJDIR)/%.o: $(DLL_SRCDIR)/%.cpp
 	$(DO_CC)
 
 $(WPN_SHARED_OBJDIR)/%.o: $(WPN_SHARED_SRCDIR)/%.cpp
+	$(DO_CC)
+
+$(GAME_SHARED_OBJDIR)/%.o: $(GAME_SHARED_SRCDIR)/%.cpp
 	$(DO_CC)
 
 $(PM_SHARED_OBJDIR)/%.o: $(PM_SHARED_SRCDIR)/%.c
@@ -154,6 +162,7 @@ OBJ = \
 	$(DLL_OBJDIR)/xen.o \
 	$(DLL_OBJDIR)/zombie.o \
 	$(WPN_SHARED_OBJDIR)/hl_wpn_glock.o \
+	$(GAME_SHARED_OBJDIR)/voice_gamemgr.o \
 	$(PM_SHARED_OBJDIR)/pm_debug.o \
 	$(PM_SHARED_OBJDIR)/pm_math.o \
 	$(PM_SHARED_OBJDIR)/pm_shared.o
@@ -164,6 +173,7 @@ $(DLLNAME)_$(ARCH).$(SHLIBEXT) : neat $(OBJ)
 neat:
 	-mkdir $(DLL_OBJDIR)
 	-mkdir $(WPN_SHARED_OBJDIR)
+	-mkdir $(GAME_SHARED_OBJDIR)
 	-mkdir $(PM_SHARED_OBJDIR)
 clean:
 	-rm -f $(OBJ)
@@ -171,5 +181,6 @@ clean:
 spotless: clean
 	-rm -r $(DLL_OBJDIR)
 	-rm -r $(WPN_SHARED_OBJDIR)
+	-rm -r $(GAME_SHARED_OBJDIR)
 	-rm -r $(PM_SHARED_OBJDIR)
 

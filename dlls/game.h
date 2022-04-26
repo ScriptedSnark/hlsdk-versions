@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -20,23 +20,22 @@ extern void GameDLLInit( void );
 
 
 extern cvar_t	displaysoundlist;
-extern cvar_t	mapcyclefile;
-extern cvar_t	servercfgfile;
-extern cvar_t	lservercfgfile;
 
 // multiplayer server rules
+extern cvar_t	teamplay;
 extern cvar_t	fraglimit;
 extern cvar_t	timelimit;
-extern cvar_t	friendlyfir;
+extern cvar_t	friendlyfire;
 extern cvar_t	falldamage;
 extern cvar_t	weaponstay;
-extern cvar_t	forcerespaw;
+extern cvar_t	forcerespawn;
 extern cvar_t	flashlight;
 extern cvar_t	aimcrosshair;
 extern cvar_t	decalfrequency;
 extern cvar_t	teamlist;
 extern cvar_t	teamoverride;
 extern cvar_t	defaultteam;
+extern cvar_t	allowmonsters;
 
 // Engine Cvars
 extern cvar_t	*g_psv_gravity;

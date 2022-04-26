@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -64,6 +64,12 @@ typedef struct ref_params_s
 
 	// Movevars
 	struct movevars_s *movevars;
+
+	int		viewport[4];		// the viewport coordinates x ,y , width, height
+
+	int		nextView;			// the renderer calls ClientDLL_CalcRefdef() and Renderview
+								// so long in cycles until this value is 0 (multiple views)
+	int		onlyClientDraw;		// if !=0 nothing is drawn by the engine except clientDraw functions
 } ref_params_t;
 
 #endif // !REF_PARAMSH

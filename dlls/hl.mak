@@ -130,6 +130,9 @@ CLEAN :
 	-@erase "$(INTDIR)\plane.obj"
 	-@erase "$(INTDIR)\plats.obj"
 	-@erase "$(INTDIR)\player.obj"
+	-@erase "$(INTDIR)\pm_debug.obj"
+	-@erase "$(INTDIR)\pm_math.obj"
+	-@erase "$(INTDIR)\pm_shared.obj"
 	-@erase "$(INTDIR)\python.obj"
 	-@erase "$(INTDIR)\rat.obj"
 	-@erase "$(INTDIR)\roach.obj"
@@ -172,11 +175,11 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /c
+# ADD CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /I "..\common" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /c
 # SUBTRACT CPP /Fr
-CPP_PROJ=/nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32"\
- /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL"\
- /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c 
+CPP_PROJ=/nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /I "..\common" /D\
+ "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D\
+ "VALVE_DLL" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c 
 CPP_OBJS=.\Releasehl/
 CPP_SBRS=.\.
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
@@ -268,6 +271,9 @@ LINK32_OBJS= \
 	"$(INTDIR)\plane.obj" \
 	"$(INTDIR)\plats.obj" \
 	"$(INTDIR)\player.obj" \
+	"$(INTDIR)\pm_debug.obj" \
+	"$(INTDIR)\pm_math.obj" \
+	"$(INTDIR)\pm_shared.obj" \
 	"$(INTDIR)\python.obj" \
 	"$(INTDIR)\rat.obj" \
 	"$(INTDIR)\roach.obj" \
@@ -469,6 +475,12 @@ CLEAN :
 	-@erase "$(INTDIR)\plats.sbr"
 	-@erase "$(INTDIR)\player.obj"
 	-@erase "$(INTDIR)\player.sbr"
+	-@erase "$(INTDIR)\pm_debug.obj"
+	-@erase "$(INTDIR)\pm_debug.sbr"
+	-@erase "$(INTDIR)\pm_math.obj"
+	-@erase "$(INTDIR)\pm_math.sbr"
+	-@erase "$(INTDIR)\pm_shared.obj"
+	-@erase "$(INTDIR)\pm_shared.sbr"
 	-@erase "$(INTDIR)\python.obj"
 	-@erase "$(INTDIR)\python.sbr"
 	-@erase "$(INTDIR)\rat.obj"
@@ -543,10 +555,11 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /Zi /Od /I "..\engine" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /FR /YX /c
-CPP_PROJ=/nologo /G5 /MTd /W3 /Gm /GX /Zi /Od /I "..\engine" /D "_DEBUG" /D\
- "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL"\
- /FR"$(INTDIR)/" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c 
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /Zi /Od /I "..\engine" /I "..\common" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /FR /YX /c
+CPP_PROJ=/nologo /G5 /MTd /W3 /Gm /GX /Zi /Od /I "..\engine" /I "..\common" /D\
+ "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D\
+ "VALVE_DLL" /FR"$(INTDIR)/" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/"\
+ /Fd"$(INTDIR)/" /c 
 CPP_OBJS=.\debughl/
 CPP_SBRS=.\debughl/
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
@@ -627,6 +640,9 @@ BSC32_SBRS= \
 	"$(INTDIR)\plane.sbr" \
 	"$(INTDIR)\plats.sbr" \
 	"$(INTDIR)\player.sbr" \
+	"$(INTDIR)\pm_debug.sbr" \
+	"$(INTDIR)\pm_math.sbr" \
+	"$(INTDIR)\pm_shared.sbr" \
 	"$(INTDIR)\python.sbr" \
 	"$(INTDIR)\rat.sbr" \
 	"$(INTDIR)\roach.sbr" \
@@ -739,6 +755,9 @@ LINK32_OBJS= \
 	"$(INTDIR)\plane.obj" \
 	"$(INTDIR)\plats.obj" \
 	"$(INTDIR)\player.obj" \
+	"$(INTDIR)\pm_debug.obj" \
+	"$(INTDIR)\pm_math.obj" \
+	"$(INTDIR)\pm_shared.obj" \
 	"$(INTDIR)\python.obj" \
 	"$(INTDIR)\rat.obj" \
 	"$(INTDIR)\roach.obj" \
@@ -939,6 +958,12 @@ CLEAN :
 	-@erase "$(INTDIR)\plats.sbr"
 	-@erase "$(INTDIR)\player.obj"
 	-@erase "$(INTDIR)\player.sbr"
+	-@erase "$(INTDIR)\pm_debug.obj"
+	-@erase "$(INTDIR)\pm_debug.sbr"
+	-@erase "$(INTDIR)\pm_math.obj"
+	-@erase "$(INTDIR)\pm_math.sbr"
+	-@erase "$(INTDIR)\pm_shared.obj"
+	-@erase "$(INTDIR)\pm_shared.sbr"
 	-@erase "$(INTDIR)\python.obj"
 	-@erase "$(INTDIR)\python.sbr"
 	-@erase "$(INTDIR)\rat.obj"
@@ -1009,10 +1034,10 @@ CLEAN :
     if not exist "$(OUTDIR)/$(NULL)" mkdir "$(OUTDIR)"
 
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /FR /YX /c
-# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "GERMANY" /FR /YX /c
-CPP_PROJ=/nologo /MT /W3 /GX /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D\
- "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "GERMANY"\
- /FR"$(INTDIR)/" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /c 
+# ADD CPP /nologo /MT /W3 /GX /O2 /I "..\engine" /I "..\common" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "GERMANY" /FR /YX /c
+CPP_PROJ=/nologo /MT /W3 /GX /O2 /I "..\engine" /I "..\common" /D "NDEBUG" /D\
+ "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D\
+ "GERMANY" /FR"$(INTDIR)/" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /c 
 CPP_OBJS=.\Germany/
 CPP_SBRS=.\Germany/
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
@@ -1093,6 +1118,9 @@ BSC32_SBRS= \
 	"$(INTDIR)\plane.sbr" \
 	"$(INTDIR)\plats.sbr" \
 	"$(INTDIR)\player.sbr" \
+	"$(INTDIR)\pm_debug.sbr" \
+	"$(INTDIR)\pm_math.sbr" \
+	"$(INTDIR)\pm_shared.sbr" \
 	"$(INTDIR)\python.sbr" \
 	"$(INTDIR)\rat.sbr" \
 	"$(INTDIR)\roach.sbr" \
@@ -1208,6 +1236,9 @@ LINK32_OBJS= \
 	"$(INTDIR)\plane.obj" \
 	"$(INTDIR)\plats.obj" \
 	"$(INTDIR)\player.obj" \
+	"$(INTDIR)\pm_debug.obj" \
+	"$(INTDIR)\pm_math.obj" \
+	"$(INTDIR)\pm_shared.obj" \
 	"$(INTDIR)\python.obj" \
 	"$(INTDIR)\rat.obj" \
 	"$(INTDIR)\roach.obj" \
@@ -1340,6 +1371,9 @@ CLEAN :
 	-@erase "$(INTDIR)\plane.obj"
 	-@erase "$(INTDIR)\plats.obj"
 	-@erase "$(INTDIR)\player.obj"
+	-@erase "$(INTDIR)\pm_debug.obj"
+	-@erase "$(INTDIR)\pm_math.obj"
+	-@erase "$(INTDIR)\pm_shared.obj"
 	-@erase "$(INTDIR)\python.obj"
 	-@erase "$(INTDIR)\rat.obj"
 	-@erase "$(INTDIR)\roach.obj"
@@ -1382,11 +1416,11 @@ CLEAN :
 
 # ADD BASE CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /c
 # SUBTRACT BASE CPP /Fr
-# ADD CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /c
+# ADD CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /I "..\common" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /c
 # SUBTRACT CPP /Fr
-CPP_PROJ=/nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32"\
- /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL"\
- /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c 
+CPP_PROJ=/nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /I "..\common" /D\
+ "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D\
+ "VALVE_DLL" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c 
 CPP_OBJS=.\Profilehl/
 CPP_SBRS=.\.
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
@@ -1477,6 +1511,9 @@ LINK32_OBJS= \
 	"$(INTDIR)\plane.obj" \
 	"$(INTDIR)\plats.obj" \
 	"$(INTDIR)\player.obj" \
+	"$(INTDIR)\pm_debug.obj" \
+	"$(INTDIR)\pm_math.obj" \
+	"$(INTDIR)\pm_shared.obj" \
 	"$(INTDIR)\python.obj" \
 	"$(INTDIR)\rat.obj" \
 	"$(INTDIR)\roach.obj" \
@@ -1619,6 +1656,9 @@ CLEAN :
 	-@erase "$(INTDIR)\plane.obj"
 	-@erase "$(INTDIR)\plats.obj"
 	-@erase "$(INTDIR)\player.obj"
+	-@erase "$(INTDIR)\pm_debug.obj"
+	-@erase "$(INTDIR)\pm_math.obj"
+	-@erase "$(INTDIR)\pm_shared.obj"
 	-@erase "$(INTDIR)\python.obj"
 	-@erase "$(INTDIR)\rat.obj"
 	-@erase "$(INTDIR)\roach.obj"
@@ -1662,11 +1702,12 @@ CLEAN :
 
 # ADD BASE CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /YX /c
 # SUBTRACT BASE CPP /Fr
-# ADD CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "HLDEMO_BUILD" /YX /c
+# ADD CPP /nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /I "..\common" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D "HLDEMO_BUILD" /YX /c
 # SUBTRACT CPP /Fr
-CPP_PROJ=/nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /D "NDEBUG" /D "WIN32"\
- /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D "VALVE_DLL" /D\
- "HLDEMO_BUILD" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/" /Fd"$(INTDIR)/" /c 
+CPP_PROJ=/nologo /G5 /MT /W3 /GX /Zi /O2 /I "..\engine" /I "..\common" /D\
+ "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "QUIVER" /D "VOXEL" /D "QUAKE2" /D\
+ "VALVE_DLL" /D "HLDEMO_BUILD" /Fp"$(INTDIR)/hl.pch" /YX /Fo"$(INTDIR)/"\
+ /Fd"$(INTDIR)/" /c 
 CPP_OBJS=.\HLDEMO/
 CPP_SBRS=.\.
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
@@ -1759,6 +1800,9 @@ LINK32_OBJS= \
 	"$(INTDIR)\plane.obj" \
 	"$(INTDIR)\plats.obj" \
 	"$(INTDIR)\player.obj" \
+	"$(INTDIR)\pm_debug.obj" \
+	"$(INTDIR)\pm_math.obj" \
+	"$(INTDIR)\pm_shared.obj" \
 	"$(INTDIR)\python.obj" \
 	"$(INTDIR)\rat.obj" \
 	"$(INTDIR)\roach.obj" \
@@ -1855,13 +1899,16 @@ SOURCE=.\world.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_WORLD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -1870,7 +1917,6 @@ DEP_CPP_WORLD=\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\nodes.h"\
 	".\player.h"\
@@ -1890,13 +1936,16 @@ DEP_CPP_WORLD=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_WORLD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -1905,7 +1954,6 @@ DEP_CPP_WORLD=\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\nodes.h"\
 	".\player.h"\
@@ -1927,13 +1975,16 @@ DEP_CPP_WORLD=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_WORLD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -1942,7 +1993,6 @@ DEP_CPP_WORLD=\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\nodes.h"\
 	".\player.h"\
@@ -1964,13 +2014,16 @@ DEP_CPP_WORLD=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_WORLD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -1979,7 +2032,6 @@ DEP_CPP_WORLD=\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\nodes.h"\
 	".\player.h"\
@@ -2034,13 +2086,16 @@ SOURCE=.\bmodels.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_BMODE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2059,13 +2114,16 @@ DEP_CPP_BMODE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_BMODE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2086,13 +2144,16 @@ DEP_CPP_BMODE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_BMODE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2113,13 +2174,16 @@ DEP_CPP_BMODE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_BMODE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2163,13 +2227,16 @@ SOURCE=.\buttons.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_BUTTO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2188,13 +2255,16 @@ DEP_CPP_BUTTO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_BUTTO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2215,13 +2285,16 @@ DEP_CPP_BUTTO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_BUTTO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2242,13 +2315,16 @@ DEP_CPP_BUTTO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_BUTTO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2292,20 +2368,25 @@ SOURCE=.\client.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_CLIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\entity_state.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\customentity.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -2314,7 +2395,6 @@ DEP_CPP_CLIEN=\
 	".\spectator.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\client.obj" : $(SOURCE) $(DEP_CPP_CLIEN) "$(INTDIR)"
@@ -2323,20 +2403,25 @@ DEP_CPP_CLIEN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_CLIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\entity_state.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\customentity.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -2345,7 +2430,6 @@ DEP_CPP_CLIEN=\
 	".\spectator.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\client.obj" : $(SOURCE) $(DEP_CPP_CLIEN) "$(INTDIR)"
@@ -2356,20 +2440,25 @@ DEP_CPP_CLIEN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_CLIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\entity_state.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\customentity.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -2378,7 +2467,6 @@ DEP_CPP_CLIEN=\
 	".\spectator.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\client.obj" : $(SOURCE) $(DEP_CPP_CLIEN) "$(INTDIR)"
@@ -2389,20 +2477,25 @@ DEP_CPP_CLIEN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_CLIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\entity_state.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\customentity.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -2411,7 +2504,6 @@ DEP_CPP_CLIEN=\
 	".\spectator.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\client.obj" : $(SOURCE) $(DEP_CPP_CLIEN) "$(INTDIR)"
@@ -2420,13 +2512,25 @@ DEP_CPP_CLIEN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_CLIEN=\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\entity_state.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\customentity.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\client.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -2434,7 +2538,7 @@ DEP_CPP_CLIEN=\
 	".\soundent.h"\
 	".\spectator.h"\
 	".\util.h"\
-	".\weapons.h"\
+	".\vector.h"\
 	
 
 "$(INTDIR)\client.obj" : $(SOURCE) $(DEP_CPP_CLIEN) "$(INTDIR)"
@@ -2451,14 +2555,17 @@ SOURCE=.\combat.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_COMBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -2482,14 +2589,17 @@ DEP_CPP_COMBA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_COMBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -2515,14 +2625,17 @@ DEP_CPP_COMBA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_COMBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -2548,14 +2661,17 @@ DEP_CPP_COMBA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_COMBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -2579,9 +2695,18 @@ DEP_CPP_COMBA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_COMBA=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
 	".\animation.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
@@ -2589,10 +2714,10 @@ DEP_CPP_COMBA=\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
-	".\schedule.h"\
 	".\skill.h"\
 	".\soundent.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -2610,13 +2735,16 @@ SOURCE=.\doors.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_DOORS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2635,13 +2763,16 @@ DEP_CPP_DOORS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_DOORS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2662,13 +2793,16 @@ DEP_CPP_DOORS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_DOORS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2689,13 +2823,16 @@ DEP_CPP_DOORS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_DOORS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -2739,13 +2876,16 @@ SOURCE=.\globals.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GLOBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2764,13 +2904,16 @@ DEP_CPP_GLOBA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GLOBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2791,13 +2934,16 @@ DEP_CPP_GLOBA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GLOBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2818,13 +2964,16 @@ DEP_CPP_GLOBA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GLOBA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2868,13 +3017,16 @@ SOURCE=.\h_export.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_H_EXP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2884,7 +3036,6 @@ DEP_CPP_H_EXP=\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\h_export.obj" : $(SOURCE) $(DEP_CPP_H_EXP) "$(INTDIR)"
@@ -2893,13 +3044,16 @@ DEP_CPP_H_EXP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_H_EXP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2909,7 +3063,6 @@ DEP_CPP_H_EXP=\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\h_export.obj" : $(SOURCE) $(DEP_CPP_H_EXP) "$(INTDIR)"
@@ -2920,13 +3073,16 @@ DEP_CPP_H_EXP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_H_EXP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2936,7 +3092,6 @@ DEP_CPP_H_EXP=\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\h_export.obj" : $(SOURCE) $(DEP_CPP_H_EXP) "$(INTDIR)"
@@ -2947,13 +3102,16 @@ DEP_CPP_H_EXP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_H_EXP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -2963,7 +3121,6 @@ DEP_CPP_H_EXP=\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\h_export.obj" : $(SOURCE) $(DEP_CPP_H_EXP) "$(INTDIR)"
@@ -2997,13 +3154,16 @@ SOURCE=.\lights.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_LIGHT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3021,13 +3181,16 @@ DEP_CPP_LIGHT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_LIGHT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3047,13 +3210,16 @@ DEP_CPP_LIGHT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_LIGHT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3073,13 +3239,16 @@ DEP_CPP_LIGHT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_LIGHT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3121,19 +3290,23 @@ SOURCE=.\monsters.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_MONST=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -3155,19 +3328,23 @@ DEP_CPP_MONST=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_MONST=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -3191,19 +3368,23 @@ DEP_CPP_MONST=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_MONST=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -3227,19 +3408,23 @@ DEP_CPP_MONST=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_MONST=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -3313,13 +3498,16 @@ SOURCE=.\plats.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_PLATS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3338,13 +3526,16 @@ DEP_CPP_PLATS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_PLATS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3365,13 +3556,16 @@ DEP_CPP_PLATS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_PLATS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3392,13 +3586,16 @@ DEP_CPP_PLATS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_PLATS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -3442,19 +3639,23 @@ SOURCE=.\player.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_PLAYE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
@@ -3476,19 +3677,23 @@ DEP_CPP_PLAYE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_PLAYE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
@@ -3512,19 +3717,23 @@ DEP_CPP_PLAYE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_PLAYE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
@@ -3548,19 +3757,23 @@ DEP_CPP_PLAYE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_PLAYE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
@@ -3582,12 +3795,23 @@ DEP_CPP_PLAYE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_PLAYE=\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
@@ -3599,6 +3823,7 @@ DEP_CPP_PLAYE=\
 	".\soundent.h"\
 	".\trains.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -3616,19 +3841,21 @@ SOURCE=.\sound.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -3647,19 +3874,21 @@ DEP_CPP_SOUND=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -3680,19 +3909,21 @@ DEP_CPP_SOUND=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -3713,19 +3944,21 @@ DEP_CPP_SOUND=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -3775,13 +4008,16 @@ SOURCE=.\subs.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SUBS_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -3801,13 +4037,16 @@ DEP_CPP_SUBS_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SUBS_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -3829,13 +4068,16 @@ DEP_CPP_SUBS_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SUBS_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -3857,13 +4099,16 @@ DEP_CPP_SUBS_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SUBS_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -3909,17 +4154,21 @@ SOURCE=.\triggers.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_TRIGG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -3935,17 +4184,21 @@ DEP_CPP_TRIGG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_TRIGG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -3963,17 +4216,21 @@ DEP_CPP_TRIGG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_TRIGG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -3991,17 +4248,21 @@ DEP_CPP_TRIGG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_TRIGG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -4043,14 +4304,17 @@ SOURCE=.\util.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_UTIL_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4072,14 +4336,17 @@ DEP_CPP_UTIL_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_UTIL_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4103,14 +4370,17 @@ DEP_CPP_UTIL_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_UTIL_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4134,14 +4404,17 @@ DEP_CPP_UTIL_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_UTIL_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4210,20 +4483,22 @@ SOURCE=.\weapons.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_WEAPO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -4243,20 +4518,22 @@ DEP_CPP_WEAPO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_WEAPO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -4278,20 +4555,22 @@ DEP_CPP_WEAPO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_WEAPO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -4313,20 +4592,22 @@ DEP_CPP_WEAPO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_WEAPO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -4346,22 +4627,29 @@ DEP_CPP_WEAPO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_WEAPO=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
-	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
 	".\player.h"\
 	".\saverestore.h"\
-	".\schedule.h"\
 	".\skill.h"\
 	".\soundent.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -4433,13 +4721,16 @@ SOURCE=.\h_cine.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_H_CIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4460,13 +4751,16 @@ DEP_CPP_H_CIN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_H_CIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4489,13 +4783,16 @@ DEP_CPP_H_CIN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_H_CIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4518,13 +4815,16 @@ DEP_CPP_H_CIN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_H_CIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -4572,13 +4872,16 @@ SOURCE=.\cbase.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_CBASE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -4587,13 +4890,11 @@ DEP_CPP_CBASE=\
 	".\extdll.h"\
 	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\cbase.obj" : $(SOURCE) $(DEP_CPP_CBASE) "$(INTDIR)"
@@ -4602,13 +4903,16 @@ DEP_CPP_CBASE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_CBASE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -4617,13 +4921,11 @@ DEP_CPP_CBASE=\
 	".\extdll.h"\
 	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\cbase.obj" : $(SOURCE) $(DEP_CPP_CBASE) "$(INTDIR)"
@@ -4634,13 +4936,16 @@ DEP_CPP_CBASE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_CBASE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -4649,13 +4954,11 @@ DEP_CPP_CBASE=\
 	".\extdll.h"\
 	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\cbase.obj" : $(SOURCE) $(DEP_CPP_CBASE) "$(INTDIR)"
@@ -4666,13 +4969,16 @@ DEP_CPP_CBASE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_CBASE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\client.h"\
@@ -4681,13 +4987,11 @@ DEP_CPP_CBASE=\
 	".\extdll.h"\
 	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\cbase.obj" : $(SOURCE) $(DEP_CPP_CBASE) "$(INTDIR)"
@@ -4696,20 +5000,29 @@ DEP_CPP_CBASE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_CBASE=\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\client.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
-	".\weapons.h"\
+	".\vector.h"\
 	
 
 "$(INTDIR)\cbase.obj" : $(SOURCE) $(DEP_CPP_CBASE) "$(INTDIR)"
@@ -4726,13 +5039,16 @@ SOURCE=.\pathcorner.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_PATHC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -4751,13 +5067,16 @@ DEP_CPP_PATHC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_PATHC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -4778,13 +5097,16 @@ DEP_CPP_PATHC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_PATHC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -4805,13 +5127,16 @@ DEP_CPP_PATHC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_PATHC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -4855,14 +5180,17 @@ SOURCE=.\h_cycler.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_H_CYC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -4884,14 +5212,17 @@ DEP_CPP_H_CYC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_H_CYC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -4915,14 +5246,17 @@ DEP_CPP_H_CYC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_H_CYC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -4946,14 +5280,17 @@ DEP_CPP_H_CYC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_H_CYC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -5004,13 +5341,16 @@ SOURCE=.\explode.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_EXPLO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5030,13 +5370,16 @@ DEP_CPP_EXPLO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_EXPLO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5058,13 +5401,16 @@ DEP_CPP_EXPLO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_EXPLO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5086,13 +5432,16 @@ DEP_CPP_EXPLO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_EXPLO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5138,13 +5487,16 @@ SOURCE=.\turret.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_TURRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -5166,13 +5518,16 @@ DEP_CPP_TURRE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_TURRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -5196,13 +5551,16 @@ DEP_CPP_TURRE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_TURRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -5226,13 +5584,16 @@ DEP_CPP_TURRE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_TURRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -5282,13 +5643,16 @@ SOURCE=.\func_break.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_FUNC_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5309,13 +5673,16 @@ DEP_CPP_FUNC_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_FUNC_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5338,13 +5705,16 @@ DEP_CPP_FUNC_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_FUNC_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5367,13 +5737,16 @@ DEP_CPP_FUNC_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_FUNC_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5421,15 +5794,18 @@ SOURCE=.\effects.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_EFFEC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5453,15 +5829,18 @@ DEP_CPP_EFFEC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_EFFEC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5487,15 +5866,18 @@ DEP_CPP_EFFEC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_EFFEC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5521,15 +5903,18 @@ DEP_CPP_EFFEC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_EFFEC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -5585,13 +5970,16 @@ SOURCE=.\items.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_ITEMS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -5614,13 +6002,16 @@ DEP_CPP_ITEMS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_ITEMS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -5645,13 +6036,16 @@ DEP_CPP_ITEMS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_ITEMS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -5676,13 +6070,16 @@ DEP_CPP_ITEMS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_ITEMS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -5731,12 +6128,16 @@ DEP_CPP_ITEMS=\
 
 SOURCE=.\animation.cpp
 DEP_CPP_ANIMA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\common\nowin.h"\
+	"..\common\studio_event.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\studio.h"\
 	"..\utils\common\mathlib.h"\
 	".\activity.h"\
@@ -5810,14 +6211,17 @@ SOURCE=.\nodes.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_NODES=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -5839,14 +6243,17 @@ DEP_CPP_NODES=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_NODES=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -5870,14 +6277,17 @@ DEP_CPP_NODES=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_NODES=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -5901,14 +6311,17 @@ DEP_CPP_NODES=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_NODES=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\doors.h"\
@@ -5959,26 +6372,27 @@ SOURCE=.\h_battery.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_H_BAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\skill.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\h_battery.obj" : $(SOURCE) $(DEP_CPP_H_BAT) "$(INTDIR)"
@@ -5987,26 +6401,27 @@ DEP_CPP_H_BAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_H_BAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\skill.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\h_battery.obj" : $(SOURCE) $(DEP_CPP_H_BAT) "$(INTDIR)"
@@ -6017,26 +6432,27 @@ DEP_CPP_H_BAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_H_BAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\skill.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\h_battery.obj" : $(SOURCE) $(DEP_CPP_H_BAT) "$(INTDIR)"
@@ -6047,26 +6463,27 @@ DEP_CPP_H_BAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_H_BAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\skill.h"\
 	".\util.h"\
 	".\vector.h"\
-	".\weapons.h"\
 	
 
 "$(INTDIR)\h_battery.obj" : $(SOURCE) $(DEP_CPP_H_BAT) "$(INTDIR)"
@@ -6103,17 +6520,21 @@ SOURCE=.\headcrab.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HEADC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -6129,17 +6550,21 @@ DEP_CPP_HEADC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HEADC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -6157,17 +6582,21 @@ DEP_CPP_HEADC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HEADC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -6185,17 +6614,21 @@ DEP_CPP_HEADC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HEADC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -6237,18 +6670,22 @@ SOURCE=.\houndeye.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -6267,18 +6704,22 @@ DEP_CPP_HOUND=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -6299,18 +6740,22 @@ DEP_CPP_HOUND=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -6331,18 +6776,22 @@ DEP_CPP_HOUND=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HOUND=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -6391,15 +6840,18 @@ SOURCE=.\hgrunt.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -6425,15 +6877,18 @@ DEP_CPP_HGRUN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -6461,15 +6916,18 @@ DEP_CPP_HGRUN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -6497,15 +6955,18 @@ DEP_CPP_HGRUN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -6565,14 +7026,17 @@ SOURCE=.\schedule.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SCHED=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -6597,14 +7061,17 @@ DEP_CPP_SCHED=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SCHED=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -6631,14 +7098,17 @@ DEP_CPP_SCHED=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SCHED=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -6665,14 +7135,17 @@ DEP_CPP_SCHED=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SCHED=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -6729,14 +7202,17 @@ SOURCE=.\monsterstate.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_MONSTE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -6758,14 +7234,17 @@ DEP_CPP_MONSTE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_MONSTE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -6789,14 +7268,17 @@ DEP_CPP_MONSTE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_MONSTE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -6820,14 +7302,17 @@ DEP_CPP_MONSTE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_MONSTE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -6878,13 +7363,16 @@ SOURCE=.\defaultai.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_DEFAU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -6909,13 +7397,16 @@ DEP_CPP_DEFAU=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_DEFAU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -6942,13 +7433,16 @@ DEP_CPP_DEFAU=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_DEFAU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -6975,13 +7469,16 @@ DEP_CPP_DEFAU=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_DEFAU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7037,17 +7534,21 @@ SOURCE=.\h_ai.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_H_AI_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -7063,17 +7564,21 @@ DEP_CPP_H_AI_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_H_AI_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -7091,17 +7596,21 @@ DEP_CPP_H_AI_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_H_AI_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -7119,17 +7628,21 @@ DEP_CPP_H_AI_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_H_AI_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -7171,14 +7684,17 @@ SOURCE=.\scripted.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SCRIP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7201,14 +7717,17 @@ DEP_CPP_SCRIP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SCRIP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7233,14 +7752,17 @@ DEP_CPP_SCRIP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SCRIP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7265,14 +7787,17 @@ DEP_CPP_SCRIP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SCRIP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7325,13 +7850,16 @@ SOURCE=.\barney.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_BARNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7357,13 +7885,16 @@ DEP_CPP_BARNE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_BARNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7391,13 +7922,16 @@ DEP_CPP_BARNE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_BARNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7425,13 +7959,16 @@ DEP_CPP_BARNE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_BARNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7489,14 +8026,17 @@ SOURCE=.\scientist.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SCIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7521,14 +8061,17 @@ DEP_CPP_SCIEN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SCIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7555,14 +8098,17 @@ DEP_CPP_SCIEN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SCIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7589,14 +8135,17 @@ DEP_CPP_SCIEN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SCIEN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -7653,13 +8202,16 @@ SOURCE=.\zombie.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_ZOMBI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -7679,13 +8231,16 @@ DEP_CPP_ZOMBI=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_ZOMBI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -7707,13 +8262,16 @@ DEP_CPP_ZOMBI=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_ZOMBI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -7735,13 +8293,16 @@ DEP_CPP_ZOMBI=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_ZOMBI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -7787,13 +8348,16 @@ SOURCE=.\roach.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_ROACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -7815,13 +8379,16 @@ DEP_CPP_ROACH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_ROACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -7845,13 +8412,16 @@ DEP_CPP_ROACH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_ROACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -7875,13 +8445,16 @@ DEP_CPP_ROACH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_ROACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -7931,13 +8504,16 @@ SOURCE=.\rat.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_RAT_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -7957,13 +8533,16 @@ DEP_CPP_RAT_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_RAT_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -7985,13 +8564,16 @@ DEP_CPP_RAT_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_RAT_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8013,13 +8595,16 @@ DEP_CPP_RAT_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_RAT_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8065,13 +8650,16 @@ SOURCE=.\monstermaker.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_MONSTER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8091,13 +8679,16 @@ DEP_CPP_MONSTER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_MONSTER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8119,13 +8710,16 @@ DEP_CPP_MONSTER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_MONSTER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8147,13 +8741,16 @@ DEP_CPP_MONSTER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_MONSTER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8199,19 +8796,23 @@ SOURCE=.\bullsquid.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_BULLS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -8229,19 +8830,23 @@ DEP_CPP_BULLS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_BULLS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -8261,19 +8866,23 @@ DEP_CPP_BULLS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_BULLS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -8293,19 +8902,23 @@ DEP_CPP_BULLS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_BULLS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -8353,14 +8966,17 @@ SOURCE=.\ichthyosaur.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_ICHTH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -8377,7 +8993,6 @@ DEP_CPP_ICHTH=\
 	".\util.h"\
 	".\vector.h"\
 	".\weapons.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\ichthyosaur.obj" : $(SOURCE) $(DEP_CPP_ICHTH) "$(INTDIR)"
@@ -8386,14 +9001,17 @@ DEP_CPP_ICHTH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_ICHTH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -8410,7 +9028,6 @@ DEP_CPP_ICHTH=\
 	".\util.h"\
 	".\vector.h"\
 	".\weapons.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\ichthyosaur.obj" : $(SOURCE) $(DEP_CPP_ICHTH) "$(INTDIR)"
@@ -8421,14 +9038,17 @@ DEP_CPP_ICHTH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_ICHTH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -8445,7 +9065,6 @@ DEP_CPP_ICHTH=\
 	".\util.h"\
 	".\vector.h"\
 	".\weapons.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\ichthyosaur.obj" : $(SOURCE) $(DEP_CPP_ICHTH) "$(INTDIR)"
@@ -8456,14 +9075,17 @@ DEP_CPP_ICHTH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_ICHTH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -8480,7 +9102,6 @@ DEP_CPP_ICHTH=\
 	".\util.h"\
 	".\vector.h"\
 	".\weapons.h"\
-	".\wxdebug.h"\
 	
 
 "$(INTDIR)\ichthyosaur.obj" : $(SOURCE) $(DEP_CPP_ICHTH) "$(INTDIR)"
@@ -8522,13 +9143,16 @@ SOURCE=.\barnacle.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_BARNA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8548,13 +9172,16 @@ DEP_CPP_BARNA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_BARNA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8576,13 +9203,16 @@ DEP_CPP_BARNA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_BARNA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8604,13 +9234,16 @@ DEP_CPP_BARNA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_BARNA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8656,17 +9289,21 @@ SOURCE=.\hassassin.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HASSA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -8685,17 +9322,21 @@ DEP_CPP_HASSA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HASSA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -8716,17 +9357,21 @@ DEP_CPP_HASSA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HASSA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -8747,17 +9392,21 @@ DEP_CPP_HASSA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HASSA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -8805,13 +9454,16 @@ SOURCE=.\agrunt.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_AGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8835,13 +9487,16 @@ DEP_CPP_AGRUN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_AGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8867,13 +9522,16 @@ DEP_CPP_AGRUN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_AGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8899,13 +9557,16 @@ DEP_CPP_AGRUN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_AGRUN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -8959,13 +9620,16 @@ SOURCE=.\islave.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_ISLAV=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -8989,13 +9653,16 @@ DEP_CPP_ISLAV=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_ISLAV=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -9021,13 +9688,16 @@ DEP_CPP_ISLAV=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_ISLAV=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -9053,13 +9723,16 @@ DEP_CPP_ISLAV=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_ISLAV=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -9113,19 +9786,21 @@ SOURCE=.\shotgun.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SHOTG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9144,19 +9819,21 @@ DEP_CPP_SHOTG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SHOTG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9177,19 +9854,21 @@ DEP_CPP_SHOTG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SHOTG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9210,19 +9889,21 @@ DEP_CPP_SHOTG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SHOTG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9241,20 +9922,27 @@ DEP_CPP_SHOTG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_SHOTG=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
-	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
 	".\player.h"\
 	".\saverestore.h"\
-	".\schedule.h"\
 	".\skill.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -9272,13 +9960,16 @@ SOURCE=.\glock.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GLOCK=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -9301,13 +9992,16 @@ DEP_CPP_GLOCK=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GLOCK=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -9332,13 +10026,16 @@ DEP_CPP_GLOCK=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GLOCK=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -9363,13 +10060,16 @@ DEP_CPP_GLOCK=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GLOCK=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -9392,18 +10092,26 @@ DEP_CPP_GLOCK=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_GLOCK=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
-	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
 	".\player.h"\
 	".\saverestore.h"\
-	".\schedule.h"\
 	".\skill.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -9421,19 +10129,21 @@ SOURCE=.\mp5.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_MP5_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9453,19 +10163,21 @@ DEP_CPP_MP5_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_MP5_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9487,19 +10199,21 @@ DEP_CPP_MP5_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_MP5_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9521,19 +10235,21 @@ DEP_CPP_MP5_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_MP5_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9553,21 +10269,28 @@ DEP_CPP_MP5_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_MP5_C=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
-	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
 	".\player.h"\
 	".\saverestore.h"\
-	".\schedule.h"\
 	".\skill.h"\
 	".\soundent.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -9585,19 +10308,21 @@ SOURCE=.\python.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_PYTHO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -9615,19 +10340,21 @@ DEP_CPP_PYTHO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_PYTHO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -9647,19 +10374,21 @@ DEP_CPP_PYTHO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_PYTHO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -9679,19 +10408,21 @@ DEP_CPP_PYTHO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_PYTHO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
@@ -9709,19 +10440,26 @@ DEP_CPP_PYTHO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_PYTHO=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	".\activity.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
-	".\monsterevent.h"\
 	".\monsters.h"\
 	".\player.h"\
 	".\saverestore.h"\
-	".\schedule.h"\
 	".\skill.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -9739,19 +10477,21 @@ SOURCE=.\crowbar.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_CROWB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9770,19 +10510,21 @@ DEP_CPP_CROWB=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_CROWB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9803,19 +10545,21 @@ DEP_CPP_CROWB=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_CROWB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9836,19 +10580,21 @@ DEP_CPP_CROWB=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_CROWB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9898,20 +10644,22 @@ SOURCE=.\gauss.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GAUSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9931,20 +10679,22 @@ DEP_CPP_GAUSS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GAUSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -9966,20 +10716,22 @@ DEP_CPP_GAUSS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GAUSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10001,20 +10753,22 @@ DEP_CPP_GAUSS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GAUSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10034,22 +10788,29 @@ DEP_CPP_GAUSS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_GAUSS=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
+	"..\engine\custom.h"\
+	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
+	"..\engine\eiface.h"\
+	"..\engine\progdefs.h"\
 	"..\engine\shake.h"\
 	".\activity.h"\
 	".\cbase.h"\
+	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
-	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
 	".\player.h"\
 	".\saverestore.h"\
-	".\schedule.h"\
 	".\skill.h"\
 	".\soundent.h"\
 	".\util.h"\
+	".\vector.h"\
 	".\weapons.h"\
 	
 
@@ -10067,19 +10828,21 @@ SOURCE=.\rpg.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_RPG_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10098,19 +10861,21 @@ DEP_CPP_RPG_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_RPG_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10131,19 +10896,21 @@ DEP_CPP_RPG_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_RPG_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10164,19 +10931,21 @@ DEP_CPP_RPG_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_RPG_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10226,13 +10995,16 @@ SOURCE=.\soundent.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SOUNDE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -10253,13 +11025,16 @@ DEP_CPP_SOUNDE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SOUNDE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -10282,13 +11057,16 @@ DEP_CPP_SOUNDE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SOUNDE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -10311,13 +11089,16 @@ DEP_CPP_SOUNDE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SOUNDE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -10365,14 +11146,17 @@ SOURCE=.\gargantua.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GARGA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -10399,14 +11183,17 @@ DEP_CPP_GARGA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GARGA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -10435,14 +11222,17 @@ DEP_CPP_GARGA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GARGA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -10471,14 +11261,17 @@ DEP_CPP_GARGA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GARGA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -10539,19 +11332,21 @@ SOURCE=.\crossbow.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_CROSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10570,19 +11365,21 @@ DEP_CPP_CROSS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_CROSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10603,19 +11400,21 @@ DEP_CPP_CROSS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_CROSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10636,19 +11435,21 @@ DEP_CPP_CROSS=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_CROSS=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10698,21 +11499,23 @@ SOURCE=.\egon.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_EGON_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10731,21 +11534,23 @@ DEP_CPP_EGON_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_EGON_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10766,21 +11571,23 @@ DEP_CPP_EGON_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_EGON_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10801,21 +11608,23 @@ DEP_CPP_EGON_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_EGON_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -10867,18 +11676,22 @@ SOURCE=.\bigmomma.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_BIGMO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -10895,18 +11708,22 @@ DEP_CPP_BIGMO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_BIGMO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -10925,18 +11742,22 @@ DEP_CPP_BIGMO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_BIGMO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -10955,18 +11776,22 @@ DEP_CPP_BIGMO=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_BIGMO=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -11011,13 +11836,16 @@ SOURCE=.\flyingmonster.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_FLYIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11038,13 +11866,16 @@ DEP_CPP_FLYIN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_FLYIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11067,13 +11898,16 @@ DEP_CPP_FLYIN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_FLYIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11096,13 +11930,16 @@ DEP_CPP_FLYIN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_FLYIN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11150,13 +11987,16 @@ SOURCE=.\ggrenade.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GGREN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -11180,13 +12020,16 @@ DEP_CPP_GGREN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GGREN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -11212,13 +12055,16 @@ DEP_CPP_GGREN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GGREN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -11244,13 +12090,16 @@ DEP_CPP_GGREN=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GGREN=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -11304,13 +12153,16 @@ SOURCE=.\handgrenade.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HANDG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11333,13 +12185,16 @@ DEP_CPP_HANDG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HANDG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11364,13 +12219,16 @@ DEP_CPP_HANDG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HANDG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11395,13 +12253,16 @@ DEP_CPP_HANDG=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HANDG=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11453,19 +12314,21 @@ SOURCE=.\satchel.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SATCH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11484,19 +12347,21 @@ DEP_CPP_SATCH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SATCH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11517,19 +12382,21 @@ DEP_CPP_SATCH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SATCH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11550,19 +12417,21 @@ DEP_CPP_SATCH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SATCH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11612,19 +12481,21 @@ SOURCE=.\squeakgrenade.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SQUEA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11644,19 +12515,21 @@ DEP_CPP_SQUEA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SQUEA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11678,19 +12551,21 @@ DEP_CPP_SQUEA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SQUEA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11712,19 +12587,21 @@ DEP_CPP_SQUEA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SQUEA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11776,13 +12653,16 @@ SOURCE=.\tempmonster.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_TEMPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11802,13 +12682,16 @@ DEP_CPP_TEMPM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_TEMPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11830,13 +12713,16 @@ DEP_CPP_TEMPM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_TEMPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11858,13 +12744,16 @@ DEP_CPP_TEMPM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_TEMPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -11910,18 +12799,22 @@ SOURCE=.\tripmine.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_TRIPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11940,18 +12833,22 @@ DEP_CPP_TRIPM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_TRIPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -11972,18 +12869,22 @@ DEP_CPP_TRIPM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_TRIPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -12004,18 +12905,22 @@ DEP_CPP_TRIPM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_TRIPM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\gamerules.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -12064,20 +12969,22 @@ SOURCE=.\hornetgun.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HORNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -12096,20 +13003,22 @@ DEP_CPP_HORNE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HORNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -12130,20 +13039,22 @@ DEP_CPP_HORNE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HORNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -12164,20 +13075,22 @@ DEP_CPP_HORNE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HORNE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\nodes.h"\
@@ -12228,12 +13141,14 @@ SOURCE=.\WXDEBUG.CPP
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_WXDEB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12249,12 +13164,14 @@ DEP_CPP_WXDEB=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_WXDEB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12272,12 +13189,14 @@ DEP_CPP_WXDEB=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_WXDEB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12295,12 +13214,14 @@ DEP_CPP_WXDEB=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_WXDEB=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12339,14 +13260,17 @@ SOURCE=.\squadmonster.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SQUAD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12369,14 +13293,17 @@ DEP_CPP_SQUAD=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SQUAD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12401,14 +13328,17 @@ DEP_CPP_SQUAD=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SQUAD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12433,14 +13363,17 @@ DEP_CPP_SQUAD=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SQUAD=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12493,12 +13426,14 @@ SOURCE=.\plane.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_PLANE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\cdll_dll.h"\
 	".\extdll.h"\
 	".\plane.h"\
@@ -12511,12 +13446,14 @@ DEP_CPP_PLANE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_PLANE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\cdll_dll.h"\
 	".\extdll.h"\
 	".\plane.h"\
@@ -12531,12 +13468,14 @@ DEP_CPP_PLANE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_PLANE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\cdll_dll.h"\
 	".\extdll.h"\
 	".\plane.h"\
@@ -12551,12 +13490,14 @@ DEP_CPP_PLANE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_PLANE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\cdll_dll.h"\
 	".\extdll.h"\
 	".\plane.h"\
@@ -12589,13 +13530,16 @@ SOURCE=.\genericmonster.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GENER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12615,13 +13559,16 @@ DEP_CPP_GENER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GENER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12643,13 +13590,16 @@ DEP_CPP_GENER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GENER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12671,13 +13621,16 @@ DEP_CPP_GENER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GENER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12723,13 +13676,16 @@ SOURCE=.\tentacle.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_TENTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12751,13 +13707,16 @@ DEP_CPP_TENTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_TENTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12781,13 +13740,16 @@ DEP_CPP_TENTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_TENTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12811,13 +13773,16 @@ DEP_CPP_TENTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_TENTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -12867,13 +13832,16 @@ SOURCE=.\leech.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_LEECH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -12894,13 +13862,16 @@ DEP_CPP_LEECH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_LEECH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -12923,13 +13894,16 @@ DEP_CPP_LEECH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_LEECH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -12952,13 +13926,16 @@ DEP_CPP_LEECH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_LEECH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13006,14 +13983,17 @@ SOURCE=.\talkmonster.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_TALKM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -13038,14 +14018,17 @@ DEP_CPP_TALKM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_TALKM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -13072,14 +14055,17 @@ DEP_CPP_TALKM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_TALKM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -13106,14 +14092,17 @@ DEP_CPP_TALKM=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_TALKM=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\defaultai.h"\
@@ -13170,14 +14159,17 @@ SOURCE=.\osprey.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_OSPRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13201,14 +14193,17 @@ DEP_CPP_OSPRE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_OSPRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13234,14 +14229,17 @@ DEP_CPP_OSPRE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_OSPRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13267,14 +14265,17 @@ DEP_CPP_OSPRE=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_OSPRE=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
 	"..\engine\customentity.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13329,13 +14330,16 @@ SOURCE=.\apache.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_APACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13358,13 +14362,16 @@ DEP_CPP_APACH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_APACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13389,13 +14396,16 @@ DEP_CPP_APACH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_APACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13420,13 +14430,16 @@ DEP_CPP_APACH=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_APACH=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -13478,13 +14491,16 @@ SOURCE=.\mortar.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_MORTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -13505,13 +14521,16 @@ DEP_CPP_MORTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_MORTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -13534,13 +14553,16 @@ DEP_CPP_MORTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_MORTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -13563,13 +14585,16 @@ DEP_CPP_MORTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_MORTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\decals.h"\
@@ -13617,13 +14642,16 @@ SOURCE=.\bloater.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_BLOAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13643,13 +14671,16 @@ DEP_CPP_BLOAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_BLOAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13671,13 +14702,16 @@ DEP_CPP_BLOAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_BLOAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13699,13 +14733,16 @@ DEP_CPP_BLOAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_BLOAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13751,13 +14788,16 @@ SOURCE=.\airtank.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_AIRTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13780,13 +14820,16 @@ DEP_CPP_AIRTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_AIRTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13811,13 +14854,16 @@ DEP_CPP_AIRTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_AIRTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13842,13 +14888,16 @@ DEP_CPP_AIRTA=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_AIRTA=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13900,13 +14949,16 @@ SOURCE=.\healthkit.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HEALT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13931,13 +14983,16 @@ DEP_CPP_HEALT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HEALT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13964,13 +15019,16 @@ DEP_CPP_HEALT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HEALT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -13997,13 +15055,16 @@ DEP_CPP_HEALT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HEALT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14059,13 +15120,16 @@ SOURCE=.\nihilanth.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_NIHIL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14088,13 +15152,16 @@ DEP_CPP_NIHIL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_NIHIL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14119,13 +15186,16 @@ DEP_CPP_NIHIL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_NIHIL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14150,13 +15220,16 @@ DEP_CPP_NIHIL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_NIHIL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14208,13 +15281,16 @@ SOURCE=.\aflock.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_AFLOC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14235,13 +15311,16 @@ DEP_CPP_AFLOC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_AFLOC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14264,13 +15343,16 @@ DEP_CPP_AFLOC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_AFLOC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14293,13 +15375,16 @@ DEP_CPP_AFLOC=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_AFLOC=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14347,12 +15432,14 @@ SOURCE=.\skill.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SKILL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14368,12 +15455,14 @@ DEP_CPP_SKILL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SKILL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14391,12 +15480,14 @@ DEP_CPP_SKILL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SKILL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14414,12 +15505,14 @@ DEP_CPP_SKILL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SKILL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14458,13 +15551,16 @@ SOURCE=.\controller.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_CONTR=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14487,13 +15583,16 @@ DEP_CPP_CONTR=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_CONTR=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14518,13 +15617,16 @@ DEP_CPP_CONTR=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_CONTR=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14549,13 +15651,16 @@ DEP_CPP_CONTR=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_CONTR=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -14607,13 +15712,16 @@ SOURCE=.\spectator.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SPECT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14634,13 +15742,16 @@ DEP_CPP_SPECT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SPECT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14663,13 +15774,16 @@ DEP_CPP_SPECT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SPECT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14692,13 +15806,16 @@ DEP_CPP_SPECT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SPECT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14746,13 +15863,16 @@ SOURCE=.\gman.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GMAN_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14773,13 +15893,16 @@ DEP_CPP_GMAN_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GMAN_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14802,13 +15925,16 @@ DEP_CPP_GMAN_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GMAN_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14831,13 +15957,16 @@ DEP_CPP_GMAN_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GMAN_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -14885,19 +16014,22 @@ SOURCE=.\gamerules.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GAMER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -14915,19 +16047,22 @@ DEP_CPP_GAMER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GAMER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -14947,19 +16082,22 @@ DEP_CPP_GAMER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GAMER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -14979,19 +16117,22 @@ DEP_CPP_GAMER=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GAMER=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
+	".\game.h"\
 	".\gamerules.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\player.h"\
 	".\saverestore.h"\
@@ -15039,14 +16180,17 @@ SOURCE=.\xen.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_XEN_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15065,14 +16209,17 @@ DEP_CPP_XEN_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_XEN_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15093,14 +16240,17 @@ DEP_CPP_XEN_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_XEN_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15121,14 +16271,17 @@ DEP_CPP_XEN_C=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_XEN_C=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15173,13 +16326,16 @@ SOURCE=.\func_tank.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_FUNC_T=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15201,13 +16357,16 @@ DEP_CPP_FUNC_T=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_FUNC_T=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15231,13 +16390,16 @@ DEP_CPP_FUNC_T=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_FUNC_T=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15261,13 +16423,16 @@ DEP_CPP_FUNC_T=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_FUNC_T=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\effects.h"\
@@ -15317,20 +16482,22 @@ SOURCE=.\hornet.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_HORNET=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -15348,20 +16515,22 @@ DEP_CPP_HORNET=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_HORNET=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -15381,20 +16550,22 @@ DEP_CPP_HORNET=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_HORNET=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -15414,20 +16585,22 @@ DEP_CPP_HORNET=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_HORNET=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\hornet.h"\
-	".\items.h"\
 	".\monsterevent.h"\
 	".\monsters.h"\
 	".\saverestore.h"\
@@ -15476,13 +16649,16 @@ SOURCE=.\teamplay_gamerules.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_TEAMP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15505,13 +16681,16 @@ DEP_CPP_TEAMP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_TEAMP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15536,13 +16715,16 @@ DEP_CPP_TEAMP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_TEAMP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15567,13 +16749,16 @@ DEP_CPP_TEAMP=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_TEAMP=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15625,13 +16810,16 @@ SOURCE=.\multiplay_gamerules.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_MULTI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15655,13 +16843,16 @@ DEP_CPP_MULTI=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_MULTI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15687,13 +16878,16 @@ DEP_CPP_MULTI=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_MULTI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15719,13 +16913,16 @@ DEP_CPP_MULTI=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_MULTI=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15779,13 +16976,16 @@ SOURCE=.\singleplay_gamerules.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_SINGL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15808,13 +17008,16 @@ DEP_CPP_SINGL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_SINGL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15839,13 +17042,16 @@ DEP_CPP_SINGL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_SINGL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15870,13 +17076,16 @@ DEP_CPP_SINGL=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_SINGL=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15928,12 +17137,14 @@ SOURCE=.\game.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_GAME_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15949,12 +17160,14 @@ DEP_CPP_GAME_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_GAME_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15972,12 +17185,14 @@ DEP_CPP_GAME_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_GAME_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -15995,12 +17210,14 @@ DEP_CPP_GAME_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_GAME_=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16016,14 +17233,16 @@ DEP_CPP_GAME_=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_GAME_=\
+	"..\common\cvardef.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
 	"..\engine\eiface.h"\
 	".\activity.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\game.h"\
 	".\util.h"\
+	".\vector.h"\
 	
 
 "$(INTDIR)\game.obj" : $(SOURCE) $(DEP_CPP_GAME_) "$(INTDIR)"
@@ -16040,13 +17259,16 @@ SOURCE=.\maprules.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_MAPRU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16054,6 +17276,7 @@ DEP_CPP_MAPRU=\
 	".\gamerules.h"\
 	".\maprules.h"\
 	".\monsterevent.h"\
+	".\player.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
@@ -16066,13 +17289,16 @@ DEP_CPP_MAPRU=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_MAPRU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16080,6 +17306,7 @@ DEP_CPP_MAPRU=\
 	".\gamerules.h"\
 	".\maprules.h"\
 	".\monsterevent.h"\
+	".\player.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
@@ -16094,13 +17321,16 @@ DEP_CPP_MAPRU=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_MAPRU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16108,6 +17338,7 @@ DEP_CPP_MAPRU=\
 	".\gamerules.h"\
 	".\maprules.h"\
 	".\monsterevent.h"\
+	".\player.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
@@ -16122,13 +17353,16 @@ DEP_CPP_MAPRU=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_MAPRU=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16136,6 +17370,7 @@ DEP_CPP_MAPRU=\
 	".\gamerules.h"\
 	".\maprules.h"\
 	".\monsterevent.h"\
+	".\player.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
@@ -16148,19 +17383,23 @@ DEP_CPP_MAPRU=\
 !ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
 
 DEP_CPP_MAPRU=\
+	"..\common\cvardef.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
 	"..\engine\eiface.h"\
 	".\activity.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\enginecallback.h"\
 	".\extdll.h"\
 	".\gamerules.h"\
 	".\maprules.h"\
 	".\monsterevent.h"\
+	".\player.h"\
 	".\saverestore.h"\
 	".\schedule.h"\
 	".\util.h"\
+	".\vector.h"\
 	
 
 "$(INTDIR)\maprules.obj" : $(SOURCE) $(DEP_CPP_MAPRU) "$(INTDIR)"
@@ -16177,14 +17416,17 @@ SOURCE=.\animating.cpp
 !IF  "$(CFG)" == "hl - Win32 Release"
 
 DEP_CPP_ANIMAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16202,14 +17444,17 @@ DEP_CPP_ANIMAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Debug"
 
 DEP_CPP_ANIMAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16229,14 +17474,17 @@ DEP_CPP_ANIMAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Germany"
 
 DEP_CPP_ANIMAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16256,14 +17504,17 @@ DEP_CPP_ANIMAT=\
 !ELSEIF  "$(CFG)" == "hl - Win32 Profile"
 
 DEP_CPP_ANIMAT=\
-	"..\engine\const.h"\
+	"..\common\const.h"\
+	"..\common\cvardef.h"\
+	"..\common\in_buttons.h"\
+	"..\engine\../common/crc.h"\
 	"..\engine\custom.h"\
-	"..\engine\cvardef.h"\
+	"..\engine\edict.h"\
 	"..\engine\eiface.h"\
 	"..\engine\progdefs.h"\
-	"..\engine\progs.h"\
 	".\activity.h"\
 	".\animation.h"\
+	".\basemonster.h"\
 	".\cbase.h"\
 	".\cdll_dll.h"\
 	".\enginecallback.h"\
@@ -16295,6 +17546,200 @@ DEP_CPP_ANIMAT=\
 	
 
 "$(INTDIR)\animating.obj" : $(SOURCE) $(DEP_CPP_ANIMAT) "$(INTDIR)"
+
+
+!ENDIF 
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=\quiver\goldsrc\pm_shared\pm_shared.c
+DEP_CPP_PM_SH=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\common\mathlib.h"\
+	"..\common\usercmd.h"\
+	"..\engine\pmtrace.h"\
+	"..\pm_shared\pm_debug.h"\
+	"..\pm_shared\pm_defs.h"\
+	"..\pm_shared\pm_info.h"\
+	"..\pm_shared\pm_movevars.h"\
+	"..\pm_shared\pm_shared.h"\
+	
+
+!IF  "$(CFG)" == "hl - Win32 Release"
+
+
+"$(INTDIR)\pm_shared.obj" : $(SOURCE) $(DEP_CPP_PM_SH) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Debug"
+
+
+BuildCmds= \
+	$(CPP) $(CPP_PROJ) $(SOURCE) \
+	
+
+"$(INTDIR)\pm_shared.obj" : $(SOURCE) $(DEP_CPP_PM_SH) "$(INTDIR)"
+   $(BuildCmds)
+
+"$(INTDIR)\pm_shared.sbr" : $(SOURCE) $(DEP_CPP_PM_SH) "$(INTDIR)"
+   $(BuildCmds)
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Germany"
+
+
+BuildCmds= \
+	$(CPP) $(CPP_PROJ) $(SOURCE) \
+	
+
+"$(INTDIR)\pm_shared.obj" : $(SOURCE) $(DEP_CPP_PM_SH) "$(INTDIR)"
+   $(BuildCmds)
+
+"$(INTDIR)\pm_shared.sbr" : $(SOURCE) $(DEP_CPP_PM_SH) "$(INTDIR)"
+   $(BuildCmds)
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Profile"
+
+
+"$(INTDIR)\pm_shared.obj" : $(SOURCE) $(DEP_CPP_PM_SH) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
+
+
+"$(INTDIR)\pm_shared.obj" : $(SOURCE) $(DEP_CPP_PM_SH) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=\quiver\goldsrc\pm_shared\pm_math.c
+DEP_CPP_PM_MA=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\common\mathlib.h"\
+	
+
+!IF  "$(CFG)" == "hl - Win32 Release"
+
+
+"$(INTDIR)\pm_math.obj" : $(SOURCE) $(DEP_CPP_PM_MA) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Debug"
+
+
+BuildCmds= \
+	$(CPP) $(CPP_PROJ) $(SOURCE) \
+	
+
+"$(INTDIR)\pm_math.obj" : $(SOURCE) $(DEP_CPP_PM_MA) "$(INTDIR)"
+   $(BuildCmds)
+
+"$(INTDIR)\pm_math.sbr" : $(SOURCE) $(DEP_CPP_PM_MA) "$(INTDIR)"
+   $(BuildCmds)
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Germany"
+
+
+BuildCmds= \
+	$(CPP) $(CPP_PROJ) $(SOURCE) \
+	
+
+"$(INTDIR)\pm_math.obj" : $(SOURCE) $(DEP_CPP_PM_MA) "$(INTDIR)"
+   $(BuildCmds)
+
+"$(INTDIR)\pm_math.sbr" : $(SOURCE) $(DEP_CPP_PM_MA) "$(INTDIR)"
+   $(BuildCmds)
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Profile"
+
+
+"$(INTDIR)\pm_math.obj" : $(SOURCE) $(DEP_CPP_PM_MA) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
+
+
+"$(INTDIR)\pm_math.obj" : $(SOURCE) $(DEP_CPP_PM_MA) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ENDIF 
+
+# End Source File
+################################################################################
+# Begin Source File
+
+SOURCE=\quiver\goldsrc\pm_shared\pm_debug.c
+DEP_CPP_PM_DE=\
+	"..\common\const.h"\
+	"..\common\in_buttons.h"\
+	"..\common\mathlib.h"\
+	"..\common\usercmd.h"\
+	"..\engine\pmtrace.h"\
+	"..\pm_shared\pm_debug.h"\
+	"..\pm_shared\pm_defs.h"\
+	"..\pm_shared\pm_info.h"\
+	"..\pm_shared\pm_movevars.h"\
+	"..\pm_shared\pm_shared.h"\
+	
+
+!IF  "$(CFG)" == "hl - Win32 Release"
+
+
+"$(INTDIR)\pm_debug.obj" : $(SOURCE) $(DEP_CPP_PM_DE) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Debug"
+
+
+BuildCmds= \
+	$(CPP) $(CPP_PROJ) $(SOURCE) \
+	
+
+"$(INTDIR)\pm_debug.obj" : $(SOURCE) $(DEP_CPP_PM_DE) "$(INTDIR)"
+   $(BuildCmds)
+
+"$(INTDIR)\pm_debug.sbr" : $(SOURCE) $(DEP_CPP_PM_DE) "$(INTDIR)"
+   $(BuildCmds)
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Germany"
+
+
+BuildCmds= \
+	$(CPP) $(CPP_PROJ) $(SOURCE) \
+	
+
+"$(INTDIR)\pm_debug.obj" : $(SOURCE) $(DEP_CPP_PM_DE) "$(INTDIR)"
+   $(BuildCmds)
+
+"$(INTDIR)\pm_debug.sbr" : $(SOURCE) $(DEP_CPP_PM_DE) "$(INTDIR)"
+   $(BuildCmds)
+
+!ELSEIF  "$(CFG)" == "hl - Win32 Profile"
+
+
+"$(INTDIR)\pm_debug.obj" : $(SOURCE) $(DEP_CPP_PM_DE) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
+
+
+!ELSEIF  "$(CFG)" == "hl - Win32 HLDEMO Release"
+
+
+"$(INTDIR)\pm_debug.obj" : $(SOURCE) $(DEP_CPP_PM_DE) "$(INTDIR)"
+   $(CPP) $(CPP_PROJ) $(SOURCE)
 
 
 !ENDIF 

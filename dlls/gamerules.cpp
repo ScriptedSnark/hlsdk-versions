@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -24,14 +24,16 @@
 #include	"gamerules.h"
 #include	"teamplay_gamerules.h"
 #include	"skill.h"
+#include	"game.h"
 
 extern edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
 
 DLL_GLOBAL CGameRules*	g_pGameRules = NULL;
 extern DLL_GLOBAL BOOL	g_fGameOver;
 extern int gmsgDeathMsg;	// client dll messages
-extern int gmsgScoreInfo;
 extern int gmsgMOTD;
+
+int g_teamplay = 0;
 
 //=========================================================
 //=========================================================
@@ -113,6 +115,7 @@ void CGameRules::RefreshSkillData ( void )
 	int	iSkill;
 
 	iSkill = (int)CVAR_GET_FLOAT("skill");
+	g_iSkillLevel = iSkill;
 
 	if ( iSkill < 1 )
 	{
@@ -313,23 +316,28 @@ CGameRules *InstallGameRules( void )
 	if ( !gpGlobals->deathmatch )
 	{
 		// generic half-life
+		g_teamplay = 0;
 		return new CHalfLifeRules;
 	}
 	else
 	{
-		if ( CVAR_GET_FLOAT( "mp_teamplay" ) > 0 )
+		if ( teamplay.value > 0 )
 		{
 			// teamplay
+
+			g_teamplay = 1;
 			return new CHalfLifeTeamplay;
 		}
 		if ((int)gpGlobals->deathmatch == 1)
 		{
 			// vanilla deathmatch
+			g_teamplay = 0;
 			return new CHalfLifeMultiplay;
 		}
 		else
 		{
 			// vanilla deathmatch??
+			g_teamplay = 0;
 			return new CHalfLifeMultiplay;
 		}
 	}

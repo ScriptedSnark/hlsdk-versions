@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -54,7 +54,7 @@ CBaseEntity
 #ifdef _WIN32
 #define EXPORT	_declspec( dllexport )
 #else
-#define EXPORT
+#define EXPORT	/* */
 #endif
 
 extern "C" EXPORT int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
@@ -240,6 +240,7 @@ public:
 	void EXPORT SUB_CallUseToggle( void ) { this->Use( this, this, USE_TOGGLE, 0 ); }
 	int			ShouldToggle( USE_TYPE useType, BOOL currentState );
 	void		FireBullets( ULONG	cShots, Vector  vecSrc, Vector	vecDirShooting,	Vector	vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL  );
+	Vector		FireBulletsPlayer( ULONG	cShots, Vector  vecSrc, Vector	vecDirShooting,	Vector	vecSpread, float flDistance, int iBulletType, int iTracerFreq = 4, int iDamage = 0, entvars_t *pevAttacker = NULL, int shared_rand = 0 );
 
 	virtual CBaseEntity *Respawn( void ) { return NULL; }
 
@@ -250,16 +251,6 @@ public:
 	int		IsDormant( void );
 	BOOL    IsLockedByMaster( void ) { return FALSE; }
 
-#ifdef _DEBUG
-	static CBaseEntity *Instance( edict_t *pent ) 
-	{ 
-		if ( !pent )
-			pent = ENT(0);
-		CBaseEntity *pEnt = (CBaseEntity *)GET_PRIVATE(pent); 
-		ASSERT(pEnt!=NULL); 
-		return pEnt; 
-	}
-#else
 	static CBaseEntity *Instance( edict_t *pent )
 	{ 
 		if ( !pent )
@@ -267,7 +258,6 @@ public:
 		CBaseEntity *pEnt = (CBaseEntity *)GET_PRIVATE(pent); 
 		return pEnt; 
 	}
-#endif
 
 	static CBaseEntity *Instance( entvars_t *pev ) { return Instance( ENT( pev ) ); }
 	static CBaseEntity *Instance( int eoffset) { return Instance( ENT( eoffset) ); }
@@ -292,10 +282,8 @@ public:
 #ifdef _DEBUG
 	void FunctionCheck( void *pFunction, char *name ) 
 	{ 
-#ifdef _WIN32
 		if (pFunction && !NAME_FOR_FUNCTION((unsigned long)(pFunction)) )
 			ALERT( at_error, "No EXPORT: %s:%s (%08lx)\n", STRING(pev->classname), name, (unsigned long)pFunction );
-#endif // _WIN32
 	}
 
 	BASEPTR	ThinkSet( BASEPTR func, char *name ) 
@@ -349,6 +337,24 @@ public:
 
 	virtual	BOOL FVisible ( CBaseEntity *pEntity );
 	virtual	BOOL FVisible ( const Vector &vecOrigin );
+
+	//We use this variables to store each ammo count.
+	int ammo_9mm;
+	int ammo_357;
+	int ammo_bolts;
+	int ammo_buckshot;
+	int ammo_rockets;
+	int ammo_uranium;
+	int ammo_hornets;
+	int ammo_argrens;
+	//Special stuff for grenades and satchels.
+	float m_flStartThrow;
+	float m_flReleaseThrow;
+	int m_chargeReady;
+	int m_fInAttack;
+
+	enum EGON_FIRESTATE { FIRE_OFF, FIRE_CHARGE };
+	int m_fireState;
 };
 
 

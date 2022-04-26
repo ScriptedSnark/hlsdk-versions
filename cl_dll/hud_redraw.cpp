@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -108,6 +108,7 @@ int CHud :: Redraw( float flTime, int intermission )
 		else if ( !m_iIntermission && intermission )
 		{
 			gViewPort->HideCommandMenu();
+			gViewPort->HideVGUIMenu();
 			gViewPort->ShowScoreBoard();
 
 			// Take a screenshot if the client's got the cvar set

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -32,46 +32,36 @@
 #pragma warning(disable : 4514)		// unreferenced inline function removed
 #pragma warning(disable : 4100)		// unreferenced formal parameter
 
-#ifdef _WIN32
 // Prevent tons of unused windows definitions
+#ifdef _WIN32
 #define WIN32_LEAN_AND_MEAN
 #define NOWINRES
 #define NOSERVICE
 #define NOMCX
 #define NOIME
-#include "WINDOWS.H"
- 
-// Misc C-runtime library headers
-#include "STDIO.H"
-#include "STDLIB.H"
-#include "MATH.H"
- 
-#else
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <string.h>
-#include <ctype.h>
-#include <limits.h>
- 
-#define MAX_PATH PATH_MAX
-#define ULONG ulong
+#include "windows.h"
+#else // _WIN32
 #define FALSE 0
-#define TRUE  1
- 
-#ifndef max
-#define max(a,b)    (((a) > (b)) ? (a) : (b))
-#endif
- 
-#ifndef min
-#define min(a,b)    (((a) < (b)) ? (a) : (b))
-#endif
- 
-#define itoa(a,b,c) sprintf(b, "%d", a)
- 
+#define TRUE (!FALSE)
+typedef unsigned long ULONG;
 typedef unsigned char BYTE;
+typedef int BOOL;
+#define MAX_PATH PATH_MAX
+#include <limits.h>
+#include <stdarg.h>
+#ifndef min
+#define min(a,b)  (((a) < (b)) ? (a) : (b))
 #endif
+#ifndef max
+#define max(a,b)  (((a) > (b)) ? (a) : (b))
+#define _vsnprintf(a,b,c,d) vsnprintf(a,b,c,d)
+#endif
+#endif //_WIN32
+
+// Misc C-runtime library headers
+#include "stdio.h"
+#include "stdlib.h"
+#include "math.h"
 
 // Header file containing definition of globalvars_t and entvars_t
 typedef int	func_t;					//

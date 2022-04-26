@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -14,6 +14,10 @@
 ****/
 #ifndef PLAYER_H
 #define PLAYER_H
+
+
+#include "pm_materials.h"
+
 
 #define PLAYER_FATAL_FALL_SPEED		1024// approx 60 feet
 #define PLAYER_MAX_SAFE_FALL_SPEED	580// approx 20 feet
@@ -256,8 +260,6 @@ public:
 	void SetSuitUpdate(char *name, int fgroup, int iNoRepeat);
 	void UpdateGeigerCounter( void );
 	void CheckTimeBasedDamage( void );
-	void UpdateStepSound( void );
-	void PlayStepSound(int step, float fvol);
 
 	BOOL FBecomeProne ( void );
 	void BarnacleVictimBitten ( entvars_t *pevBarnacle );
@@ -276,6 +278,13 @@ public:
 
 	void SetCustomDecalFrames( int nFrames );
 	int GetCustomDecalFrames( void );
+
+	void CBasePlayer::TabulateAmmo( void );
+
+	float m_flStartCharge;
+	float m_flAmmoStartCharge;
+	float m_flPlayAftershock;
+	float m_flNextAmmoBurn;// while charging, when to absorb another unit of player's ammo?
 };
 
 #define AUTOAIM_2DEGREES  0.0348994967025

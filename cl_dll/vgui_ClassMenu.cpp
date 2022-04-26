@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1999 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -198,9 +198,11 @@ CClassMenuPanel::CClassMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide
 		// Open up the Class Briefing File
 		sprintf(sz, "classes/short_%s.txt", sTFClassSelection[i]);
 		char *cText = "Class Description not available.";
-		char *pfile = (char*)gEngfuncs.COM_LoadFile( sz, 5, NULL );
+		char *pfile = (char *)gEngfuncs.COM_LoadFile( sz, 5, NULL );
 		if (pfile)
+		{
 			cText = pfile;
+		}
 		
 		// Create the Text info window
 		TextPanel *pTextWindow = new TextPanel(cText, textOffs, CLASSMENU_WINDOW_TEXT_Y, (CLASSMENU_WINDOW_SIZE_X - textOffs)-5, CLASSMENU_WINDOW_SIZE_Y - CLASSMENU_WINDOW_TEXT_Y);
@@ -215,7 +217,7 @@ CClassMenuPanel::CClassMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide
 		int wide,tall;
 		pTextWindow->getTextImage()->getTextSizeWrapped( wide,tall);
 		pTextWindow->setSize(wide,tall);
-		//pTextWindow->setBorder(new LineBorder());
+
 		int xx,yy;
 		pTextWindow->getPos(xx,yy);
 		int maxX=xx+wide;
@@ -318,7 +320,10 @@ void CClassMenuPanel::Update()
 		m_pPlayers[i]->setText( sz );
 
 		// Set the text color to the teamcolor
-		m_pPlayers[i]->setFgColor( iTeamColors[g_iTeamNumber][0], iTeamColors[g_iTeamNumber][1], iTeamColors[g_iTeamNumber][2], 0 );
+		m_pPlayers[i]->setFgColor(	iTeamColors[g_iTeamNumber % iNumberOfTeamColors][0],
+									iTeamColors[g_iTeamNumber % iNumberOfTeamColors][1],
+									iTeamColors[g_iTeamNumber % iNumberOfTeamColors][2],
+									0 );
 
 		// set the graphic to be the team pick
 		for ( int team = 0; team < MAX_TEAMS; team++ )

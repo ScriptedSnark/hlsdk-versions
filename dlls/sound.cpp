@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -1064,7 +1064,7 @@ int USENTENCEG_PickSequential(int isentenceg, char *szfound, int ipick, int fres
 
 	strcpy(szfound, "!");
 	strcat(szfound, szgroupname);
-	itoa(ipick, sznum, 10);
+	sprintf(sznum, "%d", ipick);
 	strcat(szfound, sznum);
 	
 	if (ipick >= count)
@@ -1126,7 +1126,7 @@ int USENTENCEG_Pick(int isentenceg, char *szfound)
 		{
 			strcpy(szfound, "!");
 			strcat(szfound, szgroupname);
-			itoa(ipick, sznum, 10);
+			sprintf(sznum, "%d", ipick);
 			strcat(szfound, sznum);
 			return ipick;
 		}
@@ -1250,7 +1250,7 @@ void SENTENCEG_Stop(edict_t *entity, int isentenceg, int ipick)
 	
 	strcpy(buffer, "!");
 	strcat(buffer, rgsentenceg[isentenceg].szgroupname);
-	itoa(ipick, sznum, 10);
+	sprintf(sznum, "%d", ipick);
 	strcat(buffer, sznum);
 
 	STOP_SOUND(entity, CHAN_VOICE, buffer);
@@ -1387,10 +1387,6 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 {
 	char sznum[8];
 
-//#ifdef GERMANY
-//	return -1; // no constructed sentences in international versions
-//#endif // GERMANY
-
 	int i;
 	// this is a sentence name; lookup sentence number
 	// and give to engine as string.
@@ -1400,7 +1396,7 @@ int SENTENCEG_Lookup(const char *sample, char *sentencenum)
 			if (sentencenum)
 			{
 				strcpy(sentencenum, "!");
-				itoa(i, sznum, 10);
+				sprintf(sznum, "%d", i);
 				strcat(sentencenum, sznum);
 			}
 			return i;
@@ -1612,7 +1608,7 @@ char TEXTURETYPE_Find(char *name)
 
 	for (int i = 0; i < gcTextures; i++)
 	{
-		if (!_strnicmp(name, &(grgszTextureName[i][0]), CBTEXTURENAMEMAX-1))
+		if (!strnicmp(name, &(grgszTextureName[i][0]), CBTEXTURENAMEMAX-1))
 			return (grgchTextureType[i]);
 	}
 

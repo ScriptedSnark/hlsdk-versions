@@ -1,3 +1,10 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // keydefs.h
 #ifndef KEYDEFS_H
 #define KEYDEFS_H
@@ -58,6 +65,7 @@
 #define K_KP_SLASH		172
 #define K_KP_MINUS		173
 #define K_KP_PLUS		174
+#define K_CAPSLOCK		175
 
 
 //

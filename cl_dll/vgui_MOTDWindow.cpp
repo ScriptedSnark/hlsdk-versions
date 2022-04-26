@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1999 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -104,6 +104,7 @@ CMessageWindowPanel::CMessageWindowPanel( const char *szMOTD, const char *szTitl
 	// Create the Scroll panel
 	ScrollPanel *pScrollPanel = new CTFScrollPanel( iXPos + XRES(16), iYPos + MOTD_TITLE_Y*2 + YRES(16), iXSize - XRES(32), iYSize - (YRES(48) + BUTTON_SIZE_Y*2) );
 	pScrollPanel->setParent(this);
+	
 	//force the scrollbars on so clientClip will take them in account after the validate
 	pScrollPanel->setScrollBarAutoVisible(false, false);
 	pScrollPanel->setScrollBarVisible(true, true);
@@ -120,13 +121,19 @@ CMessageWindowPanel::CMessageWindowPanel( const char *szMOTD, const char *szTitl
 	pSchemes->getBgColor( hMOTDText, r, g, b, a );
 	pText->setBgColor( r, g, b, a );
 	pText->setText(szMOTD);
-	pText->setSize(pScrollPanel->getClientClip()->getWide()-2, 5000);
 
 	// Get the total size of the MOTD text and resize the text panel
 	int iScrollSizeX, iScrollSizeY;
+
+	// First, set the size so that the client's wdith is correct at least because the
+	//  width is critical for getting the "wrapped" size right.
+	// You'll see a horizontal scroll bar if there is a single word that won't wrap in the
+	//  specified width.
+	pText->getTextImage()->setSize(pScrollPanel->getClientClip()->getWide(), pScrollPanel->getClientClip()->getTall());
 	pText->getTextImage()->getTextSizeWrapped( iScrollSizeX, iScrollSizeY );
+	
+	// Now resize the textpanel to fit the scrolled size
 	pText->setSize( iScrollSizeX , iScrollSizeY );
-	//pText->setBorder(new LineBorder());
 
 	//turn the scrollbars back into automode
 	pScrollPanel->setScrollBarAutoVisible(true, true);

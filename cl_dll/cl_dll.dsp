@@ -43,7 +43,7 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MT /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\utils\vgui\include" /I "..\engine" /I "..\common" /I "..\pm_shared" /I "..\dlls" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /YX /FD /c
+# ADD CPP /nologo /MT /W3 /GX /Zi /O2 /I "..\utils\vgui\include" /I "..\engine" /I "..\common" /I "..\pm_shared" /I "..\dlls" /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "CLIENT_DLL" /D "CLIENT_WEAPONS" /YX /FD /c
 # ADD BASE MTL /nologo /D "NDEBUG" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "NDEBUG"
@@ -54,15 +54,6 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /machine:I386
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib winmm.lib ../utils/vgui/lib/win32_vc6/vgui.lib wsock32.lib /nologo /subsystem:windows /dll /map /machine:I386 /out:".\Release\client.dll"
-# Begin Custom Build - Copying to cl_dlls
-TargetDir=.\Release
-InputPath=.\Release\client.dll
-SOURCE="$(InputPath)"
-
-"\half-life\mp\cl_dlls\client.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetDir)\client.dll \half-life\mp\cl_dlls
-
-# End Custom Build
 
 !ELSEIF  "$(CFG)" == "cl_dll - Win32 Debug"
 
@@ -78,7 +69,7 @@ SOURCE="$(InputPath)"
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /Zi /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /YX /c
-# ADD CPP /nologo /G5 /MTd /W3 /Gm /GX /ZI /Od /I "..\utils\vgui\include" /I "..\engine" /I "..\common" /I "..\pm_shared" /I "..\dlls" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /FR /YX /FD /c
+# ADD CPP /nologo /G5 /MTd /W3 /Gm /GR /GX /ZI /Od /I "..\dlls" /I "..\common" /I "..\pm_shared" /I "..\engine" /I "..\utils\vgui\include" /I "..\game_shared" /D "_DEBUG" /D "_MBCS" /D "WIN32" /D "_WINDOWS" /D "CLIENT_DLL" /D "CLIENT_WEAPONS" /FR /YX /FD /c
 # ADD BASE MTL /nologo /D "_DEBUG" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x409 /d "_DEBUG"
@@ -89,15 +80,6 @@ BSC32=bscmake.exe
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /dll /debug /machine:I386
 # ADD LINK32 oleaut32.lib uuid.lib odbc32.lib odbccp32.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib winmm.lib ../utils/vgui/lib/win32_vc6/vgui.lib wsock32.lib /nologo /subsystem:windows /dll /debug /machine:I386 /out:".\Debug\client.dll"
-# Begin Custom Build - Copying to cl_dlls
-TargetDir=.\Debug
-InputPath=.\Debug\client.dll
-SOURCE="$(InputPath)"
-
-"\half-life\mp\cl_dlls\client.dll" : $(SOURCE) "$(INTDIR)" "$(OUTDIR)"
-	copy $(TargetDir)\client.dll \half-life\mp\cl_dlls
-
-# End Custom Build
 
 !ENDIF 
 
@@ -113,7 +95,27 @@ SOURCE="$(InputPath)"
 # PROP Default_Filter "*.CPP"
 # Begin Source File
 
+SOURCE=..\dlls\crossbow.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\crowbar.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\egon.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\ev_hldm.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\gauss.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\handgrenade.cpp
 # End Source File
 # Begin Source File
 
@@ -134,6 +136,62 @@ SOURCE=.\hl\hl_weapons.cpp
 # Begin Source File
 
 SOURCE=..\dlls\wpn_shared\hl_wpn_glock.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\hornetgun.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\interface.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\mp5.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\python.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\rpg.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\satchel.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\shotgun.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\squeakgrenade.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\dlls\tripmine.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\vgui_scrollbar2.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\vgui_slider2.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\voice_banmgr.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\voice_status.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\voice_vgui_tweakdlg.cpp
 # End Source File
 # End Group
 # Begin Source File
@@ -186,6 +244,10 @@ SOURCE=.\flashlight.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\GameStudioModelRenderer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\geiger.cpp
 # End Source File
 # Begin Source File
@@ -210,6 +272,10 @@ SOURCE=.\hud_servers.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\hud_spectator.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\hud_update.cpp
 # End Source File
 # Begin Source File
@@ -231,6 +297,11 @@ SOURCE=.\menu.cpp
 # Begin Source File
 
 SOURCE=.\message.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\overview.cpp
+# PROP Exclude_From_Build 1
 # End Source File
 # Begin Source File
 
@@ -266,6 +337,14 @@ SOURCE=.\statusbar.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\studio_util.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\StudioModelRenderer.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\text_message.cpp
 # End Source File
 # Begin Source File
@@ -279,6 +358,10 @@ SOURCE=.\tri.cpp
 # Begin Source File
 
 SOURCE=.\util.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\vgui_checkbutton2.cpp
 # End Source File
 # Begin Source File
 
@@ -298,7 +381,23 @@ SOURCE=.\vgui_CustomObjects.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\game_shared\vgui_grid.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\vgui_helpers.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\vgui_int.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\vgui_listbox.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\vgui_loadtga.cpp
 # End Source File
 # Begin Source File
 
@@ -366,6 +465,10 @@ SOURCE=.\eventscripts.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\GameStudioModelRenderer.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\health.h
 # End Source File
 # Begin Source File
@@ -386,11 +489,23 @@ SOURCE=.\hud_servers_priv.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\hud_spectator.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\in_defs.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\itrackeruser.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\kbutton.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\overview.h
 # End Source File
 # Begin Source File
 
@@ -415,6 +530,14 @@ SOURCE=..\pm_shared\pm_movevars.h
 # Begin Source File
 
 SOURCE=..\pm_shared\pm_shared.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\studio_util.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\StudioModelRenderer.h
 # End Source File
 # Begin Source File
 
@@ -455,6 +578,18 @@ SOURCE=.\vgui_TeamFortressViewport.h
 # Begin Source File
 
 SOURCE=.\view.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\voice_banmgr.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\voice_status.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\game_shared\voice_vgui_tweakdlg.h
 # End Source File
 # Begin Source File
 

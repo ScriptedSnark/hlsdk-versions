@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -32,6 +32,7 @@
 #include "client.h"
 #include "soundent.h"
 #include "gamerules.h"
+#include "game.h"
 #include "customentity.h"
 #include "weapons.h"
 #include "weaponinfo.h"
@@ -47,7 +48,10 @@ extern void CopyToBodyQue(entvars_t* pev);
 extern int giPrecacheGrunt;
 extern int gmsgSayText;
 
+extern int g_teamplay;
+
 void LinkUserMessages( void );
+
 /*
  * used by kill command and disconnect command
  * ROBIN: Moved here from player.cpp, to allow multiple player models
@@ -189,7 +193,7 @@ void ClientPutInServer( edict_t *pEntity )
 	pPlayer->SetCustomDecalFrames(-1); // Assume none;
 
 	// Allocate a CBasePlayer for pev, and call spawn
-	pPlayer->Spawn();
+	pPlayer->Spawn() ;
 
 	// Reset interpolation during first frame
 	pPlayer->pev->effects |= EF_NOINTERP;
@@ -309,6 +313,34 @@ void Host_Say( edict_t *pEntity, int teamonly )
 
 	// echo to server console
 	g_engfuncs.pfnServerPrint( text );
+
+	char * temp;
+	if ( teamonly )
+		temp = "say_team";
+	else
+		temp = "say";
+	
+	// team match?
+	if ( g_teamplay )
+	{
+		UTIL_LogPrintf( "\"%s<%i><%u><%s>\" %s \"%s\"\n", 
+			STRING( pEntity->v.netname ), 
+			GETPLAYERUSERID( pEntity ),
+			GETPLAYERWONID( pEntity ),
+			g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( pEntity ), "model" ),
+			temp,
+			p );
+	}
+	else
+	{
+		UTIL_LogPrintf( "\"%s<%i><%u><%i>\" %s \"%s\"\n", 
+			STRING( pEntity->v.netname ), 
+			GETPLAYERUSERID( pEntity ),
+			GETPLAYERWONID( pEntity ),
+			GETPLAYERUSERID( pEntity ),
+			temp,
+			p );
+	}
 }
 
 
@@ -384,7 +416,15 @@ void ClientCommand( edict_t *pEntity )
 	else
 	{
 		// tell the user they entered an unknown command
-		ClientPrint( &pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs( "Unknown command: %s\n", pcmd ) );
+		char command[128];
+
+		// check the length of the command (prevents crash)
+		// max total length is 192 ...and we're adding a string below ("Unknown command: %s\n")
+		strncpy( command, pcmd, 127 );
+		command[127] = '\0';
+
+		// tell the user they entered an unknown command
+		ClientPrint( &pEntity->v, HUD_PRINTCONSOLE, UTIL_VarArgs( "Unknown command: %s\n", command ) );
 	}
 }
 
@@ -407,6 +447,22 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 	// msg everyone if someone changes their name,  and it isn't the first time (changing no name to current name)
 	if ( pEntity->v.netname && STRING(pEntity->v.netname)[0] != 0 && !FStrEq( STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" )) )
 	{
+		char sName[256];
+		char *pName = g_engfuncs.pfnInfoKeyValue( infobuffer, "name" );
+		strncpy( sName, pName, sizeof(sName) - 1 );
+		sName[ sizeof(sName) - 1 ] = '\0';
+
+		// First parse the name and remove any %'s
+		for ( char *pApersand = sName; pApersand != NULL && *pApersand != 0; pApersand++ )
+		{
+			// Replace it with a space
+			if ( *pApersand == '%' )
+				*pApersand = ' ';
+		}
+
+		// Set the name
+		g_engfuncs.pfnSetClientKeyValue( ENTINDEX(pEntity), infobuffer, "name", sName );
+
 		char text[256];
 		sprintf( text, "* %s changed name to %s\n", STRING(pEntity->v.netname), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
 		MESSAGE_BEGIN( MSG_ALL, gmsgSayText, NULL );
@@ -414,7 +470,25 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 			WRITE_STRING( text );
 		MESSAGE_END();
 
-		UTIL_LogPrintf( "\"%s<%i>\" changed name to \"%s<%i>\"\n", STRING( pEntity->v.netname ), GETPLAYERUSERID( pEntity ), g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ), GETPLAYERUSERID( pEntity ) );
+		// team match?
+		if ( g_teamplay )
+		{
+			UTIL_LogPrintf( "\"%s<%i><%u><%s>\" changed name to \"%s\"\n", 
+				STRING( pEntity->v.netname ), 
+				GETPLAYERUSERID( pEntity ), 
+				GETPLAYERWONID( pEntity ),
+				g_engfuncs.pfnInfoKeyValue( infobuffer, "model" ), 
+				g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
+		}
+		else
+		{
+			UTIL_LogPrintf( "\"%s<%i><%u><%i>\" changed name to \"%s\"\n", 
+				STRING( pEntity->v.netname ), 
+				GETPLAYERUSERID( pEntity ), 
+				GETPLAYERWONID( pEntity ),
+				GETPLAYERUSERID( pEntity ), 
+				g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
+		}
 	}
 
 	g_pGameRules->ClientUserInfoChanged( GetClassPtr((CBasePlayer *)&pEntity->v), infobuffer );
@@ -532,8 +606,7 @@ void StartFrame( void )
 	if ( g_fGameOver )
 		return;
 
-	gpGlobals->teamplay = CVAR_GET_FLOAT("teamplay");
-	g_iSkillLevel = CVAR_GET_FLOAT("skill");
+	gpGlobals->teamplay = teamplay.value;
 	g_ulFrameCount++;
 }
 
@@ -654,20 +727,8 @@ void ClientPrecache( void )
 }
 
 /*
-================
-Sys_Error
-
-Engine is going to shut down, allows setting a breakpoint in game .dll to catch that occasion
-================
-*/
-void Sys_Error( const char *error_string )
-{
-	// Default case, do nothing.  MOD AUTHORS:  Add code ( e.g., _asm { int 3 }; here to cause a breakpoint for debugging your game .dlls
-}
-
-/*
 ===============
-const char *GetGameDescription()
+GetGameDescription
 
 Returns the descriptive name of this .dll.  E.g., Half-Life, or Team Fortress 2
 ===============
@@ -678,6 +739,18 @@ const char *GetGameDescription()
 		return g_pGameRules->GetGameDescription();
 	else
 		return "Half-Life";
+}
+
+/*
+================
+Sys_Error
+
+Engine is going to shut down, allows setting a breakpoint in game .dll to catch that occasion
+================
+*/
+void Sys_Error( const char *error_string )
+{
+	// Default case, do nothing.  MOD AUTHORS:  Add code ( e.g., _asm { int 3 }; here to cause a breakpoint for debugging your game .dlls
 }
 
 /*
@@ -797,6 +870,13 @@ void SetupVisibility( edict_t *pViewEntity, edict_t *pClient, unsigned char **pv
 	if ( pViewEntity )
 	{
 		pView = pViewEntity;
+	}
+
+	if ( pClient->v.flags & FL_PROXY )
+	{
+		*pvs = NULL;	// the spectator proxy sees
+		*pas = NULL;	// and hears everything
+		return;
 	}
 
 	org = pView->v.origin + pView->v.view_ofs;
@@ -935,6 +1015,7 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 	state->scale	  = ent->v.scale;
 	state->solid	  = ent->v.solid;
 	state->colormap   = ent->v.colormap;
+
 	state->movetype   = ent->v.movetype;
 	state->sequence   = ent->v.sequence;
 	state->framerate  = ent->v.framerate;
@@ -953,9 +1034,9 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 	state->rendermode    = ent->v.rendermode;
 	state->renderamt     = ent->v.renderamt; 
 	state->renderfx      = ent->v.renderfx;
-	state->rendercolor.r = ent->v.rendercolor[0];
-	state->rendercolor.g = ent->v.rendercolor[1];
-	state->rendercolor.b = ent->v.rendercolor[2];
+	state->rendercolor.r = ent->v.rendercolor.x;
+	state->rendercolor.g = ent->v.rendercolor.y;
+	state->rendercolor.b = ent->v.rendercolor.z;
 
 	state->aiment = 0;
 	if ( ent->v.aiment )
@@ -994,7 +1075,7 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 
 		state->gravity      = ent->v.gravity;
 //		state->team			= ent->v.team;
-//		state->playerclass  = ent->v.playerclass;
+//		
 		state->usehull      = ( ent->v.flags & FL_DUCKING ) ? 1 : 0;
 		state->health		= ent->v.health;
 	}
@@ -1022,9 +1103,9 @@ void CreateBaseline( int player, int eindex, struct entity_state_s *baseline, st
 	// render information
 	baseline->rendermode	= (byte)entity->v.rendermode;
 	baseline->renderamt		= (byte)entity->v.renderamt;
-	baseline->rendercolor.r	= (byte)entity->v.rendercolor[0];
-	baseline->rendercolor.g	= (byte)entity->v.rendercolor[1];
-	baseline->rendercolor.b	= (byte)entity->v.rendercolor[2];
+	baseline->rendercolor.r	= (byte)entity->v.rendercolor.x;
+	baseline->rendercolor.g	= (byte)entity->v.rendercolor.y;
+	baseline->rendercolor.b	= (byte)entity->v.rendercolor.z;
 	baseline->renderfx		= (byte)entity->v.renderfx;
 
 	if ( player )
@@ -1103,7 +1184,6 @@ FIXME:  Move to script
 void Entity_Encode( struct delta_s *pFields, const unsigned char *from, const unsigned char *to )
 {
 	entity_state_t *f, *t;
-
 	int localplayer = 0;
 	static int initialized = 0;
 
@@ -1350,7 +1430,7 @@ int GetWeaponData( struct edict_s *player, struct weapon_data_s *info )
 					if ( II.iId >= 0 && II.iId < 32 )
 					{
 						item = &info[ II.iId ];
-						
+					 	
 						item->m_iId						= II.iId;
 						item->m_iClip					= gun->m_iClip;
 
@@ -1358,6 +1438,16 @@ int GetWeaponData( struct edict_s *player, struct weapon_data_s *info )
 						item->m_flNextPrimaryAttack		= max( gun->m_flNextPrimaryAttack, -0.001 );
 						item->m_flNextSecondaryAttack	= max( gun->m_flNextSecondaryAttack, -0.001 );
 						item->m_fInReload				= gun->m_fInReload;
+						item->m_fInSpecialReload		= gun->m_fInSpecialReload;
+						item->fuser1					= max( gun->pev->fuser1, -0.001 );
+						item->fuser2					= gun->m_flStartThrow;
+						item->fuser3					= gun->m_flReleaseThrow;
+						item->iuser1					= gun->m_chargeReady;
+						item->iuser2					= gun->m_fInAttack;
+						item->iuser3					= gun->m_fireState;
+						
+											
+//						item->m_flPumpTime				= max( gun->m_flPumpTime, -0.001 );
 					}
 				}
 				pPlayerItem = pPlayerItem->m_pNext;
@@ -1384,6 +1474,7 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 	cd->health			= ent->v.health;
 
 	cd->viewmodel		= MODEL_INDEX( STRING( ent->v.viewmodel ) );
+
 	cd->waterlevel		= ent->v.waterlevel;
 	cd->watertype		= ent->v.watertype;
 	cd->weapons			= ent->v.weapons;
@@ -1417,6 +1508,17 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 		if ( pl )
 		{
 			cd->m_flNextAttack	= pl->m_flNextAttack;
+			cd->fuser2			= pl->m_flNextAmmoBurn;
+			cd->fuser3			= pl->m_flAmmoStartCharge;
+			cd->vuser1.x		= pl->ammo_9mm;
+			cd->vuser1.y		= pl->ammo_357;
+			cd->vuser1.z		= pl->ammo_argrens;
+			cd->ammo_nails		= pl->ammo_bolts;
+			cd->ammo_shells		= pl->ammo_buckshot;
+			cd->ammo_rockets	= pl->ammo_rockets;
+			cd->ammo_cells		= pl->ammo_uranium;
+			cd->vuser2.x		= pl->ammo_hornets;
+			
 
 			if ( pl->m_pActiveItem )
 			{
@@ -1429,6 +1531,17 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 					gun->GetItemInfo( &II );
 
 					cd->m_iId = II.iId;
+
+					cd->vuser3.z	= gun->m_iSecondaryAmmoType;
+					cd->vuser4.x	= gun->m_iPrimaryAmmoType;
+					cd->vuser4.y	= pl->m_rgAmmo[gun->m_iPrimaryAmmoType];
+					cd->vuser4.z	= pl->m_rgAmmo[gun->m_iSecondaryAmmoType];
+					
+					if ( pl->m_pActiveItem->m_iId == WEAPON_RPG )
+					{
+						cd->vuser2.y = ( ( CRpg * )pl->m_pActiveItem)->m_fSpotActive;
+						cd->vuser2.z = ( ( CRpg * )pl->m_pActiveItem)->m_cActiveRockets;
+					}
 				}
 			}
 		}
@@ -1591,6 +1704,5 @@ AllowLagCompensation
 */
 int AllowLagCompensation( void )
 {
-	return 0;
+	return 1;
 }
-

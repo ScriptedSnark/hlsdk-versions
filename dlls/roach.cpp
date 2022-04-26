@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -121,7 +121,7 @@ void CRoach :: Spawn()
 	Precache( );
 
 	SET_MODEL(ENT(pev), "models/roach.mdl");
-	UTIL_SetSize( pev, Vector( -1, -1, 0 ), Vector( 1, 1, 1 ) );
+	UTIL_SetSize( pev, Vector( -1, -1, 0 ), Vector( 1, 1, 2 ) );
 
 	pev->solid			= SOLID_SLIDEBOX;
 	pev->movetype		= MOVETYPE_STEP;

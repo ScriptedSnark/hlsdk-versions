@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -439,9 +439,15 @@ IMPLEMENT_SAVERESTORE( CBasePlayerItem, CBaseAnimating );
 
 TYPEDESCRIPTION	CBasePlayerWeapon::m_SaveData[] = 
 {
+#if defined( CLIENT_WEAPONS )
+	DEFINE_FIELD( CBasePlayerWeapon, m_flNextPrimaryAttack, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayerWeapon, m_flNextSecondaryAttack, FIELD_FLOAT ),
+	DEFINE_FIELD( CBasePlayerWeapon, m_flTimeWeaponIdle, FIELD_FLOAT ),
+#else	// CLIENT_WEAPONS
 	DEFINE_FIELD( CBasePlayerWeapon, m_flNextPrimaryAttack, FIELD_TIME ),
 	DEFINE_FIELD( CBasePlayerWeapon, m_flNextSecondaryAttack, FIELD_TIME ),
 	DEFINE_FIELD( CBasePlayerWeapon, m_flTimeWeaponIdle, FIELD_TIME ),
+#endif	// CLIENT_WEAPONS
 	DEFINE_FIELD( CBasePlayerWeapon, m_iPrimaryAmmoType, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayerWeapon, m_iSecondaryAmmoType, FIELD_INTEGER ),
 	DEFINE_FIELD( CBasePlayerWeapon, m_iClip, FIELD_INTEGER ),
@@ -645,6 +651,8 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 		m_iClip += j;
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] -= j;
 
+		m_pPlayer->TabulateAmmo();
+
 		m_fInReload = FALSE;
 	}
 
@@ -655,6 +663,7 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 			m_fFireOnEmpty = TRUE;
 		}
 
+		m_pPlayer->TabulateAmmo();
 		SecondaryAttack();
 		m_pPlayer->pev->button &= ~IN_ATTACK2;
 	}
@@ -665,6 +674,7 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 			m_fFireOnEmpty = TRUE;
 		}
 
+		m_pPlayer->TabulateAmmo();
 		PrimaryAttack();
 	}
 	else if ( m_pPlayer->pev->button & IN_RELOAD && iMaxClip() != WEAPON_NOCLIP && !m_fInReload ) 
@@ -848,8 +858,13 @@ int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer )
 }
 
 
-void CBasePlayerWeapon::SendWeaponAnim( int iAnim, int skiplocal )
+void CBasePlayerWeapon::SendWeaponAnim( int iAnim, int skiplocal, int body )
 {
+	if ( UseDecrement() )
+		skiplocal = 1;
+	else
+		skiplocal = 0;
+
 	m_pPlayer->pev->weaponanim = iAnim;
 
 #if defined( CLIENT_WEAPONS )
@@ -967,15 +982,16 @@ BOOL CBasePlayerWeapon :: CanDeploy( void )
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal /* = 0 */ )
+BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal /* = 0 */, int body )
 {
 	if (!CanDeploy( ))
 		return FALSE;
 
+	m_pPlayer->TabulateAmmo();
 	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
 	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
 	strcpy( m_pPlayer->m_szAnimExtention, szAnimExt );
-	SendWeaponAnim( iAnim, skiplocal );
+	SendWeaponAnim( iAnim, skiplocal, body );
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
@@ -984,7 +1000,7 @@ BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel,
 }
 
 
-BOOL CBasePlayerWeapon :: DefaultReload( int iClipSize, int iAnim, float fDelay )
+BOOL CBasePlayerWeapon :: DefaultReload( int iClipSize, int iAnim, float fDelay, int body )
 {
 	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		return FALSE;
@@ -1491,8 +1507,73 @@ void CWeaponBox::SetObjectCollisionBox( void )
 	pev->absmax = pev->origin + Vector(16, 16, 16); 
 }
 
+
 void CBasePlayerWeapon::PrintState( void )
 {
+	ALERT( at_console, "primary:  %f\n", m_flNextPrimaryAttack );
+	ALERT( at_console, "idle   :  %f\n", m_flTimeWeaponIdle );
+
+//	ALERT( at_console, "nextrl :  %f\n", m_flNextReload );
+//	ALERT( at_console, "nextpum:  %f\n", m_flPumpTime );
+
+//	ALERT( at_console, "m_frt  :  %f\n", m_fReloadTime );
+	ALERT( at_console, "m_finre:  %i\n", m_fInReload );
+//	ALERT( at_console, "m_finsr:  %i\n", m_fInSpecialReload );
+
+	ALERT( at_console, "m_iclip:  %i\n", m_iClip );
 }
 
+
+TYPEDESCRIPTION	CRpg::m_SaveData[] = 
+{
+	DEFINE_FIELD( CRpg, m_fSpotActive, FIELD_INTEGER ),
+	DEFINE_FIELD( CRpg, m_cActiveRockets, FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CRpg, CBasePlayerWeapon );
+
+TYPEDESCRIPTION	CRpgRocket::m_SaveData[] = 
+{
+	DEFINE_FIELD( CRpgRocket, m_flIgniteTime, FIELD_TIME ),
+	DEFINE_FIELD( CRpgRocket, m_pLauncher, FIELD_CLASSPTR ),
+};
+IMPLEMENT_SAVERESTORE( CRpgRocket, CGrenade );
+
+TYPEDESCRIPTION	CShotgun::m_SaveData[] = 
+{
+	DEFINE_FIELD( CShotgun, m_flNextReload, FIELD_TIME ),
+	DEFINE_FIELD( CShotgun, m_fInSpecialReload, FIELD_INTEGER ),
+	DEFINE_FIELD( CShotgun, m_flNextReload, FIELD_TIME ),
+	// DEFINE_FIELD( CShotgun, m_iShell, FIELD_INTEGER ),
+	DEFINE_FIELD( CShotgun, m_flPumpTime, FIELD_TIME ),
+};
+IMPLEMENT_SAVERESTORE( CShotgun, CBasePlayerWeapon );
+
+TYPEDESCRIPTION	CGauss::m_SaveData[] = 
+{
+	DEFINE_FIELD( CGauss, m_fInAttack, FIELD_INTEGER ),
+//	DEFINE_FIELD( CGauss, m_flStartCharge, FIELD_TIME ),
+//	DEFINE_FIELD( CGauss, m_flPlayAftershock, FIELD_TIME ),
+//	DEFINE_FIELD( CGauss, m_flNextAmmoBurn, FIELD_TIME ),
+	DEFINE_FIELD( CGauss, m_fPrimaryFire, FIELD_BOOLEAN ),
+};
+IMPLEMENT_SAVERESTORE( CGauss, CBasePlayerWeapon );
+
+TYPEDESCRIPTION	CEgon::m_SaveData[] = 
+{
+//	DEFINE_FIELD( CEgon, m_pBeam, FIELD_CLASSPTR ),
+//	DEFINE_FIELD( CEgon, m_pNoise, FIELD_CLASSPTR ),
+//	DEFINE_FIELD( CEgon, m_pSprite, FIELD_CLASSPTR ),
+	DEFINE_FIELD( CEgon, m_shootTime, FIELD_TIME ),
+	DEFINE_FIELD( CEgon, m_fireState, FIELD_INTEGER ),
+	DEFINE_FIELD( CEgon, m_fireMode, FIELD_INTEGER ),
+	DEFINE_FIELD( CEgon, m_shakeTime, FIELD_TIME ),
+	DEFINE_FIELD( CEgon, m_flAmmoUseTime, FIELD_TIME ),
+};
+IMPLEMENT_SAVERESTORE( CEgon, CBasePlayerWeapon );
+
+TYPEDESCRIPTION	CSatchel::m_SaveData[] = 
+{
+	DEFINE_FIELD( CSatchel, m_chargeReady, FIELD_INTEGER ),
+};
+IMPLEMENT_SAVERESTORE( CSatchel, CBasePlayerWeapon );
 

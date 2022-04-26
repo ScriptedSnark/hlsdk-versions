@@ -1,3 +1,10 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 #ifdef _WIN32
 #include <windows.h> 
 #else
@@ -211,8 +218,8 @@ void Sys_ConsoleOutput (char *string)
 	}
 	UpdateStatus( 1 /* force */ );
 #else
-	printf( string );
-	fflush(stdout);
+	printf( "%s", string );
+	fflush( stdout );
 #endif
 }
 

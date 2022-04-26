@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -32,11 +32,6 @@
 #define	MAX_NODE_INITIAL_LINKS	128
 #define	MAX_NODES               1024
 
-#ifndef _WIN32
-#include <unistd.h>
-#define CreateDirectory(p, n) mkdir(p, 0777)
-#endif
-
 extern DLL_GLOBAL edict_t		*g_pBodyQueueHead;
 
 Vector VecBModelOrigin( entvars_t* pevBModel );
@@ -45,7 +40,10 @@ CGraph	WorldGraph;
 
 LINK_ENTITY_TO_CLASS( info_node, CNodeEnt );
 LINK_ENTITY_TO_CLASS( info_node_air, CNodeEnt );
-
+#ifdef __linux__
+#include <unistd.h>
+#define CreateDirectory(p, n) mkdir(p, 0777)
+#endif
 //=========================================================
 // CGraph - InitGraph - prepares the graph for use. Frees any
 // memory currently in use by the world graph, NULLs 

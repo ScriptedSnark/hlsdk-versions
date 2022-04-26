@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -23,6 +23,7 @@
 #include	"util.h"
 #include	"cbase.h"
 #include	"monsters.h"
+#include	"game.h"
 	
 #define		NUM_LATERAL_CHECKS		13  // how many checks are made on each side of a monster looking for lateral cover
 #define		NUM_LATERAL_LOS_CHECKS		6  // how many checks are made on each side of a monster looking for lateral cover
@@ -83,7 +84,7 @@ Vector VecCheckToss ( entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, f
 	Vector			vecScale;
 	Vector			vecGrenadeVel;
 	Vector			vecTemp;
-	float			flGravity = CVAR_GET_FLOAT( "sv_gravity" ) * flGravityAdj;
+	float			flGravity = g_psv_gravity->value * flGravityAdj;
 
 	if (vecSpot2.z - vecSpot1.z > 500)
 	{
@@ -163,7 +164,7 @@ Vector VecCheckToss ( entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, f
 // 
 Vector VecCheckThrow ( entvars_t *pev, const Vector &vecSpot1, Vector vecSpot2, float flSpeed, float flGravityAdj )
 {
-	float			flGravity = CVAR_GET_FLOAT( "sv_gravity" ) * flGravityAdj;
+	float			flGravity = g_psv_gravity->value * flGravityAdj;
 
 	Vector vecGrenadeVel = (vecSpot2 - vecSpot1);
 

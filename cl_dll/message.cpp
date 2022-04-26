@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -27,6 +27,10 @@
 DECLARE_MESSAGE( m_Message, HudText )
 DECLARE_MESSAGE( m_Message, GameTitle )
 
+// 1 Global client_textmessage_t for custom messages that aren't in the titles.txt
+client_textmessage_t	g_pCustomMessage;
+char *g_pCustomName = "Custom";
+char g_pCustomText[1024];
 
 int CHudMessage::Init(void)
 {
@@ -415,13 +419,62 @@ int CHudMessage::Draw( float fTime )
 
 void CHudMessage::MessageAdd( const char *pName, float time )
 {
-	int i;
+	int i,j;
+	client_textmessage_t *tempMessage;
 
 	for ( i = 0; i < maxHUDMessages; i++ )
 	{
 		if ( !m_pMessages[i] )
 		{
-			m_pMessages[i] = TextMessageGet( pName );
+			// Trim off a leading # if it's there
+			if ( pName[0] == '#' ) 
+				tempMessage = TextMessageGet( pName+1 );
+			else
+				tempMessage = TextMessageGet( pName );
+			// If we couldnt find it in the titles.txt, just create it
+			if ( !tempMessage )
+			{
+				g_pCustomMessage.effect = 2;
+				g_pCustomMessage.r1 = g_pCustomMessage.g1 = g_pCustomMessage.b1 = g_pCustomMessage.a1 = 100;
+				g_pCustomMessage.r2 = 240;
+				g_pCustomMessage.g2 = 110;
+				g_pCustomMessage.b2 = 0;
+				g_pCustomMessage.a2 = 0;
+				g_pCustomMessage.x = -1;		// Centered
+				g_pCustomMessage.y = 0.7;
+				g_pCustomMessage.fadein = 0.01;
+				g_pCustomMessage.fadeout = 1.5;
+				g_pCustomMessage.fxtime = 0.25;
+				g_pCustomMessage.holdtime = 5;
+				g_pCustomMessage.pName = g_pCustomName;
+				strcpy( g_pCustomText, pName );
+				g_pCustomMessage.pMessage = g_pCustomText;
+
+				tempMessage = &g_pCustomMessage;
+			}
+
+			for ( j = 0; j < maxHUDMessages; j++ )
+			{
+				if ( m_pMessages[j] )
+				{
+					// is this message already in the list
+					if ( !strcmp( tempMessage->pMessage, m_pMessages[j]->pMessage ) )
+					{
+						return;
+					}
+
+					// get rid of any other messages in same location (only one displays at a time)
+					if ( fabs( tempMessage->y - m_pMessages[j]->y ) < 0.0001 )
+					{
+						if ( fabs( tempMessage->x - m_pMessages[j]->x ) < 0.0001 )
+						{
+							m_pMessages[j] = NULL;
+						}
+					}
+				}
+			}
+
+			m_pMessages[i] = tempMessage;
 			m_startTime[i] = time;
 			return;
 		}

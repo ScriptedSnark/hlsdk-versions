@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -43,7 +43,7 @@
 #define	FL_IMMUNE_SLIME			(1<<18)
 #define FL_IMMUNE_LAVA			(1<<19)
 
-//#define FL_ARCHIVE_OVERRIDE		(1<<20)	// NOT USED
+#define FL_PROXY				(1<<20)	// This is a spectator proxy
 #define FL_ALWAYSTHINK			(1<<21)	// Brush model flag -- call think every frame regardless of nextthink - ltime (for constantly changing velocity/path)
 #define FL_BASEVELOCITY			(1<<22)	// Base velocity has been applied this frame (used to convert base velocity into momentum)
 #define FL_MONSTERCLIP			(1<<23)	// Only collide in with monsters who have FL_MONSTERCLIP set
@@ -347,7 +347,17 @@
 // ushort 8.8 hold time
 // optional ushort 8.8 fxtime	(time the highlight lags behing the leading text in effect 2)
 // string text message		(512 chars max sz string)
+#define TE_LINE				30
+// coord, coord, coord		startpos
+// coord, coord, coord		endpos
+// short life in 0.1 s
+// 3 bytes r, g, b
 
+#define TE_BOX				31
+// coord, coord, coord		boxmins
+// coord, coord, coord		boxmaxs
+// short life in 0.1 s
+// 3 bytes r, g, b
 
 #define TE_KILLBEAM			99		// kill all beams attached to entity
 // short (entity)
@@ -550,6 +560,8 @@
 // byte ( color ) this is an index into an array of color vectors in the engine. (0 - )
 // byte ( length * 10 )
 
+
+
 #define	MSG_BROADCAST		0		// unreliable to all
 #define	MSG_ONE				1		// reliable to one (msg_entity)
 #define	MSG_ALL				2		// reliable to all
@@ -559,6 +571,7 @@
 #define MSG_PVS_R			6		// Reliable to PVS
 #define MSG_PAS_R			7		// Reliable to PAS
 #define MSG_ONE_UNRELIABLE	8		// Send to one client, but don't put in reliable stream, put in unreliable datagram ( could be dropped )
+#define	MSG_SPEC			9		// Sends to all spectator proxies
 
 // contents of a spot in the world
 #define	CONTENTS_EMPTY		-1
@@ -594,9 +607,10 @@
 #define	CHAN_VOICE			2
 #define CHAN_ITEM			3
 #define	CHAN_BODY			4
-#define CHAN_STREAM			5		// allocate stream channel from the static or dynamic area
-#define CHAN_STATIC			6		// allocate channel from the static area 
-
+#define CHAN_STREAM			5			// allocate stream channel from the static or dynamic area
+#define CHAN_STATIC			6			// allocate channel from the static area 
+#define CHAN_NETWORKVOICE_BASE	7		// voice data coming across the network
+#define CHAN_NETWORKVOICE_END	500		// network voice data reserves slots (CHAN_NETWORKVOICE_BASE through CHAN_NETWORKVOICE_END).
 
 // attenuation values
 #define ATTN_NONE		0

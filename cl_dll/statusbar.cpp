@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -31,6 +31,9 @@ DECLARE_MESSAGE( m_StatusBar, StatusValue );
 
 #define STATUSBAR_ID_LINE		1
 
+float *GetClientColor( int clientIndex );
+extern float g_ColorYellow[3];
+
 int CHudStatusBar :: Init( void )
 {
 	gHUD.AddHudElem( this );
@@ -54,12 +57,18 @@ int CHudStatusBar :: VidInit( void )
 
 void CHudStatusBar :: Reset( void )
 {
+	int i = 0;
+
 	m_iFlags &= ~HUD_ACTIVE;  // start out inactive
-	for ( int i = 0; i < MAX_STATUSBAR_LINES; i++ )
+	for ( i = 0; i < MAX_STATUSBAR_LINES; i++ )
 		m_szStatusText[i][0] = 0;
 	memset( m_iStatusValues, 0, sizeof m_iStatusValues );
 
 	m_iStatusValues[0] = 1;  // 0 is the special index, which always returns true
+
+	// reset our colors for the status bar lines (yellow is default)
+	for ( i = 0; i < MAX_STATUSBAR_LINES; i++ )
+		m_pflNameColors[i] = g_ColorYellow;
 }
 
 void CHudStatusBar :: ParseStatusString( int line_num )
@@ -133,11 +142,13 @@ void CHudStatusBar :: ParseStatusString( int line_num )
 							if ( g_PlayerInfoList[indexval].name != NULL )
 							{
 								strncpy( szRepString, g_PlayerInfoList[indexval].name, MAX_PLAYER_NAME_LENGTH );
+								m_pflNameColors[line_num] = GetClientColor( indexval );
 							}
 							else
 							{
 								strcpy( szRepString, "******" );
 							}
+
 							break;
 						case 'i':  // number
 							sprintf( szRepString, "%d", indexval );
@@ -166,7 +177,10 @@ int CHudStatusBar :: Draw( float fTime )
 	if ( m_bReparseString )
 	{
 		for ( int i = 0; i < MAX_STATUSBAR_LINES; i++ )
+		{
+			m_pflNameColors[i] = g_ColorYellow;
 			ParseStatusString( i );
+		}
 		m_bReparseString = FALSE;
 	}
 
@@ -191,6 +205,9 @@ int CHudStatusBar :: Draw( float fTime )
 			x = max( 0, max(2, (ScreenWidth - TextWidth)) / 2 );
 			y = (ScreenHeight / 2) + (TextHeight*CVAR_GET_FLOAT("hud_centerid"));
 		}
+
+		if ( m_pflNameColors[i] )
+			gEngfuncs.pfnDrawSetTextColor( m_pflNameColors[i][0], m_pflNameColors[i][1], m_pflNameColors[i][2] );
 
 		DrawConsoleString( x, y, m_szStatusBar[i] );
 	}

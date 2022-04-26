@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -24,10 +24,59 @@
 #include <stdio.h>
 #include "parsemsg.h"
 #include "hud_servers.h"
+#include "vgui_int.h"
 #include "vgui_TeamFortressViewport.h"
 
 #include "demo.h"
 #include "demo_api.h"
+#include "vgui_scorepanel.h"
+
+
+
+class CHLVoiceStatusHelper : public IVoiceStatusHelper
+{
+public:
+	virtual void GetPlayerTextColor(int entindex, int color[3])
+	{
+		color[0] = color[1] = color[2] = 255;
+
+		if( entindex >= 0 && entindex < sizeof(g_PlayerExtraInfo)/sizeof(g_PlayerExtraInfo[0]) )
+		{
+			int iTeam = g_PlayerExtraInfo[entindex].teamnumber;
+
+			if ( iTeam < 0 )
+			{
+				iTeam = 0;
+			}
+
+			iTeam = iTeam % iNumberOfTeamColors;
+
+			color[0] = iTeamColors[iTeam][0];
+			color[1] = iTeamColors[iTeam][1];
+			color[2] = iTeamColors[iTeam][2];
+		}
+	}
+
+	virtual void UpdateCursorState()
+	{
+		gViewPort->UpdateCursorState();
+	}
+
+	virtual int	GetAckIconHeight()
+	{
+		return ScreenHeight - gHUD.m_iFontHeight*3 - 6;
+	}
+
+	virtual bool			CanShowSpeakerLabels()
+	{
+		if( gViewPort && gViewPort->m_pScoreBoard )
+			return !gViewPort->m_pScoreBoard->isVisible();
+		else
+			return false;
+	}
+};
+static CHLVoiceStatusHelper g_VoiceStatusHelper;
+
 
 extern client_sprite_t *GetSpriteList(client_sprite_t *pList, const char *psz, int iRes, int iCount);
 
@@ -245,6 +294,10 @@ void CHud :: Init( void )
 	// VGUI Menus
 	HOOK_MESSAGE( VGUIMenu );
 
+	CVAR_CREATE( "hud_classautokill", "1", FCVAR_ARCHIVE | FCVAR_USERINFO );		// controls whether or not to suicide immediately on TF class switch
+	CVAR_CREATE( "hud_takesshots", "0", FCVAR_ARCHIVE );		// controls whether or not to automatically take screenshots at the end of a round
+
+
 	m_iLogo = 0;
 	m_iFOV = 0;
 
@@ -284,6 +337,8 @@ void CHud :: Init( void )
 	m_AmmoSecondary.Init();
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
+	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
+	m_Spectator.Init();
 
 	m_SayText.Init();
 	m_Menu.Init();
@@ -431,6 +486,8 @@ void CHud :: VidInit( void )
 	m_AmmoSecondary.VidInit();
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
+	GetClientVoiceMgr()->VidInit();
+	m_Spectator.VidInit();
 }
 
 int CHud::MsgFunc_Logo(const char *pszName,  int iSize, void *pbuf)
@@ -544,10 +601,8 @@ int CHud::MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf)
 	int newfov = READ_BYTE();
 	int def_fov = CVAR_GET_FLOAT( "default_fov" );
 
-	int tfc = 0;
-	tfc = HUD_IsGame( "tfc" );
-
-	if ( tfc && cl_lw && cl_lw->value )
+	//Weapon prediction already takes care of changing the fog. ( g_lastFOV ).
+	if ( cl_lw && cl_lw->value )
 		return 1;
 
 	g_lastFOV = newfov;

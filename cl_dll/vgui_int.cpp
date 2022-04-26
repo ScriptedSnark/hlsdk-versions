@@ -1,3 +1,9 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
 
 #include"vgui_int.h"
 #include<VGUI_Label.h>

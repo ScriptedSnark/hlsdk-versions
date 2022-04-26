@@ -1,3 +1,10 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // Triangle rendering, if any
 
 #include "hud.h"
@@ -94,6 +101,8 @@ Non-transparent triangles-- add them here
 void DLLEXPORT HUD_DrawNormalTriangles( void )
 {
 
+	gHUD.m_Spectator.DrawOverview();
+	
 #if defined( TEST_IT )
 //	Draw_Triangles();
 #endif

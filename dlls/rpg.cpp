@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -24,6 +24,8 @@
 #include "gamerules.h"
 
 
+
+
 enum rpg_e {
 	RPG_IDLE = 0,
 	RPG_FIDGET,
@@ -37,61 +39,11 @@ enum rpg_e {
 	RPG_FIDGET_UL,	// unloaded fidget
 };
 
-
-class CLaserSpot : public CBaseEntity
-{
-	void Spawn( void );
-	void Precache( void );
-
-	int	ObjectCaps( void ) { return FCAP_DONT_SAVE; }
-
-public:
-	void Suspend( float flSuspendTime );
-	void EXPORT Revive( void );
-	
-	static CLaserSpot *CreateSpot( void );
-};
-LINK_ENTITY_TO_CLASS( laser_spot, CLaserSpot );
-
-
-class CRpg : public CBasePlayerWeapon
-{
-public:
-	int		Save( CSave &save );
-	int		Restore( CRestore &restore );
-	static	TYPEDESCRIPTION m_SaveData[];
-
-	void Spawn( void );
-	void Precache( void );
-	void Reload( void );
-	int iItemSlot( void ) { return 4; }
-	int GetItemInfo(ItemInfo *p);
-	int AddToPlayer( CBasePlayer *pPlayer );
-
-	BOOL Deploy( void );
-	BOOL CanHolster( void );
-	void Holster( int skiplocal = 0 );
-
-	void PrimaryAttack( void );
-	void SecondaryAttack( void );
-	void WeaponIdle( void );
-
-	void UpdateSpot( void );
-	BOOL ShouldWeaponIdle( void ) { return TRUE; };
-
-	CLaserSpot *m_pSpot;
-	int m_fSpotActive;
-	int m_cActiveRockets;// how many missiles in flight from this launcher right now?
-
-};
 LINK_ENTITY_TO_CLASS( weapon_rpg, CRpg );
 
-TYPEDESCRIPTION	CRpg::m_SaveData[] = 
-{
-	DEFINE_FIELD( CRpg, m_fSpotActive, FIELD_INTEGER ),
-	DEFINE_FIELD( CRpg, m_cActiveRockets, FIELD_INTEGER ),
-};
-IMPLEMENT_SAVERESTORE( CRpg, CBasePlayerWeapon );
+#ifndef CLIENT_DLL
+
+LINK_ENTITY_TO_CLASS( laser_spot, CLaserSpot );
 
 //=========================================================
 //=========================================================
@@ -147,35 +99,7 @@ void CLaserSpot::Precache( void )
 	PRECACHE_MODEL("sprites/laserdot.spr");
 };
 
-
-
-
-
-class CRpgRocket : public CGrenade
-{
-public:
-	int		Save( CSave &save );
-	int		Restore( CRestore &restore );
-	static	TYPEDESCRIPTION m_SaveData[];
-	void Spawn( void );
-	void Precache( void );
-	void EXPORT FollowThink( void );
-	void EXPORT IgniteThink( void );
-	void EXPORT RocketTouch( CBaseEntity *pOther );
-	static CRpgRocket *CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBaseEntity *pOwner, CRpg *pLauncher );
-
-	int m_iTrail;
-	float m_flIgniteTime;
-	CRpg *m_pLauncher;// pointer back to the launcher that fired me. 
-};
 LINK_ENTITY_TO_CLASS( rpg_rocket, CRpgRocket );
-
-TYPEDESCRIPTION	CRpgRocket::m_SaveData[] = 
-{
-	DEFINE_FIELD( CRpgRocket, m_flIgniteTime, FIELD_TIME ),
-	DEFINE_FIELD( CRpgRocket, m_pLauncher, FIELD_CLASSPTR ),
-};
-IMPLEMENT_SAVERESTORE( CRpgRocket, CGrenade );
 
 //=========================================================
 //=========================================================
@@ -273,20 +197,6 @@ void CRpgRocket :: IgniteThink( void  )
 
 	MESSAGE_END();  // move PHS/PVS data sending into here (SEND_ALL, SEND_PVS, SEND_PHS)
 
-
-
-/*
-	WRITE_BYTE( MSG_BROADCAST, SVC_TEMPENTITY );
-	WRITE_BYTE( MSG_BROADCAST, TE_BEAMFOLLOW);
-		WRITE_SHORT(entindex());	// entity
-	WRITE_SHORT(MSG_BROADCAST, m_iTrail );	// model
-	WRITE_BYTE( MSG_BROADCAST, 40 ); // life
-	WRITE_BYTE( MSG_BROADCAST, 5 );  // width
-	WRITE_BYTE( MSG_BROADCAST, 224 );   // r, g, b
-	WRITE_BYTE( MSG_BROADCAST, 224 );   // r, g, b
-	WRITE_BYTE( MSG_BROADCAST, 255 );   // r, g, b
-	WRITE_BYTE( MSG_BROADCAST, 255 );	// brightness
-*/
 	m_flIgniteTime = gpGlobals->time;
 
 	// set to follow laser spot
@@ -368,11 +278,7 @@ void CRpgRocket :: FollowThink( void  )
 
 	pev->nextthink = gpGlobals->time + 0.1;
 }
-
-
-
-
-
+#endif
 
 
 
@@ -386,6 +292,9 @@ void CRpg::Reload( void )
 		return;
 	}
 
+	if ( m_pPlayer->ammo_rockets <= 0 )
+		return;
+
 	// because the RPG waits to autoreload when no missiles are active while  the LTD is on, the
 	// weapons code is constantly calling into this function, but is often denied because 
 	// a) missiles are in flight, but the LTD is on
@@ -396,7 +305,7 @@ void CRpg::Reload( void )
 	// Set the next attack time into the future so that WeaponIdle will get called more often
 	// than reload, allowing the RPG LTD to be updated
 	
-	m_flNextPrimaryAttack = gpGlobals->time + 0.5;
+	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.5;
 
 	if ( m_cActiveRockets && m_fSpotActive )
 	{
@@ -405,21 +314,20 @@ void CRpg::Reload( void )
 		return;
 	}
 
-	if (m_pSpot && m_fSpotActive)
+#ifndef CLIENT_DLL
+	if ( m_pSpot && m_fSpotActive )
 	{
 		m_pSpot->Suspend( 2.1 );
-		m_flNextSecondaryAttack = gpGlobals->time + 2.1;
+		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 2.1;
 	}
+#endif
 
-	if (m_iClip == 0)
-	{
+	if ( m_iClip == 0 )
 		iResult = DefaultReload( RPG_MAX_CLIP, RPG_RELOAD, 2 );
-	}
-
-	if (iResult)
-	{
-		m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
-	}
+	
+	if ( iResult )
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
+	
 }
 
 void CRpg::Spawn( )
@@ -430,7 +338,11 @@ void CRpg::Spawn( )
 	SET_MODEL(ENT(pev), "models/w_rpg.mdl");
 	m_fSpotActive = 1;
 
+#ifdef CLIENT_DLL
+	if ( bIsMultiplayer() )
+#else
 	if ( g_pGameRules->IsMultiplayer() )
+#endif
 	{
 		// more default ammo in multiplay. 
 		m_iDefaultAmmo = RPG_DEFAULT_GIVE * 2;
@@ -457,6 +369,8 @@ void CRpg::Precache( void )
 
 	PRECACHE_SOUND("weapons/rocketfire1.wav");
 	PRECACHE_SOUND("weapons/glauncher.wav"); // alternative fire sound
+
+	m_usRpg = PRECACHE_EVENT ( 1, "events/rpg.sc" );
 }
 
 
@@ -516,26 +430,29 @@ void CRpg::Holster( int skiplocal /* = 0 */ )
 	m_fInReload = FALSE;// cancel any reload in progress.
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	// m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
+	
 	SendWeaponAnim( RPG_HOLSTER1 );
+
+#ifndef CLIENT_DLL
 	if (m_pSpot)
 	{
 		m_pSpot->Killed( NULL, GIB_NEVER );
 		m_pSpot = NULL;
 	}
+#endif
+
 }
 
 
 
 void CRpg::PrimaryAttack()
 {
-	if (m_iClip)
+	if ( m_iClip )
 	{
 		m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 		m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
-		SendWeaponAnim( RPG_FIRE2 );
-
+#ifndef CLIENT_DLL
 		// player "shoot" animation
 		m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
@@ -546,20 +463,24 @@ void CRpg::PrimaryAttack()
 
 		UTIL_MakeVectors( m_pPlayer->pev->v_angle );// RpgRocket::Create stomps on globals, so remake.
 		pRocket->pev->velocity = pRocket->pev->velocity + gpGlobals->v_forward * DotProduct( m_pPlayer->pev->velocity, gpGlobals->v_forward );
+#endif
 
 		// firing RPG no longer turns on the designator. ALT fire is a toggle switch for the LTD.
 		// Ken signed up for this as a global change (sjb)
 
-		
-		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/rocketfire1.wav", 0.9, ATTN_NORM );
-		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_ITEM, "weapons/glauncher.wav", 0.7, ATTN_NORM );
+		int flags;
+#if defined( CLIENT_WEAPONS )
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
+
+		PLAYBACK_EVENT( flags, m_pPlayer->edict(), m_usRpg );
 
 		m_iClip--; 
-		//m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-		
-		m_flNextPrimaryAttack = gpGlobals->time + 1.5;
-		m_flTimeWeaponIdle = gpGlobals->time + 1.5;
-		m_pPlayer->pev->punchangle.x -= 5;
+				
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 1.5;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
 	}
 	else
 	{
@@ -573,13 +494,15 @@ void CRpg::SecondaryAttack()
 {
 	m_fSpotActive = ! m_fSpotActive;
 
+#ifndef CLIENT_DLL
 	if (!m_fSpotActive && m_pSpot)
 	{
 		m_pSpot->Killed( NULL, GIB_NORMAL );
 		m_pSpot = NULL;
 	}
+#endif
 
-	m_flNextSecondaryAttack = gpGlobals->time + 0.2;
+	m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.2;
 }
 
 
@@ -589,13 +512,13 @@ void CRpg::WeaponIdle( void )
 
 	ResetEmptySound( );
 
-	if (m_flTimeWeaponIdle > gpGlobals->time)
+	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+	if ( m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{
 		int iAnim;
-		float flRand = RANDOM_FLOAT(0, 1);
+		float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 		if (flRand <= 0.75 || m_fSpotActive)
 		{
 			if ( m_iClip == 0 )
@@ -603,7 +526,7 @@ void CRpg::WeaponIdle( void )
 			else
 				iAnim = RPG_IDLE;
 
-			m_flTimeWeaponIdle = gpGlobals->time + 90.0 / 15.0;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 90.0 / 15.0;
 		}
 		else
 		{
@@ -612,14 +535,14 @@ void CRpg::WeaponIdle( void )
 			else
 				iAnim = RPG_FIDGET;
 
-			m_flTimeWeaponIdle = gpGlobals->time + 3.0;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3.0;
 		}
 
 		SendWeaponAnim( iAnim );
 	}
 	else
 	{
-		m_flTimeWeaponIdle = gpGlobals->time + 1;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1;
 	}
 }
 
@@ -627,6 +550,8 @@ void CRpg::WeaponIdle( void )
 
 void CRpg::UpdateSpot( void )
 {
+
+#ifndef CLIENT_DLL
 	if (m_fSpotActive)
 	{
 		if (!m_pSpot)
@@ -641,17 +566,10 @@ void CRpg::UpdateSpot( void )
 		TraceResult tr;
 		UTIL_TraceLine ( vecSrc, vecSrc + vecAiming * 8192, dont_ignore_monsters, ENT(m_pPlayer->pev), &tr );
 		
-		// ALERT( "%f %f\n", gpGlobals->v_forward.y, vecAiming.y );
-
-		/*
-		float a = gpGlobals->v_forward.y * vecAiming.y + gpGlobals->v_forward.x * vecAiming.x;
-		m_pPlayer->pev->punchangle.y = acos( a ) * (180 / M_PI);
-		
-		ALERT( at_console, "%f\n", a );
-		*/
-
 		UTIL_SetOrigin( m_pSpot->pev, tr.vecEndPos );
 	}
+#endif
+
 }
 
 
@@ -672,7 +590,11 @@ class CRpgAmmo : public CBasePlayerAmmo
 	{ 
 		int iGive;
 
-		if ( g_pGameRules->IsMultiplayer() )
+#ifdef CLIENT_DLL
+	if ( bIsMultiplayer() )
+#else
+	if ( g_pGameRules->IsMultiplayer() )
+#endif
 		{
 			// hand out more ammo per rocket in multiplayer.
 			iGive = AMMO_RPGCLIP_GIVE * 2;

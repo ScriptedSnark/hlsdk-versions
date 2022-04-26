@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -161,7 +161,7 @@ void CBreakable::Spawn( void )
 	{
 		pev->playerclass = 1;
 	}
-	
+
 	SET_MODEL(ENT(pev), STRING(pev->model) );//set size and link into world.
 
 	SetTouch( BreakTouch );

@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1999 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -100,7 +100,7 @@ CTeamMenuPanel::CTeamMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide,i
 	pSchemes->getBgColor( hTeamWindowText, r, g, b, a );
 	m_pBriefing->setBgColor( r, g, b, a );
 
-	m_pBriefing->setText("Map Description not available.");
+	m_pBriefing->setText( gHUD.m_TextMessage.BufferedLocaliseTextString("#Map_Description_not_available") );
 	
 	// Team Menu buttons
 	for (int i = 1; i <= 5; i++)
@@ -132,7 +132,10 @@ CTeamMenuPanel::CTeamMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide,i
 		m_pTeamInfoPanel[i] = new TextPanel("", TEAMMENU_WINDOW_INFO_X, TEAMMENU_WINDOW_INFO_Y, TEAMMENU_WINDOW_SIZE_X - TEAMMENU_WINDOW_INFO_X, TEAMMENU_WINDOW_SIZE_X - TEAMMENU_WINDOW_INFO_Y );
 		m_pTeamInfoPanel[i]->setParent( m_pTeamWindow );
 		m_pTeamInfoPanel[i]->setFont( pSchemes->getFont(hTeamInfoText) );
-		m_pTeamInfoPanel[i]->setFgColor( iTeamColors[i][0], iTeamColors[i][1], iTeamColors[i][2], 0 );
+		m_pTeamInfoPanel[i]->setFgColor(	iTeamColors[i % iNumberOfTeamColors][0],
+											iTeamColors[i % iNumberOfTeamColors][1],
+											iTeamColors[i % iNumberOfTeamColors][2],
+											0 );
 		m_pTeamInfoPanel[i]->setBgColor( 0,0,0, 255 );
 	}
 

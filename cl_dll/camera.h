@@ -1,3 +1,10 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // Camera.h  --  defines and such for a 3rd person camera
 // NOTE: must include quakedef.h first
 

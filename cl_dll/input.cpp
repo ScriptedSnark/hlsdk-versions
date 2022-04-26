@@ -1,3 +1,10 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // cl.input.c  -- builds an intended movement command to send to the server
 
 //xxxxxx Move bob and pitch drifting code here and other stuff from view if needed
@@ -22,6 +29,7 @@ extern "C"
 
 #include "vgui_TeamFortressViewport.h"
 
+
 extern "C" 
 {
 	struct kbutton_s DLLEXPORT *KB_Find( const char *name );
@@ -29,6 +37,8 @@ extern "C"
 	void DLLEXPORT HUD_Shutdown( void );
 	int DLLEXPORT HUD_Key_Event( int eventcode, int keynum, const char *pszCurrentBinding );
 }
+
+extern int g_iAlive;
 
 extern int g_weaponselect;
 extern cl_enginefunc_t gEngfuncs;
@@ -389,18 +399,57 @@ void IN_LeftDown(void) {KeyDown(&in_left);}
 void IN_LeftUp(void) {KeyUp(&in_left);}
 void IN_RightDown(void) {KeyDown(&in_right);}
 void IN_RightUp(void) {KeyUp(&in_right);}
-void IN_ForwardDown(void) {KeyDown(&in_forward);}
-void IN_ForwardUp(void) {KeyUp(&in_forward);}
-void IN_BackDown(void) {KeyDown(&in_back);}
-void IN_BackUp(void) {KeyUp(&in_back);}
+
+void IN_ForwardDown(void)
+{
+	KeyDown(&in_forward);
+	gHUD.m_Spectator.HandleButtonsDown( IN_FORWARD );
+}
+
+void IN_ForwardUp(void)
+{
+	KeyUp(&in_forward);
+	gHUD.m_Spectator.HandleButtonsUp( IN_FORWARD );
+}
+
+void IN_BackDown(void)
+{
+	KeyDown(&in_back);
+	gHUD.m_Spectator.HandleButtonsDown( IN_BACK );
+}
+
+void IN_BackUp(void)
+{
+	KeyUp(&in_back);
+	gHUD.m_Spectator.HandleButtonsUp( IN_BACK );
+}
 void IN_LookupDown(void) {KeyDown(&in_lookup);}
 void IN_LookupUp(void) {KeyUp(&in_lookup);}
 void IN_LookdownDown(void) {KeyDown(&in_lookdown);}
 void IN_LookdownUp(void) {KeyUp(&in_lookdown);}
-void IN_MoveleftDown(void) {KeyDown(&in_moveleft);}
-void IN_MoveleftUp(void) {KeyUp(&in_moveleft);}
-void IN_MoverightDown(void) {KeyDown(&in_moveright);}
-void IN_MoverightUp(void) {KeyUp(&in_moveright);}
+void IN_MoveleftDown(void)
+{
+	KeyDown(&in_moveleft);
+	gHUD.m_Spectator.HandleButtonsDown( IN_MOVELEFT );
+}
+
+void IN_MoveleftUp(void)
+{
+	KeyUp(&in_moveleft);
+	gHUD.m_Spectator.HandleButtonsUp( IN_MOVELEFT );
+}
+
+void IN_MoverightDown(void)
+{
+	KeyDown(&in_moveright);
+	gHUD.m_Spectator.HandleButtonsDown( IN_MOVERIGHT );
+}
+
+void IN_MoverightUp(void)
+{
+	KeyUp(&in_moveright);
+	gHUD.m_Spectator.HandleButtonsUp( IN_MOVERIGHT );
+}
 void IN_SpeedDown(void) {KeyDown(&in_speed);}
 void IN_SpeedUp(void) {KeyUp(&in_speed);}
 void IN_StrafeDown(void) {KeyDown(&in_strafe);}
@@ -408,18 +457,30 @@ void IN_StrafeUp(void) {KeyUp(&in_strafe);}
 
 // needs capture by hud/vgui also
 extern void __CmdFunc_InputPlayerSpecial(void);
+
 void IN_Attack2Down(void) 
 {
 	KeyDown(&in_attack2);
 	__CmdFunc_InputPlayerSpecial();
+	gHUD.m_Spectator.HandleButtonsDown( IN_ATTACK2 );
 }
 
 void IN_Attack2Up(void) {KeyUp(&in_attack2);}
 void IN_UseDown (void) {KeyDown(&in_use);}
 void IN_UseUp (void) {KeyUp(&in_use);}
-void IN_JumpDown (void) {KeyDown(&in_jump);}
+void IN_JumpDown (void)
+{
+	KeyDown(&in_jump);
+	gHUD.m_Spectator.HandleButtonsDown( IN_JUMP );
+
+}
 void IN_JumpUp (void) {KeyUp(&in_jump);}
-void IN_DuckDown(void) {KeyDown(&in_duck);}
+void IN_DuckDown(void)
+{
+	KeyDown(&in_duck);
+	gHUD.m_Spectator.HandleButtonsDown( IN_DUCK );
+
+}
 void IN_DuckUp(void) {KeyUp(&in_duck);}
 void IN_ReloadDown(void) {KeyDown(&in_reload);}
 void IN_ReloadUp(void) {KeyUp(&in_reload);}
@@ -431,6 +492,7 @@ void IN_GraphUp(void) {KeyUp(&in_graph);}
 void IN_AttackDown(void)
 {
 	KeyDown( &in_attack );
+	gHUD.m_Spectator.HandleButtonsDown( IN_ATTACK );
 }
 
 void IN_AttackUp(void)
@@ -670,6 +732,10 @@ void DLLEXPORT CL_CreateMove ( float frametime, struct usercmd_s *cmd, int activ
 	//
 	cmd->buttons = CL_ButtonBits( 1 );
 
+	// If they're in a modal dialog, ignore the attack button.
+	if(GetClientVoiceMgr()->IsInSquelchMode())
+		cmd->buttons &= ~IN_ATTACK;
+
 	// Using joystick?
 	if ( in_joystick->value )
 	{
@@ -686,7 +752,7 @@ void DLLEXPORT CL_CreateMove ( float frametime, struct usercmd_s *cmd, int activ
 	gEngfuncs.GetViewAngles( (float *)viewangles );
 	// Set current view angles.
 
-	if ( gHUD.m_Health.m_iHealth > 0 )
+	if ( g_iAlive )
 	{
 		VectorCopy( viewangles, cmd->viewangles );
 		VectorCopy( viewangles, oldangles );
@@ -695,6 +761,7 @@ void DLLEXPORT CL_CreateMove ( float frametime, struct usercmd_s *cmd, int activ
 	{
 		VectorCopy( oldangles, cmd->viewangles );
 	}
+
 }
 
 /*

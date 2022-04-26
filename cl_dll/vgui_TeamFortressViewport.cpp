@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1999 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -44,6 +44,7 @@
 #include "camera.h"
 #include "in_defs.h"
 #include "parsemsg.h"
+#include "pm_shared.h"
 #include "../engine/keydefs.h"
 #include "demo.h"
 #include "demo_api.h"
@@ -59,6 +60,18 @@ int g_iPlayerClass;
 int g_iTeamNumber;
 int g_iUser1;
 int g_iUser2;
+int g_iUser3;
+
+// Scoreboard positions
+#define SBOARD_INDENT_X			XRES(104)
+#define SBOARD_INDENT_Y			YRES(40)
+
+// low-res scoreboard indents
+#define SBOARD_INDENT_X_512		30
+#define SBOARD_INDENT_Y_512		30
+
+#define SBOARD_INDENT_X_400		0
+#define SBOARD_INDENT_Y_400		20
 
 void IN_ResetMouse( void );
 extern CMenuPanel *CMessageWindowPanel_Create( const char *szMOTD, const char *szTitle, int iShadeFullscreen, int iRemoveMe, int x, int y, int wide, int tall );
@@ -66,14 +79,16 @@ extern CMenuPanel *CMessageWindowPanel_Create( const char *szMOTD, const char *s
 using namespace vgui;
 
 // Team Colors
+int iNumberOfTeamColors = 5;
 int iTeamColors[5][3] =
 {
-	{ 255, 255, 255 },
-	{ 66, 115, 247 },
-	{ 220, 51, 38 },
-	{ 240, 135, 0 },
-	{ 115, 240, 115 },
+	{ 255, 170, 0 },	// HL orange (default)
+	{ 125, 165, 210 },	// Blue
+	{ 200, 90, 70 },	// Red
+	{ 225, 205, 45 },	// Yellow
+	{ 145, 215, 140 },	// Green
 };
+
 
 // Used for Class specific buttons
 char *sTFClasses[] =
@@ -470,9 +485,6 @@ TeamFortressViewport::TeamFortressViewport(int x,int y,int wide,int tall) : Pane
 	m_pCurrentMenu = NULL;
 	m_pCurrentCommandMenu = NULL;
 
-	CVAR_CREATE( "hud_classautokill", "1", FCVAR_ARCHIVE );		// controls whether or not to suicide immediately on TF class switch
-	CVAR_CREATE( "hud_takesshots", "0", FCVAR_ARCHIVE );		// controls whether or not to automatically take screenshots at the end of a round
-
 	Initialize();
 	addInputSignal( new CViewPortInputHandler );
 
@@ -595,7 +607,7 @@ void TeamFortressViewport::CreateCommandMenu( void )
 	m_pCommandMenus[0]->setParent(this);
 	m_pCommandMenus[0]->setVisible(false);
 	m_iNumMenus = 1;
-	m_iCurrentTeamNumber = m_iUser1 = m_iUser2 = 0;
+	m_iCurrentTeamNumber = m_iUser1 = m_iUser2 = m_iUser3 = 0;
 
 	// Read Command Menu from the txt file
 	char token[1024];
@@ -1227,6 +1239,9 @@ void TeamFortressViewport::HideScoreBoard( void )
 	if (m_pScoreBoard)
 	{
 		m_pScoreBoard->setVisible(false);
+
+		GetClientVoiceMgr()->StopSquelchMode();
+
 		UpdateCursorState();
 	}
 }
@@ -1276,26 +1291,61 @@ void TeamFortressViewport::UpdateCommandMenu()
 
 void TeamFortressViewport::UpdateSpectatorMenu()
 {
-	char sz[64];
+	char helpString1[128];
+	char helpString2[128];
+	int	 mode;
+
+	m_iUser1 = g_iUser1;
+	m_iUser2 = g_iUser2;
+	m_iUser3 = g_iUser3;
 
 	if (!m_pSpectatorMenu)
 		return;
 
-	if (m_iUser1)
+	if ( gEngfuncs.IsSpectateOnly() )
+	{
+		mode = gHUD.m_Spectator.m_iMainMode;	// spec mode is set client side
+
+		sprintf(helpString2, "#Spec_Only_Help");
+	}
+	else
+	{
+		// spec mode is given by server
+		mode = m_iUser1;	
+		// set normal help text
+		sprintf(helpString2, "#Spec_Help"  );
+	}
+
+	if ( mode && ( gEngfuncs.IsSpectateOnly() != 2) )	// don't draw in dev_overview mode
 	{
 		m_pSpectatorMenu->setVisible( true );
 
-		if (m_iUser2 > 0)
+		// check if we're locked onto a target, show the player's name
+		if ( (m_iUser2 > 0) && (m_iUser2 <= gEngfuncs.GetMaxClients()) )
 		{
-			// Locked onto a target, show the player's name
-			sprintf(sz, "#Spec_Mode%d : %s", m_iUser1, g_PlayerInfoList[ m_iUser2 ].name);
-			m_pSpectatorLabel->setText( CHudTextMessage::BufferedLocaliseTextString( sz ) );
+				// Locked onto a target, show the player's name
+			
+
+			if ( g_PlayerInfoList[ m_iUser2 ].name != NULL )
+				sprintf(helpString1, "#Spec_Mode%d : %s", mode, g_PlayerInfoList[ m_iUser2 ].name );
+
+			else
+				sprintf(helpString1, "#Spec_Mode%d", mode );
 		}
 		else
 		{
-			sprintf(sz, "#Spec_Mode%d", m_iUser1);
-			m_pSpectatorLabel->setText( CHudTextMessage::BufferedLocaliseTextString( sz ) );
+			sprintf(helpString1, "#Spec_Mode%d", mode);
 		}
+
+		if ( m_iUser1 == OBS_DIRECTED )
+		{
+			char tempString[128];
+			sprintf(tempString, "#Directed %s", helpString1);
+			strcpy( helpString1, tempString );
+		}
+		
+		m_pSpectatorLabel->setText( CHudTextMessage::BufferedLocaliseTextString( helpString1 ) );
+		m_pSpectatorHelpLabel->setText( CHudTextMessage::BufferedLocaliseTextString( helpString2 ) );
 	}
 	else
 	{
@@ -1306,7 +1356,19 @@ void TeamFortressViewport::UpdateSpectatorMenu()
 //======================================================================
 void TeamFortressViewport::CreateScoreBoard( void )
 {
-	m_pScoreBoard = new ScorePanel(SBOARD_INDENT_X,SBOARD_INDENT_Y, ScreenWidth - (SBOARD_INDENT_X * 2), ScreenHeight - (SBOARD_INDENT_Y * 2));
+	int xdent = SBOARD_INDENT_X, ydent = SBOARD_INDENT_Y;
+	if (ScreenWidth == 512)
+	{
+		xdent = SBOARD_INDENT_X_512; 
+		ydent = SBOARD_INDENT_Y_512;
+	}
+	else if (ScreenWidth == 400)
+	{
+		xdent = SBOARD_INDENT_X_400; 
+		ydent = SBOARD_INDENT_Y_400;
+	}
+
+	m_pScoreBoard = new ScorePanel(xdent, ydent, ScreenWidth - (xdent * 2), ScreenHeight - (ydent * 2));
 	m_pScoreBoard->setParent(this);
 	m_pScoreBoard->setVisible(false);
 }
@@ -1462,6 +1524,12 @@ void TeamFortressViewport::ShowVGUIMenu( int iMenu )
 	if ( gEngfuncs.pDemoAPI->IsPlayingback() )
 		return;
 
+	// Don't open any menus except the MOTD during intermission
+	// MOTD needs to be accepted because it's sent down to the client 
+	// after map change, before intermission's turned off
+	if ( gHUD.m_iIntermission && iMenu != MENU_INTRO )
+		return;
+
 	// Don't create one if it's already in the list
 	if (m_pCurrentMenu)
 	{
@@ -1509,11 +1577,24 @@ void TeamFortressViewport::ShowVGUIMenu( int iMenu )
 
 	pNewMenu->SetMenuID( iMenu );
 	pNewMenu->SetActive( true );
+	pNewMenu->setParent(this);
 
 	// See if another menu is visible, and if so, cache this one for display once the other one's finished
 	if (m_pCurrentMenu)
 	{
-		m_pCurrentMenu->SetNextMenu( pNewMenu );
+		if ( m_pCurrentMenu->GetMenuID() == MENU_CLASS && iMenu == MENU_TEAM )
+		{
+			CMenuPanel *temp = m_pCurrentMenu;
+			m_pCurrentMenu->Close();
+			m_pCurrentMenu = pNewMenu;
+			m_pCurrentMenu->SetNextMenu( temp );
+			m_pCurrentMenu->Open();
+			UpdateCursorState();
+		}
+		else
+		{
+			m_pCurrentMenu->SetNextMenu( pNewMenu );
+		}
 	}
 	else
 	{
@@ -1637,16 +1718,16 @@ void TeamFortressViewport::CreateSpectatorMenu()
 	m_pSpectatorLabel->setContentAlignment( vgui::Label::a_north );
 
 	// Create the Help
-	Label *pLabel = new Label( CHudTextMessage::BufferedLocaliseTextString( "#Spec_Help" ), 0, YRES(25), ScreenWidth, YRES(15) );
-	pLabel->setParent( m_pSpectatorMenu );
-	pLabel->setFont( pSchemes->getFont(hHelpText) );
+	m_pSpectatorHelpLabel = new Label( CHudTextMessage::BufferedLocaliseTextString( "#Spec_Help" ), 0, YRES(25), ScreenWidth, YRES(15) );
+	m_pSpectatorHelpLabel->setParent( m_pSpectatorMenu );
+	m_pSpectatorHelpLabel->setFont( pSchemes->getFont(hHelpText) );
 	pSchemes->getFgColor( hHelpText, r, g, b, a );
-	pLabel->setFgColor( r, g, b, a );
+	m_pSpectatorHelpLabel->setFgColor( r, g, b, a );
 	pSchemes->getBgColor( hHelpText, r, g, b, a );
-	pLabel->setBgColor( r, g, b, 255 );
-	pLabel->setContentAlignment( vgui::Label::a_north );
+	m_pSpectatorHelpLabel->setBgColor( r, g, b, 255 );
+	m_pSpectatorHelpLabel->setContentAlignment( vgui::Label::a_north );
 
-	pLabel = new Label( CHudTextMessage::BufferedLocaliseTextString( "#Spec_Help2" ), 0, YRES(40), ScreenWidth, YRES(20) );
+	Label *pLabel = new Label( CHudTextMessage::BufferedLocaliseTextString( "#Spec_Help2" ), 0, YRES(40), ScreenWidth, YRES(20) );
 	pLabel->setParent( m_pSpectatorMenu );
 	pLabel->setFont( pSchemes->getFont(hHelpText) );
 	pSchemes->getFgColor( hHelpText, r, g, b, a );
@@ -1654,6 +1735,7 @@ void TeamFortressViewport::CreateSpectatorMenu()
 	pSchemes->getBgColor( hHelpText, r, g, b, a );
 	pLabel->setBgColor( r, g, b, 255 );
 	pLabel->setContentAlignment( vgui::Label::a_center );
+
 }
 
 //======================================================================================
@@ -1674,7 +1756,7 @@ void TeamFortressViewport::UpdateOnPlayerInfo()
 void TeamFortressViewport::UpdateCursorState()
 {
 	// Need cursor if any VGUI window is up
-	if ( m_pCurrentMenu || m_pTeamMenu->isVisible() || m_pServerBrowser->isVisible() )
+	if ( m_pCurrentMenu || m_pTeamMenu->isVisible() || m_pServerBrowser->isVisible() || GetClientVoiceMgr()->IsInSquelchMode() )
 	{
 		g_iVisibleMouse = true;
 		App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::SchemeCursor::scu_arrow) );
@@ -1715,6 +1797,13 @@ void TeamFortressViewport::GetAllPlayersInfo( void )
 
 void TeamFortressViewport::paintBackground()
 {
+	if (m_pScoreBoard)
+	{
+		int x, y;
+		getApp()->getCursorPos(x, y);
+		m_pScoreBoard->cursorMoved(x, y, m_pScoreBoard);
+	}
+
 	// See if the command menu is visible and needs recalculating due to some external change
 	if ( g_iTeamNumber != m_iCurrentTeamNumber )
 	{
@@ -1736,10 +1825,9 @@ void TeamFortressViewport::paintBackground()
 	}
 
 	// See if the Spectator Menu needs to be update
+	// no update if only second target (m_iUser3) changes
 	if ( g_iUser1 != m_iUser1 || g_iUser2 != m_iUser2 )
 	{
-		m_iUser1 = g_iUser1;
-		m_iUser2 = g_iUser2;
 		UpdateSpectatorMenu();
 	}
 
@@ -1920,9 +2008,13 @@ int TeamFortressViewport::MsgFunc_TeamNames(const char *pszName, int iSize, void
 		if (m_pTeamButtons[i])
 			m_pTeamButtons[i]->setText( m_sTeamNames[teamNum] );
 
-		// Set the disguise buttons
-		if (m_pDisguiseButtons[i])
-			m_pDisguiseButtons[i]->setText( m_sTeamNames[teamNum] );
+		// range check this value...m_pDisguiseButtons[5];
+		if ( teamNum < 5 )
+		{
+			// Set the disguise buttons
+			if ( m_pDisguiseButtons[teamNum] )
+				m_pDisguiseButtons[teamNum]->setText( m_sTeamNames[teamNum] );
+		}
 	}
 
 	// Update the Team Menu
@@ -1983,7 +2075,10 @@ int TeamFortressViewport::MsgFunc_MOTD( const char *pszName, int iSize, void *pb
 	BEGIN_READ( pbuf, iSize );
 
 	m_iGotAllMOTD = READ_BYTE();
-	strncat( m_szMOTD, READ_STRING(), sizeof(m_szMOTD) - strlen(m_szMOTD) );
+
+	int roomInArray = sizeof(m_szMOTD) - strlen(m_szMOTD) - 1;
+
+	strncat( m_szMOTD, READ_STRING(), roomInArray >= 0 ? roomInArray : 0 );
 	m_szMOTD[ sizeof(m_szMOTD)-1 ] = '\0';
 
 	if ( m_iGotAllMOTD )
@@ -2039,6 +2134,10 @@ int TeamFortressViewport::MsgFunc_ScoreInfo( const char *pszName, int iSize, voi
 		g_PlayerExtraInfo[cl].deaths = deaths;
 		g_PlayerExtraInfo[cl].playerclass = playerclass;
 		g_PlayerExtraInfo[cl].teamnumber = teamnumber;
+
+		//Dont go bellow 0!
+		if ( g_PlayerExtraInfo[cl].teamnumber < 0 )
+			 g_PlayerExtraInfo[cl].teamnumber = 0;
 
 		UpdateOnPlayerInfo();
 	}

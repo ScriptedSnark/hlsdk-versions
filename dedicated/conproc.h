@@ -1,3 +1,10 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // conproc.h -- support for external server monitoring programs
 #ifndef INC_CONPROCH
 #define INC_CONPROCH

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -34,28 +34,13 @@ enum hgun_e {
 	HGUN_SHOOT
 };
 
-class CHgun : public CBasePlayerWeapon
+enum firemode_e
 {
-public:
-	void Spawn( void );
-	void Precache( void );
-	int iItemSlot( void ) { return 4; }
-	int GetItemInfo(ItemInfo *p);
-	int AddToPlayer( CBasePlayer *pPlayer );
-
-	void PrimaryAttack( void );
-	void SecondaryAttack( void );
-	BOOL Deploy( void );
-	BOOL IsUseable( void );
-	void Holster( int skiplocal = 0 );
-	void Reload( void );
-	void WeaponIdle( void );
-	float m_flNextAnimTime;
-
-	float m_flRechargeTime;
-	
-	int m_iFirePhase;// don't save me.
+	FIREMODE_TRACK = 0,
+	FIREMODE_FAST
 };
+
+
 LINK_ENTITY_TO_CLASS( weapon_hornetgun, CHgun );
 
 BOOL CHgun::IsUseable( void )
@@ -82,6 +67,8 @@ void CHgun::Precache( void )
 	PRECACHE_MODEL("models/w_hgun.mdl");
 	PRECACHE_MODEL("models/p_hgun.mdl");
 
+	m_usHornetFire = PRECACHE_EVENT ( 1, "events/firehornet.sc" );
+
 	UTIL_PrecacheOther("hornet");
 }
 
@@ -89,11 +76,14 @@ int CHgun::AddToPlayer( CBasePlayer *pPlayer )
 {
 	if ( CBasePlayerWeapon::AddToPlayer( pPlayer ) )
 	{
+
+#ifndef CLIENT_DLL
 		if ( g_pGameRules->IsMultiplayer() )
 		{
 			// in multiplayer, all hivehands come full. 
 			pPlayer->m_rgAmmo[ PrimaryAmmoIndex() ] = HORNET_MAX_CARRY;
 		}
+#endif
 
 		MESSAGE_BEGIN( MSG_ONE, gmsgWeapPickup, NULL, pPlayer->pev );
 			WRITE_BYTE( m_iId );
@@ -129,7 +119,6 @@ BOOL CHgun::Deploy( )
 void CHgun::Holster( int skiplocal /* = 0 */ )
 {
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
-	// m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
 	SendWeaponAnim( HGUN_DOWN );
 
 	//!!!HACKHACK - can't select hornetgun if it's empty! no way to get ammo for it, either.
@@ -149,30 +138,43 @@ void CHgun::PrimaryAttack()
 		return;
 	}
 
+#ifndef CLIENT_DLL
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle );
 
 	CBaseEntity *pHornet = CBaseEntity::Create( "hornet", m_pPlayer->GetGunPosition( ) + gpGlobals->v_forward * 16 + gpGlobals->v_right * 8 + gpGlobals->v_up * -12, m_pPlayer->pev->v_angle, m_pPlayer->edict() );
 	pHornet->pev->velocity = gpGlobals->v_forward * 300;
+
+	m_flRechargeTime = gpGlobals->time + 0.5;
+#endif
 	
 	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
-	m_flRechargeTime = gpGlobals->time + 0.5;
+	
 
 	m_pPlayer->m_iWeaponVolume = QUIET_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
 
-	SendWeaponAnim( HGUN_SHOOT );
+	int flags;
+#if defined( CLIENT_WEAPONS )
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
+
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usHornetFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, FIREMODE_TRACK, 0, 0, 0 );
+
+	
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
 	m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.25;
 
-	if (m_flNextPrimaryAttack < gpGlobals->time)
+	if (m_flNextPrimaryAttack < UTIL_WeaponTimeBase() )
 	{
-		m_flNextPrimaryAttack = gpGlobals->time + 0.25;
+		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.25;
 	}
 
-	m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
 
@@ -186,6 +188,8 @@ void CHgun::SecondaryAttack( void )
 		return;
 	}
 
+	//Wouldn't be a bad idea to completely predict these, since they fly so fast...
+#ifndef CLIENT_DLL
 	CBaseEntity *pHornet;
 	Vector vecSrc;
 
@@ -233,20 +237,28 @@ void CHgun::SecondaryAttack( void )
 
 	pHornet->SetThink( CHornet::StartDart );
 
+	m_flRechargeTime = gpGlobals->time + 0.5;
+#endif
+
+	int flags;
+#if defined( CLIENT_WEAPONS )
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
+
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usHornetFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, FIREMODE_FAST, 0, 0, 0 );
+
+
 	m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = DIM_GUN_FLASH;
 
-	m_flRechargeTime = gpGlobals->time + 0.5;
-
-	SendWeaponAnim( HGUN_SHOOT );
-
-	// player "shoot" animation
+		// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	m_flNextPrimaryAttack = m_flNextSecondaryAttack = gpGlobals->time + 0.1;
-	m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
-	m_pPlayer->pev->punchangle.x = RANDOM_FLOAT( 0, 2 );
+	m_flNextPrimaryAttack = m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.1;
+	m_flTimeWeaponIdle = gpGlobals->time + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
 
@@ -271,21 +283,21 @@ void CHgun::WeaponIdle( void )
 		return;
 
 	int iAnim;
-	float flRand = RANDOM_FLOAT(0, 1);
+	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 	if (flRand <= 0.75)
 	{
 		iAnim = HGUN_IDLE1;
-		m_flTimeWeaponIdle = gpGlobals->time + 30.0 / 16 * (2);
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 30.0 / 16 * (2);
 	}
 	else if (flRand <= 0.875)
 	{
 		iAnim = HGUN_FIDGETSWAY;
-		m_flTimeWeaponIdle = gpGlobals->time + 40.0 / 16.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 40.0 / 16.0;
 	}
 	else
 	{
 		iAnim = HGUN_FIDGETSHAKE;
-		m_flTimeWeaponIdle = gpGlobals->time + 35.0 / 16.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 35.0 / 16.0;
 	}
 	SendWeaponAnim( iAnim );
 }

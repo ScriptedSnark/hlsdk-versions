@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -14,7 +14,9 @@
 ****/
 #if !defined ( R_EFXH )
 #define R_EFXH
+#ifdef _WIN32
 #pragma once
+#endif
 
 // particle_t
 #if !defined( PARTICLEDEFH )  
@@ -187,6 +189,7 @@ struct efx_api_s
 	TEMPENTITY	*( *CL_TentEntAllocCustom )		( float *origin, struct model_s *model, int high, void ( *callback ) ( struct tempent_s *ent, float frametime, float currenttime ) );
 	void		( *R_GetPackedColor )			( short *packed, short color );
 	short		( *R_LookupColor )				( unsigned char r, unsigned char g, unsigned char b );
+	void		( *R_DecalRemoveAll )			( int textureIndex ); //textureIndex points to the decal index in the array, not the actual texture index.
 };
 
 extern efx_api_t efx;

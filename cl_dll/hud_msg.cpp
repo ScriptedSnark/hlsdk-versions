@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -19,6 +19,12 @@
 #include "hud.h"
 #include "cl_util.h"
 #include "parsemsg.h"
+#include "r_efx.h"
+
+#define MAX_CLIENTS 32
+
+extern BEAM *pBeam;
+extern BEAM *pBeam2;
 
 /// USER-DEFINED SERVER MESSAGE HANDLERS
 
@@ -56,6 +62,9 @@ void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )
 			pList->p->InitHUDData();
 		pList = pList->pNext;
 	}
+
+	//Probably not a good place to put this.
+	pBeam = pBeam2 = NULL;
 }
 
 
@@ -102,4 +111,3 @@ int CHud :: MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf )
 		this->m_StatusIcons.DisableIcon("dmg_concuss");
 	return 1;
 }
-

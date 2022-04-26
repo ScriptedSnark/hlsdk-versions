@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1998, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -1128,6 +1128,8 @@ float already_chosen_map;
 #define MENU_TEAM_CHANGE			21
 
 #define MENU_REFRESH_RATE 			25
+
+#define MENU_VOICETWEAK				50
 
 //============================
 // Timer Types

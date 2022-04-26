@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -37,7 +37,7 @@ Studio models are position independent, so the cache manager can move them.
 #define MAXSTUDIOBONES		128		// total bones actually used
 #define MAXSTUDIOMODELS		32		// sub-models per model
 #define MAXSTUDIOBODYPARTS	32
-#define MAXSTUDIOGROUPS		4
+#define MAXSTUDIOGROUPS		16
 #define MAXSTUDIOANIMATIONS	512		// per sequence
 #define MAXSTUDIOMESHES		256
 #define MAXSTUDIOEVENTS		1024
@@ -141,8 +141,12 @@ typedef struct
 	vec3_t				bbmax;		
 } mstudiobbox_t;
 
-#ifndef ZONE_H
-typedef void *cache_user_t;
+#if !defined( CACHE_USER ) && !defined( QUAKEDEF_H )
+#define CACHE_USER
+typedef struct cache_user_s
+{
+	void *data;
+} cache_user_t;
 #endif
 
 // demand loaded sequence groups

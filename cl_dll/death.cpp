@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -167,6 +167,8 @@ int CHudDeathNotice :: MsgFunc_DeathMsg( const char *pszName, int iSize, void *p
 
 	if (gViewPort)
 		gViewPort->DeathMsg( killer, victim );
+
+	gHUD.m_Spectator.DeathMessage(victim);
 
 	for ( int i = 0; i < MAX_DEATHNOTICES; i++ )
 	{

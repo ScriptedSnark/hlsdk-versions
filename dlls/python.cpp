@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -34,26 +34,6 @@ enum python_e {
 	PYTHON_IDLE3
 };
 
-class CPython : public CBasePlayerWeapon
-{
-public:
-	void Spawn( void );
-	void Precache( void );
-	int iItemSlot( void ) { return 2; }
-	int GetItemInfo(ItemInfo *p);
-	int AddToPlayer( CBasePlayer *pPlayer );
-	void PrimaryAttack( void );
-	void SecondaryAttack( void );
-	BOOL Deploy( void );
-	void Holster( int skiplocal = 0 );
-	void Reload( void );
-	void WeaponIdle( void );
-	float m_flSoundDelay;
-
-	BOOL m_fInZoom;// don't save this. 
-private:
-	unsigned short m_usFirePython;
-};
 LINK_ENTITY_TO_CLASS( weapon_python, CPython );
 LINK_ENTITY_TO_CLASS( weapon_357, CPython );
 
@@ -118,7 +98,11 @@ void CPython::Precache( void )
 
 BOOL CPython::Deploy( )
 {
+#ifdef CLIENT_DLL
+	if ( bIsMultiplayer() )
+#else
 	if ( g_pGameRules->IsMultiplayer() )
+#endif
 	{
 		// enable laser sight geometry.
 		pev->body = 1;
@@ -128,7 +112,7 @@ BOOL CPython::Deploy( )
 		pev->body = 0;
 	}
 
-	return DefaultDeploy( "models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW, "python" );
+	return DefaultDeploy( "models/v_357.mdl", "models/p_357.mdl", PYTHON_DRAW, "python", UseDecrement(), pev->body );
 }
 
 
@@ -142,29 +126,33 @@ void CPython::Holster( int skiplocal /* = 0 */ )
 	}
 
 	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 1.0;
-	m_flTimeWeaponIdle = gpGlobals->time + 10 + RANDOM_FLOAT ( 0, 5 );
+	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 	SendWeaponAnim( PYTHON_HOLSTER );
 }
 
 void CPython::SecondaryAttack( void )
 {
+#ifdef CLIENT_DLL
+	if ( !bIsMultiplayer() )
+#else
 	if ( !g_pGameRules->IsMultiplayer() )
+#endif
 	{
 		return;
 	}
 
-	if ( m_fInZoom )
+	if ( m_pPlayer->pev->fov != 0 )
 	{
 		m_fInZoom = FALSE;
-		m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
-	else
+	else if ( m_pPlayer->pev->fov != 40 )
 	{
 		m_fInZoom = TRUE;
-		m_pPlayer->m_iFOV = 40;
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 40;
 	}
 
-	m_flNextSecondaryAttack = gpGlobals->time + 0.5;
+	m_flNextSecondaryAttack = 0.5;
 }
 
 void CPython::PrimaryAttack()
@@ -173,7 +161,7 @@ void CPython::PrimaryAttack()
 	if (m_pPlayer->pev->waterlevel == 3)
 	{
 		PlayEmptySound( );
-		m_flNextPrimaryAttack = gpGlobals->time + 0.15;
+		m_flNextPrimaryAttack = 0.15;
 		return;
 	}
 
@@ -184,49 +172,70 @@ void CPython::PrimaryAttack()
 		else
 		{
 			EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_cock1.wav", 0.8, ATTN_NORM);
-			m_flNextPrimaryAttack = gpGlobals->time + 0.15;
+			m_flNextPrimaryAttack = 0.15;
 		}
 
 		return;
 	}
-
-	PLAYBACK_EVENT( 0, m_pPlayer->edict(), m_usFirePython );
 
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = BRIGHT_GUN_FLASH;
 
 	m_iClip--;
 
+	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
+
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
-	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
+
 
 	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
-	m_pPlayer->FireBullets( 1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_357, 0 );
+
+	Vector vecDir;
+	vecDir = m_pPlayer->FireBulletsPlayer( 1, vecSrc, vecAiming, VECTOR_CONE_1DEGREES, 8192, BULLET_PLAYER_357, 0, 0, m_pPlayer->pev, m_pPlayer->random_seed );
+
+    int flags;
+#if defined( CLIENT_WEAPONS )
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
+
+	PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usFirePython, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, vecDir.x, vecDir.y, 0, 0, 0, 0 );
 
 	if (!m_iClip && m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] <= 0)
 		// HEV suit - indicate out of ammo condition
 		m_pPlayer->SetSuitUpdate("!HEV_AMO0", FALSE, 0);
 
-	m_flNextPrimaryAttack = gpGlobals->time + 0.75;
-	m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
+	m_flNextPrimaryAttack = 0.75;
+	m_flTimeWeaponIdle = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 }
 
 
 void CPython::Reload( void )
 {
-	if ( m_fInZoom )
+	if ( m_pPlayer->ammo_357 <= 0 )
+		return;
+
+	if ( m_pPlayer->pev->fov != 0 )
 	{
 		m_fInZoom = FALSE;
-		m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
+		m_pPlayer->pev->fov = m_pPlayer->m_iFOV = 0;  // 0 means reset to default fov
 	}
 
-	if (DefaultReload( 6, PYTHON_RELOAD, 2.0 ))
+	int bUseScope = FALSE;
+#ifdef CLIENT_DLL
+	bUseScope = bIsMultiplayer();
+#else
+	bUseScope = g_pGameRules->IsMultiplayer();
+#endif
+
+	if (DefaultReload( 6, PYTHON_RELOAD, 2.0, bUseScope ))
 	{
-		m_flSoundDelay = gpGlobals->time + 1.5;
+		m_flSoundDelay = 1.5;
 	}
 }
 
@@ -238,38 +247,46 @@ void CPython::WeaponIdle( void )
 	m_pPlayer->GetAutoaimVector( AUTOAIM_10DEGREES );
 
 	// ALERT( at_console, "%.2f\n", gpGlobals->time - m_flSoundDelay );
-	if (m_flSoundDelay != 0 && m_flSoundDelay <= gpGlobals->time)
+	if (m_flSoundDelay != 0 && m_flSoundDelay <= UTIL_WeaponTimeBase() )
 	{
 		EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/357_reload1.wav", RANDOM_FLOAT(0.8, 0.9), ATTN_NORM);
 		m_flSoundDelay = 0;
 	}
 
-	if (m_flTimeWeaponIdle > gpGlobals->time)
+	if (m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
 	int iAnim;
-	float flRand = RANDOM_FLOAT(0, 1);
+	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 	if (flRand <= 0.5)
 	{
 		iAnim = PYTHON_IDLE1;
-		m_flTimeWeaponIdle = gpGlobals->time + (70.0/30.0);
+		m_flTimeWeaponIdle = (70.0/30.0);
 	}
 	else if (flRand <= 0.7)
 	{
 		iAnim = PYTHON_IDLE2;
-		m_flTimeWeaponIdle = gpGlobals->time + (60.0/30.0);
+		m_flTimeWeaponIdle = (60.0/30.0);
 	}
 	else if (flRand <= 0.9)
 	{
 		iAnim = PYTHON_IDLE3;
-		m_flTimeWeaponIdle = gpGlobals->time + (88.0/30.0);
+		m_flTimeWeaponIdle = (88.0/30.0);
 	}
 	else
 	{
 		iAnim = PYTHON_FIDGET;
-		m_flTimeWeaponIdle = gpGlobals->time + (170.0/30.0);
+		m_flTimeWeaponIdle = (170.0/30.0);
 	}
-	SendWeaponAnim( iAnim );
+	
+	int bUseScope = FALSE;
+#ifdef CLIENT_DLL
+	bUseScope = bIsMultiplayer();
+#else
+	bUseScope = g_pGameRules->IsMultiplayer();
+#endif
+	
+	SendWeaponAnim( iAnim, UseDecrement() ? 1 : 0, bUseScope );
 }
 
 

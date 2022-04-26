@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -19,6 +19,8 @@
 #ifdef _WIN32
 #pragma once
 #endif
+
+#include "const.h"
 
 #define MAX_QPATH 64    // Must match value in quakedefs.h
 
@@ -54,6 +56,7 @@ typedef struct resourceinfo_s
 #define RES_CUSTOM         (1<<2)   // Is this resource one that corresponds to another player's customization
 								    //  or is it a server startup resource.
 #define RES_REQUESTED	   (1<<3)	// Already requested a download of this one
+#define RES_PRECACHED	   (1<<4)	// Already precached
 
 #include "crc.h"
 

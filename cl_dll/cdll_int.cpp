@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -31,8 +31,10 @@ extern "C"
 #include <string.h>
 #include "hud_servers.h"
 #include "vgui_int.h"
+#include "interface.h"
 
 #define DLLEXPORT __declspec( dllexport )
+
 
 cl_enginefunc_t gEngfuncs;
 CHud gHUD;
@@ -41,6 +43,7 @@ TeamFortressViewport *gViewPort = NULL;
 void InitInput (void);
 void EV_HookEvents( void );
 void IN_Commands( void );
+
 /*
 ========================== 
     Initialize
@@ -50,18 +53,20 @@ Called when the DLL is first loaded.
 */
 extern "C" 
 {
-int DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion );
-int DLLEXPORT HUD_VidInit( void );
-int DLLEXPORT HUD_Init( void );
-int DLLEXPORT HUD_Redraw( float flTime, int intermission );
-int DLLEXPORT HUD_UpdateClientData( client_data_t *cdata, float flTime );
-int DLLEXPORT HUD_Reset ( void );
-void DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server );
-void DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove );
-char DLLEXPORT HUD_PlayerMoveTexture( char *name );
-int DLLEXPORT HUD_ConnectionlessPacket( struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
-int DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs );
-void DLLEXPORT HUD_Frame( double time );
+int		DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion );
+int		DLLEXPORT HUD_VidInit( void );
+int		DLLEXPORT HUD_Init( void );
+int		DLLEXPORT HUD_Redraw( float flTime, int intermission );
+int		DLLEXPORT HUD_UpdateClientData( client_data_t *cdata, float flTime );
+int		DLLEXPORT HUD_Reset ( void );
+void	DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server );
+void	DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove );
+char	DLLEXPORT HUD_PlayerMoveTexture( char *name );
+int		DLLEXPORT HUD_ConnectionlessPacket( struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
+int		DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs );
+void	DLLEXPORT HUD_Frame( double time );
+void	DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking);
+void	DLLEXPORT HUD_DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags);
 }
 
 /*
@@ -138,10 +143,6 @@ int DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion )
 {
 	gEngfuncs = *pEnginefuncs;
 
-	//!!! mwh UNDONE We need to think about our versioning strategy. Do we want to try to be compatible
-	// with previous versions, especially when we're only 'bonus' functionality? Should it be the engine
-	// that decides if the DLL is compliant?
-
 	if (iVersion != CLDLL_INTERFACE_VERSION)
 		return 0;
 
@@ -187,7 +188,6 @@ int DLLEXPORT HUD_Init( void )
 	InitInput();
 	gHUD.Init();
 	Scheme_Init();
-
 	return 1;
 }
 
@@ -254,4 +254,35 @@ Called by engine every frame that client .dll is loaded
 void DLLEXPORT HUD_Frame( double time )
 {
 	ServersThink( time );
+
+	GetClientVoiceMgr()->Frame(time);
 }
+
+
+/*
+==========================
+HUD_VoiceStatus
+
+Called when a player starts or stops talking.
+==========================
+*/
+
+void DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking)
+{
+	GetClientVoiceMgr()->UpdateSpeakerStatus(entindex, bTalking);
+}
+
+/*
+==========================
+HUD_DirectorEvent
+
+Called when a director event message was received
+==========================
+*/
+
+void DLLEXPORT HUD_DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags)
+{
+	 gHUD.m_Spectator.DirectorEvent(command, firstObject, secondObject, flags);
+}
+
+

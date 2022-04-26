@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -40,9 +40,18 @@ typedef struct {
 	int x, y;
 } POSITION;
 
+enum 
+{ 
+	MAX_PLAYERS = 64,
+	MAX_TEAMS = 64,
+	MAX_TEAM_NAME = 16,
+};
+
 typedef struct {
 	unsigned char r,g,b,a;
 } RGBA;
+
+typedef struct cvar_s cvar_t;
 
 
 #define HUD_ACTIVE	1
@@ -50,7 +59,7 @@ typedef struct {
 
 #define MAX_PLAYER_NAME_LENGTH		32
 
-#define	MAX_MOTD_LENGTH				1024
+#define	MAX_MOTD_LENGTH				1536
 
 //
 //-----------------------------------------------------
@@ -61,6 +70,7 @@ public:
 	POSITION  m_pos;
 	int   m_type;
 	int	  m_iFlags; // active, moving, 
+	virtual		~CHudBase() {}
 	virtual int Init( void ) {return 0;}
 	virtual int VidInit( void ) {return 0;}
 	virtual int Draw(float flTime) {return 0;}
@@ -74,6 +84,14 @@ struct HUDLIST {
 	CHudBase	*p;
 	HUDLIST		*pNext;
 };
+
+
+
+//
+//-----------------------------------------------------
+//
+#include "..\game_shared\voice_status.h"
+#include "hud_spectator.h"
 
 
 //
@@ -236,6 +254,9 @@ protected:
 	int m_iStatusValues[MAX_STATUSBAR_VALUES];  // an array of values for use in the status bar
 
 	int m_bReparseString; // set to TRUE whenever the m_szStatusBar needs to be recalculated
+
+	// an array of colors...one color for each line
+	float *m_pflNameColors[MAX_STATUSBAR_LINES];
 };
 
 //
@@ -272,13 +293,6 @@ private:
 
 };
 */
-
-enum 
-{ 
-	MAX_PLAYERS = 64,
-	MAX_TEAMS = 64,
-	MAX_TEAM_NAME = 16,
-};
 
 struct extra_player_info_t 
 {
@@ -522,7 +536,7 @@ private:
 //-----------------------------------------------------
 //
 
-typedef struct cvar_s cvar_t;
+
 
 class CHud
 {
@@ -580,20 +594,21 @@ public:
 	
 	int GetSpriteIndex( const char *SpriteName );	// gets a sprite index, for use in the m_rghSprites[] array
 
-	CHudAmmo	m_Ammo;
-	CHudHealth	m_Health;
-	CHudGeiger	m_Geiger;
-	CHudBattery	m_Battery;
-	CHudTrain	m_Train;
-	CHudFlashlight m_Flash;
-	CHudMessage m_Message;
-	CHudStatusBar    m_StatusBar;
+	CHudAmmo		m_Ammo;
+	CHudHealth		m_Health;
+	CHudGeiger		m_Geiger;
+	CHudBattery		m_Battery;
+	CHudTrain		m_Train;
+	CHudFlashlight	m_Flash;
+	CHudMessage		m_Message;
+	CHudStatusBar   m_StatusBar;
 	CHudDeathNotice m_DeathNotice;
-	CHudSayText m_SayText;
-	CHudMenu	m_Menu;
+	CHudSayText		m_SayText;
+	CHudMenu		m_Menu;
 	CHudAmmoSecondary	m_AmmoSecondary;
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
+	CHudSpectator   m_Spectator;
 
 	void Init( void );
 	void VidInit( void );
@@ -612,6 +627,7 @@ public:
 	void _cdecl MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf );
 	int _cdecl MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf);
 	int  _cdecl MsgFunc_Concuss( const char *pszName, int iSize, void *pbuf );
+
 	// Screen information
 	SCREENINFO	m_scrinfo;
 
@@ -638,4 +654,5 @@ extern int g_iPlayerClass;
 extern int g_iTeamNumber;
 extern int g_iUser1;
 extern int g_iUser2;
+extern int g_iUser3;
 

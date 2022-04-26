@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -133,7 +133,7 @@ void HUD_PlaybackEvent( int flags, const edict_t *pInvoker, unsigned short event
 	vec3_t ang;
 
 	if ( !g_runfuncs || !g_finalstate )
-		return;
+	     return;
 
 	// Weapon prediction events are assumed to occur at the player's origin
 	org			= g_finalstate->playerstate.origin;

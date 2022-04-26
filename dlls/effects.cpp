@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -669,14 +669,18 @@ void CLightning::StrikeThink( void )
 
 	if ( pStart != NULL && pEnd != NULL )
 	{
+		if ( IsPointEntity( pStart ) || IsPointEntity( pEnd ) )
+		{
+			if ( pev->spawnflags & SF_BEAM_RING)
+			{
+				// don't work
+				return;
+			}
+		}
+
 		MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
 			if ( IsPointEntity( pStart ) || IsPointEntity( pEnd ) )
 			{
-				if ( pev->spawnflags & SF_BEAM_RING)
-				{
-					// don't work
-					return;
-				}
 				if ( !IsPointEntity( pEnd ) )	// One point entity must be in pEnd
 				{
 					CBaseEntity *pTemp;

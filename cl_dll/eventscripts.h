@@ -1,3 +1,10 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
+
 // eventscripts.h
 #if !defined ( EVENTSCRIPTSH )
 #define EVENTSCRIPTSH

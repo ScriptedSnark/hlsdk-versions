@@ -1,3 +1,9 @@
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//
+// Purpose: 
+//
+// $NoKeywords: $
+//=============================================================================
 
 #ifndef VGUI_LABEL_H
 #define VGUI_LABEL_H
@@ -34,6 +40,11 @@ public:
 	Label(const char* text,int x,int y,int wide,int tall);
 	Label(const char* text,int x,int y);
 	Label(const char* text);
+	
+	inline Label() : Panel(0,0,10,10)
+	{
+		init(1,"",true);
+	}
 private:
 	void init(int textBufferLen,const char* text,bool textFitted);
 public:

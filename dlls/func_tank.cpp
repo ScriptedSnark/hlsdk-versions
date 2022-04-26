@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -353,12 +353,13 @@ BOOL CFuncTank :: StartControl( CBasePlayer *pController )
 
 	ALERT( at_console, "using TANK!\n");
 
-	// Holster player's weapon
 	m_pController = pController;
 	if ( m_pController->m_pActiveItem )
 	{
 		m_pController->m_pActiveItem->Holster();
 		m_pController->pev->weaponmodel = 0;
+		m_pController->pev->viewmodel = 0; 
+
 	}
 
 	m_pController->m_iHideHUD |= HIDEHUD_WEAPONS;

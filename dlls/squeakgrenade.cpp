@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -39,6 +39,8 @@ enum squeak_e {
 	SQUEAK_UP,
 	SQUEAK_THROW
 };
+
+#ifndef CLIENT_DLL
 
 class CSqueakGrenade : public CGrenade
 {
@@ -405,23 +407,8 @@ void CSqueakGrenade::SuperBounceTouch( CBaseEntity *pOther )
 	m_flNextBounceSoundTime = gpGlobals->time + 0.5;// half second.
 }
 
+#endif
 
-
-class CSqueak : public CBasePlayerWeapon
-{
-public:
-	void Spawn( void );
-	void Precache( void );
-	int iItemSlot( void ) { return 5; }
-	int GetItemInfo(ItemInfo *p);
-
-	void PrimaryAttack( void );
-	void SecondaryAttack( void );
-	BOOL Deploy( void );
-	void Holster( int skiplocal = 0 );
-	void WeaponIdle( void );
-	int m_fJustThrown;
-};
 LINK_ENTITY_TO_CLASS( weapon_snark, CSqueak );
 
 
@@ -449,6 +436,8 @@ void CSqueak::Precache( void )
 	PRECACHE_SOUND("squeek/sqk_hunt2.wav");
 	PRECACHE_SOUND("squeek/sqk_hunt3.wav");
 	UTIL_PrecacheOther("monster_snark");
+
+	m_usSnarkFire = PRECACHE_EVENT ( 1, "events/snarkfire.sc" );
 }
 
 
@@ -489,9 +478,9 @@ BOOL CSqueak::Deploy( )
 
 void CSqueak::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	
-	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+	if ( !m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] )
 	{
 		m_pPlayer->pev->weapons &= ~(1<<WEAPON_SNARK);
 		SetThink( DestroyItem );
@@ -506,7 +495,7 @@ void CSqueak::Holster( int skiplocal /* = 0 */ )
 
 void CSqueak::PrimaryAttack()
 {
-	if (m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
+	if ( m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] )
 	{
 		UTIL_MakeVectors( m_pPlayer->pev->v_angle );
 		TraceResult tr;
@@ -523,16 +512,24 @@ void CSqueak::PrimaryAttack()
 		// find place to toss monster
 		UTIL_TraceLine( trace_origin + gpGlobals->v_forward * 20, trace_origin + gpGlobals->v_forward * 64, dont_ignore_monsters, NULL, &tr );
 
-		if (tr.fAllSolid == 0 && tr.fStartSolid == 0 && tr.flFraction > 0.25)
-		{
-			SendWeaponAnim( SQUEAK_THROW );
+	int flags;
+#ifdef CLIENT_WEAPONS
+	flags = FEV_NOTHOST;
+#else
+	flags = 0;
+#endif
 
+	    PLAYBACK_EVENT_FULL( flags, m_pPlayer->edict(), m_usSnarkFire, 0.0, (float *)&g_vecZero, (float *)&g_vecZero, 0.0, 0.0, 0, 0, 0, 0 );
+
+		if ( tr.fAllSolid == 0 && tr.fStartSolid == 0 && tr.flFraction > 0.25 )
+		{
 			// player "shoot" animation
 			m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
+#ifndef CLIENT_DLL
 			CBaseEntity *pSqueak = CBaseEntity::Create( "monster_snark", tr.vecEndPos, m_pPlayer->pev->v_angle, m_pPlayer->edict() );
-
 			pSqueak->pev->velocity = gpGlobals->v_forward * 200 + m_pPlayer->pev->velocity;
+#endif
 
 			// play hunt sound
 			float flRndSound = RANDOM_FLOAT ( 0 , 1 );
@@ -548,8 +545,8 @@ void CSqueak::PrimaryAttack()
 
 			m_fJustThrown = 1;
 
-			m_flNextPrimaryAttack = gpGlobals->time + 0.3;
-			m_flTimeWeaponIdle = gpGlobals->time + 1.0;
+			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
+			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
 		}
 	}
 }
@@ -563,7 +560,7 @@ void CSqueak::SecondaryAttack( void )
 
 void CSqueak::WeaponIdle( void )
 {
-	if (m_flTimeWeaponIdle > gpGlobals->time)
+	if ( m_flTimeWeaponIdle > UTIL_WeaponTimeBase() )
 		return;
 
 	if (m_fJustThrown)
@@ -577,26 +574,26 @@ void CSqueak::WeaponIdle( void )
 		}
 
 		SendWeaponAnim( SQUEAK_UP );
-		m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + UTIL_SharedRandomFloat( m_pPlayer->random_seed, 10, 15 );
 		return;
 	}
 
 	int iAnim;
-	float flRand = RANDOM_FLOAT(0, 1);
+	float flRand = UTIL_SharedRandomFloat( m_pPlayer->random_seed, 0, 1 );
 	if (flRand <= 0.75)
 	{
 		iAnim = SQUEAK_IDLE1;
-		m_flTimeWeaponIdle = gpGlobals->time + 30.0 / 16 * (2);
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 30.0 / 16 * (2);
 	}
 	else if (flRand <= 0.875)
 	{
 		iAnim = SQUEAK_FIDGETFIT;
-		m_flTimeWeaponIdle = gpGlobals->time + 70.0 / 16.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 70.0 / 16.0;
 	}
 	else
 	{
 		iAnim = SQUEAK_FIDGETNIP;
-		m_flTimeWeaponIdle = gpGlobals->time + 80.0 / 16.0;
+		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 80.0 / 16.0;
 	}
 	SendWeaponAnim( iAnim );
 }

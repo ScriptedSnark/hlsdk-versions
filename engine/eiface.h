@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -21,8 +21,8 @@
 #define INTERFACE_VERSION		140
 #endif // !HLDEMO_BUILD
 
+#include <stdio.h>
 #include "custom.h"
-
 #include "cvardef.h"
 //
 // Defines entity interface between engine and DLLs.
@@ -251,6 +251,13 @@ typedef struct enginefuncs_s
 	void		(*pfnForceUnmodified)		( FORCE_TYPE type, float *mins, float *maxs, const char *filename );
 
 	void		(*pfnGetPlayerStats)		( const edict_t *pClient, int *ping, int *packet_loss );
+
+	void		(*pfnAddServerCommand)		( char *cmd_name, void (*function) (void) );
+
+	// For voice communications, set which clients hear eachother.
+	// NOTE: these functions take player entity indices (starting at 1).
+	qboolean	(*pfnVoice_GetClientListening)(int iReceiver, int iSender);
+	qboolean	(*pfnVoice_SetClientListening)(int iReceiver, int iSender, qboolean bListen);
 } enginefuncs_t;
 // ONLY ADD NEW FUNCTIONS TO THE END OF THIS STRUCT.  INTERFACE VERSION IS FROZEN AT 138
 
@@ -374,7 +381,7 @@ typedef struct
 
 typedef struct 
 {
-	// Initialize the game (one-time call after loading of game .dll )
+	// Initialize/shutdown the game (one-time call after loading of game .dll )
 	void			(*pfnGameInit)			( void );				
 	int				(*pfnSpawn)				( edict_t *pent );
 	void			(*pfnThink)				( edict_t *pent );
@@ -459,11 +466,25 @@ typedef struct
 	int				(*pfnAllowLagCompensation)( void );
 } DLL_FUNCTIONS;
 
-extern DLL_FUNCTIONS	gEntityInterface;
+extern DLL_FUNCTIONS		gEntityInterface;
+
+// Current version.
+#define NEW_DLL_FUNCTIONS_VERSION	1
+
+typedef struct
+{
+	// Called right before the object's memory is freed. 
+	// Calls its destructor.
+	void			(*pfnOnFreeEntPrivateData)(edict_t *pEnt);
+	void			(*pfnGameShutdown)(void);
+	int				(*pfnShouldCollide)( edict_t *pentTouched, edict_t *pentOther );
+} NEW_DLL_FUNCTIONS;
+typedef int	(*NEW_DLL_FUNCTIONS_FN)( NEW_DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion );
+
+// Pointers will be null if the game DLL doesn't support this API.
+extern NEW_DLL_FUNCTIONS	gNewDLLFunctions;
 
 typedef int	(*APIFUNCTION)( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
 typedef int	(*APIFUNCTION2)( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion );
 
-
 #endif EIFACE_H
-;
