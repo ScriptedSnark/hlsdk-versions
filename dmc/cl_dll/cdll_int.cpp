@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -66,8 +66,8 @@ int DLLEXPORT HUD_ConnectionlessPacket( struct netadr_s *net_from, const char *a
 int DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs );
 void DLLEXPORT HUD_Frame( double time );
 void DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s *to, struct usercmd_s *cmd, int runfuncs, double time, unsigned int random_seed );
-void DLLEXPORT HUD_DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags);
 void DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking);
+void	DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf );
 }
 
 /*
@@ -285,7 +285,7 @@ Called when a director event message was received
 ==========================
 */
 
-void DLLEXPORT HUD_DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags)
+void DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf )
 {
-	 gHUD.m_Spectator.DirectorEvent(command, firstObject, secondObject, flags);
+	 gHUD.m_Spectator.DirectorMessage( iSize, pbuf );
 }

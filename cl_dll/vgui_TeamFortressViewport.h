@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -38,6 +38,7 @@ using namespace vgui;
 
 class Cursor;
 class ScorePanel;
+class SpectatorPanel;
 class CCommandMenu;
 class CommandLabel;
 class CommandButton;
@@ -114,6 +115,7 @@ public:
 	BitmapTGA	*m_pTGA;
 
 public:
+	void LoadImage(const char * pImageName);
 	CImageLabel( const char* pImageName,int x,int y );
 	CImageLabel( const char* pImageName,int x,int y,int wide,int tall );
 
@@ -158,6 +160,7 @@ class CommandButton : public Button
 {
 private:
 	int		m_iPlayerClass;
+	bool	m_bFlat;
 
 	// Submenus under this button
 	CCommandMenu *m_pSubMenu;
@@ -175,9 +178,10 @@ public:
 	bool	m_bNoHighlight;
 
 public:
+	CommandButton(const char* text,int x,int y,int wide,int tall, bool bNoHighlight, bool bFlat);
 	// Constructors
 	CommandButton( const char* text,int x,int y,int wide,int tall, bool bNoHighlight = false);
-	CommandButton( int iPlayerClass, const char* text,int x,int y,int wide,int tall);
+	CommandButton( int iPlayerClass, const char* text,int x,int y,int wide,int tall, bool bFlat );
 
 	void Init( void );
 
@@ -212,6 +216,142 @@ public:
 	char getBoundKey( void );
 };
 
+class ColorButton : public CommandButton
+{
+private:
+
+	Color *ArmedColor;
+	Color *UnArmedColor;
+
+	Color *ArmedBorderColor;
+	Color *UnArmedBorderColor;
+
+public:
+	ColorButton( const char* text,int x,int y,int wide,int tall, bool bNoHighlight, bool bFlat ) : 
+	  CommandButton( text, x, y, wide, tall, bNoHighlight, bFlat  ) 
+	  {
+		  ArmedColor = NULL;
+		  UnArmedColor = NULL;
+		  ArmedBorderColor = NULL;
+		  UnArmedBorderColor = NULL;
+	  }
+	
+
+	virtual void paintBackground()
+	{
+		int r, g, b, a;
+		Color bgcolor;
+
+		if ( isArmed() )
+		{
+			// Highlight background
+		/*	getBgColor(bgcolor);
+			bgcolor.getColor(r, g, b, a);
+			drawSetColor( r,g,b,a );
+			drawFilledRect(0,0,_size[0],_size[1]);*/
+
+			if ( ArmedBorderColor )
+			{
+				ArmedBorderColor->getColor( r, g, b, a);
+				drawSetColor( r, g, b, a );
+				drawOutlinedRect(0,0,_size[0],_size[1]);
+			}
+		}
+		else
+		{
+			if ( UnArmedBorderColor )
+			{
+				UnArmedBorderColor->getColor( r, g, b, a);
+				drawSetColor( r, g, b, a );
+				drawOutlinedRect(0,0,_size[0],_size[1]);
+			}
+		}
+	}
+	void paint()
+	{
+		int r, g, b, a;
+		if ( isArmed() )
+		{
+			if (ArmedColor)
+			{
+				ArmedColor->getColor(r, g, b, a);
+				setFgColor(r, g, b, a);
+			}
+			else
+				setFgColor( Scheme::sc_secondary2 );
+		}
+		else
+		{
+			if (UnArmedColor)
+			{
+				UnArmedColor->getColor(r, g, b, a);
+				setFgColor(r, g, b, a);
+			}
+			else
+				setFgColor( Scheme::sc_primary1 );
+		}
+		
+		Button::paint();
+	}
+	
+	void setArmedColor ( int r, int g, int b, int a )
+	{
+		ArmedColor = new Color( r, g, b, a );
+	}
+
+	void setUnArmedColor ( int r, int g, int b, int a )
+	{
+		UnArmedColor = new Color( r, g, b, a );
+	}
+
+	void setArmedBorderColor ( int r, int g, int b, int a )
+	{
+		ArmedBorderColor = new Color( r, g, b, a );
+	}
+
+	void setUnArmedBorderColor ( int r, int g, int b, int a )
+	{
+		UnArmedBorderColor = new Color( r, g, b, a );
+	}
+};
+
+class SpectButton : public CommandButton
+{
+private:
+	
+public:
+	SpectButton( int iPlayerClass, const char* text,int x,int y,int wide,int tall ) : 
+	  CommandButton( text, x, y, wide, tall, false)
+	  {
+		  	Init();
+			
+			setText( text );
+	  }
+		
+	virtual void paintBackground()
+	{
+		if ( isArmed())
+		{
+			drawSetColor( 143,143, 54, 125 ); 
+			drawFilledRect( 5, 0,_size[0] - 5,_size[1]);
+		}
+	}
+
+	virtual void paint()
+	{
+	
+		if ( isArmed() )
+		{
+			setFgColor( 194, 202, 54, 0 );
+		}
+		else
+		{
+			setFgColor( 143, 143, 54, 15 );
+		}
+
+		Button::paint();
+	}
+};
 //============================================================
 // Command Menus
 class CCommandMenu : public Panel
@@ -225,6 +365,8 @@ private:
 	CommandButton *m_aButtons[ MAX_BUTTONS ];
 	int			  m_iButtons;
 
+	// opens menu from top to bottom (0 = default), or from bottom to top (1)?
+	int				m_iDirection; 
 public:
 	CCommandMenu( CCommandMenu *pParentMenu, int x,int y,int wide,int tall ) : Panel(x,y,wide,tall)
 	{
@@ -232,8 +374,20 @@ public:
 		m_iXOffset = x;
 		m_iYOffset = y;
 		m_iButtons = 0;
+		m_iDirection = 0;
 	}
 
+	CCommandMenu( CCommandMenu *pParentMenu, int direction, int x,int y,int wide,int tall ) : Panel(x,y,wide,tall)
+	{
+		m_pParentMenu = pParentMenu;
+		m_iXOffset = x;
+		m_iYOffset = y;
+		m_iButtons = 0;
+		m_iDirection = direction;
+	}
+
+	float		m_flButtonSizeY;
+	int			m_iSpectCmdMenu;
 	void		AddButton( CommandButton *pButton );
 	bool		RecalculateVisibles( int iNewYPos, bool bHideAll );
 	void		RecalculatePositions( int iYOffset );
@@ -242,6 +396,7 @@ public:
 	CCommandMenu *GetParentMenu() { return m_pParentMenu; };
 	int			GetXOffset() { return m_iXOffset; };
 	int			GetYOffset() { return m_iYOffset; };
+	int			GetDirection() { return m_iDirection; };
 	int			GetNumButtons() { return m_iButtons; };
 	CommandButton *FindButtonWithSubmenu( CCommandMenu *pSubMenu );
 
@@ -266,6 +421,7 @@ private:
 	CCommandMenu *m_pCurrentCommandMenu;
 	float		 m_flMenuOpenTime;
 	float		 m_flScoreBoardLastUpdated;
+	float		 m_flSpectatorPanelLastUpdated;
 	int			 m_iNumMenus;
 	int			 m_iCurrentTeamNumber;
 	int			 m_iCurrentPlayerClass;
@@ -296,10 +452,6 @@ private:
 	// Server Browser
 	ServerBrowser *m_pServerBrowser;
 
-	// Spectator "menu"
-	CTransparentPanel	*m_pSpectatorMenu;
-	Label				*m_pSpectatorLabel;
-	Label				*m_pSpectatorHelpLabel;
 	int					m_iAllowSpectators;
 
 	// Data for specific sections of the Command Menu
@@ -319,24 +471,24 @@ public:
 	TeamFortressViewport(int x,int y,int wide,int tall);
 	void Initialize( void );
 
-	void CreateCommandMenu( void );
-	void CreateScoreBoard( void );
-	void CreateServerBrowser( void );
-	CommandButton *CreateCustomButton( char *pButtonText, char *pButtonName );
-	CCommandMenu *CreateDisguiseSubmenu( CommandButton *pButton, CCommandMenu *pParentMenu, const char *commandText );
+	int		CreateCommandMenu( char * menuFile, int direction, int yOffset, bool flatDesign, float flButtonSizeX, float flButtonSizeY, int xOffset );
+	void	CreateScoreBoard( void );
+	void	CreateServerBrowser( void );
+	CommandButton * CreateCustomButton( char *pButtonText, char * pButtonName, int  iYOffset );
+	CCommandMenu *	CreateDisguiseSubmenu( CommandButton *pButton, CCommandMenu *pParentMenu, const char *commandText, int iYOffset, int iXOffset = 0 );
 
 	void UpdateCursorState( void );
-	void UpdateCommandMenu( void );
+	void UpdateCommandMenu(int menuIndex);
 	void UpdateOnPlayerInfo( void );
 	void UpdateHighlights( void );
-	void UpdateSpectatorMenu( void );
+	void UpdateSpectatorPanel( void );
 
 	int	 KeyInput( int down, int keynum, const char *pszCurrentBinding );
 	void InputPlayerSpecial( void );
 	void GetAllPlayersInfo( void );
 	void DeathMsg( int killer, int victim );
 
-	void ShowCommandMenu( void );
+	void ShowCommandMenu(int menuIndex);
 	void InputSignalHideCommandMenu( void );
 	void HideCommandMenu( void );
 	void SetCurrentCommandMenu( CCommandMenu *pNewMenu );
@@ -356,7 +508,7 @@ public:
 
 	CMenuPanel* CreateTextWindow( int iTextToShow );
 
-	CCommandMenu *CreateSubMenu( CommandButton *pButton, CCommandMenu *pParentMenu );
+	CCommandMenu *CreateSubMenu( CommandButton *pButton, CCommandMenu *pParentMenu, int iYOffset, int iXOffset = 0 );
 
 	// Data Handlers
 	int GetValidClasses(int iTeam) { return m_iValidClasses[iTeam]; };
@@ -398,8 +550,12 @@ public:
 	// VGUI Menus
 	CMenuPanel		*m_pCurrentMenu;
 	CTeamMenuPanel	*m_pTeamMenu;
+	int						m_StandardMenu;	// indexs in m_pCommandMenus
+	int						m_SpectatorOptionsMenu;
+	int						m_SpectatorCameraMenu;
 	CClassMenuPanel	*m_pClassMenu;
 	ScorePanel		*m_pScoreBoard;
+	SpectatorPanel *		m_pSpectatorPanel;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
 
@@ -551,6 +707,7 @@ public:
 #define SHOW_MAPBRIEFING	1
 #define SHOW_CLASSDESC		2
 #define SHOW_MOTD			3
+#define SHOW_SPECHELP		4
 
 class CMenuHandler_TextWindow : public ActionSignal
 {
@@ -576,6 +733,29 @@ public:
 	}
 };
 
+class CMenuHandler_ToggleCvar : public ActionSignal
+{
+private:
+	struct cvar_s * m_cvar;
+
+public:
+	CMenuHandler_ToggleCvar( char * cvarname )
+	{
+		m_cvar = gEngfuncs.pfnGetCvarPointer( cvarname );
+	}
+
+	virtual void actionPerformed(Panel* panel)
+	{
+		if ( m_cvar->value )
+			m_cvar->value = 0.0f;
+		else
+			m_cvar->value = 1.0f;
+
+		gViewPort->UpdateSpectatorPanel();
+	}
+
+	
+};
 class CDragNDropHandler : public InputSignal
 {
 private:
@@ -942,8 +1122,8 @@ private:
 	int m_iTeamNum;
 
 public:
-	TeamOnlyCommandButton( int iTeamNum, const char* text,int x,int y,int wide,int tall ) : 
-	  CommandButton( text, x, y, wide, tall ), m_iTeamNum(iTeamNum) {}
+	TeamOnlyCommandButton( int iTeamNum, const char* text,int x,int y,int wide,int tall, bool flat ) : 
+	  CommandButton( text, x, y, wide, tall, false, flat ), m_iTeamNum(iTeamNum) {}
 
 	virtual int IsNotValid()
 	{
@@ -952,8 +1132,282 @@ public:
 
 		return CommandButton::IsNotValid();
 	}
+
+	virtual void paintBackground()
+	{
+		if ( isArmed() )
+		{
+			drawSetColor( 143,143, 54, 125 ); 
+			drawFilledRect( 5, 0,_size[0] - 5,_size[1]);
+		}
+	}
+	
+	virtual void paint( void )
+	{
+		if ( isArmed() )
+		{ 
+			setFgColor( 194, 202, 54, 0 );
+		}
+		else
+		{
+			setFgColor( 143, 143, 54, 15 );
+		}
+
+		Button::paint();
+	}
 };
 
+//-----------------------------------------------------------------------------
+// Purpose: CommandButton which is only displayed if the player is on team X
+//-----------------------------------------------------------------------------
+class ToggleCommandButton : public CommandButton, public InputSignal
+{
+private:
+	struct cvar_s * m_cvar;
+	CImageLabel *	pLabelOn;
+	CImageLabel *	pLabelOff;
+	
+
+public:
+	ToggleCommandButton( const char* cvarname, const char* text,int x,int y,int wide,int tall, bool flat ) : 
+	  CommandButton( text, x, y, wide, tall, false, flat )
+	 {
+		m_cvar = gEngfuncs.pfnGetCvarPointer( cvarname );
+
+			// Put a > to show it's a submenu
+		pLabelOn = new CImageLabel( "checked", 0, 0 );
+		pLabelOn->setParent(this);
+		pLabelOn->addInputSignal(this);
+				
+		pLabelOff = new CImageLabel( "unchecked", 0, 0 );
+		pLabelOff->setParent(this);
+		pLabelOff->setEnabled(true);
+		pLabelOff->addInputSignal(this);
+
+		int textwide, texttall;
+		getTextSize( textwide, texttall);
+	
+		// Reposition
+		pLabelOn->setPos( textwide, (tall - pLabelOn->getTall()) / 2 );
+
+		pLabelOff->setPos( textwide, (tall - pLabelOff->getTall()) / 2 );
+		
+		// Set text color to orange
+		setFgColor(Scheme::sc_primary1);
+	}
+
+	virtual void cursorEntered(Panel* panel)
+	{
+		CommandButton::cursorEntered();
+	}
+
+	virtual void cursorExited(Panel* panel)
+	{
+		CommandButton::cursorExited();
+	}
+
+	virtual void mousePressed(MouseCode code,Panel* panel)
+	{
+		doClick();
+	};
+
+	virtual void cursorMoved(int x,int y,Panel* panel) {};
+	
+	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
+	virtual void mouseReleased(MouseCode code,Panel* panel) {};
+	virtual void mouseWheeled(int delta,Panel* panel) {};
+	virtual void keyPressed(KeyCode code,Panel* panel) {};
+	virtual void keyTyped(KeyCode code,Panel* panel) {};
+	virtual void keyReleased(KeyCode code,Panel* panel) {};
+	virtual void keyFocusTicked(Panel* panel) {};
+
+	virtual void paint( void )
+	{
+		if ( !m_cvar )
+		{
+			pLabelOff->setVisible(false);
+			pLabelOn->setVisible(false);
+		} 
+		else if ( m_cvar->value )
+		{
+			pLabelOff->setVisible(false);
+			pLabelOn->setVisible(true);
+		}
+		else
+		{
+			pLabelOff->setVisible(true);
+			pLabelOn->setVisible(false);
+		}
+
+		CommandButton::paint();
+
+	} 
+};
+class SpectToggleButton : public CommandButton, public InputSignal
+{
+private:
+	struct cvar_s * m_cvar;
+	CImageLabel *	pLabelOn; 
+
+public:
+	SpectToggleButton( const char* cvarname, const char* text,int x,int y,int wide,int tall, bool flat ) : 
+	  CommandButton( text, x, y, wide, tall, false, flat )
+	 {
+		m_cvar = gEngfuncs.pfnGetCvarPointer( cvarname );
+
+		// Put a > to show it's a submenu
+		pLabelOn = new CImageLabel( "checked", 0, 0 );
+		pLabelOn->setParent(this);
+		pLabelOn->addInputSignal(this);
+		
+
+		int textwide, texttall;
+		getTextSize( textwide, texttall);
+	
+		// Reposition
+		pLabelOn->setPos( textwide, (tall - pLabelOn->getTall()) / 2 );
+	  } 
+
+	virtual void cursorEntered(Panel* panel)
+	{
+		CommandButton::cursorEntered();
+	}
+
+	virtual void cursorExited(Panel* panel)
+	{
+		CommandButton::cursorExited();
+	}
+
+	virtual void mousePressed(MouseCode code,Panel* panel)
+	{
+		doClick();
+	};
+
+	virtual void cursorMoved(int x,int y,Panel* panel) {};
+	
+	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
+	virtual void mouseReleased(MouseCode code,Panel* panel) {};
+	virtual void mouseWheeled(int delta,Panel* panel) {};
+	virtual void keyPressed(KeyCode code,Panel* panel) {};
+	virtual void keyTyped(KeyCode code,Panel* panel) {};
+	virtual void keyReleased(KeyCode code,Panel* panel) {};
+	virtual void keyFocusTicked(Panel* panel) {};
+
+	virtual void paintBackground()
+	{
+		if ( isArmed() )
+		{
+			drawSetColor( 143,143, 54, 125 ); 
+			drawFilledRect( 5, 0,_size[0] - 5,_size[1]);
+		}
+	}
+	
+	virtual void paint( void )
+	{
+		if ( isArmed() )
+		{ 
+			setFgColor( 194, 202, 54, 0 );
+		}
+		else
+		{
+			setFgColor( 143, 143, 54, 15 );
+		}
+
+		if ( !m_cvar )
+		{
+			pLabelOn->setVisible(false);
+		} 
+		else if ( m_cvar->value )
+		{
+			pLabelOn->setVisible(true);
+		}
+		else
+		{
+			pLabelOn->setVisible(false);
+		}
+
+		Button::paint();
+	} 
+};
+
+/*
+class SpectToggleButton : public ToggleCommandButton
+{
+private:
+	struct cvar_s * m_cvar;
+	CImageLabel *	pLabelOn;
+	CImageLabel *	pLabelOff;
+	
+public:
+
+	SpectToggleButton( const char* cvarname, const char* text,int x,int y,int wide,int tall, bool flat ) : 
+	  ToggleCommandButton( cvarname, text, x, y, wide, tall, flat, TRUE )
+	 {
+		m_cvar = gEngfuncs.pfnGetCvarPointer( cvarname );
+
+			// Put a > to show it's a submenu
+		pLabelOn = new CImageLabel( "checked", 0, 0 );
+		pLabelOn->setParent(this);
+		pLabelOn->addInputSignal(this);
+				
+		pLabelOff = new CImageLabel( "unchecked", 0, 0 );
+		pLabelOff->setParent(this);
+		pLabelOff->setEnabled(true);
+		pLabelOff->addInputSignal(this);
+
+		int textwide, texttall;
+		getTextSize( textwide, texttall);
+	
+		// Reposition
+		pLabelOn->setPos( textwide, (tall - pLabelOn->getTall()) / 2 );
+
+		pLabelOff->setPos( textwide, (tall - pLabelOff->getTall()) / 2 );
+		
+		// Set text color to orange
+		setFgColor(Scheme::sc_primary1);
+	}
+		
+	virtual void paintBackground()
+	{
+		if ( isArmed())
+		{
+			drawSetColor( 143,143, 54, 125 ); 
+			drawFilledRect( 5, 0,_size[0] - 5,_size[1]);
+		}
+	}
+
+	virtual void paint()
+	{
+	
+		if ( isArmed() )
+		{ 
+			setFgColor( 194, 202, 54, 0 );
+		}
+		else
+		{
+			setFgColor( 143, 143, 54, 15 );
+		}
+
+			if ( !m_cvar )
+		{
+			pLabelOff->setVisible(false);
+			pLabelOn->setVisible(false);
+		} 
+		else if ( m_cvar->value )
+		{
+			pLabelOff->setVisible(false);
+			pLabelOn->setVisible(true);
+		}
+		else
+		{
+			pLabelOff->setVisible(true);
+			pLabelOn->setVisible(false);
+		}
+
+		Button::paint();
+	}
+};
+*/
 //============================================================
 // Panel that can be dragged around
 class DragNDropPanel : public Panel

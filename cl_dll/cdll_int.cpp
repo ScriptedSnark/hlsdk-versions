@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -55,18 +55,18 @@ extern "C"
 {
 int		DLLEXPORT Initialize( cl_enginefunc_t *pEnginefuncs, int iVersion );
 int		DLLEXPORT HUD_VidInit( void );
-int		DLLEXPORT HUD_Init( void );
+void	DLLEXPORT HUD_Init( void );
 int		DLLEXPORT HUD_Redraw( float flTime, int intermission );
 int		DLLEXPORT HUD_UpdateClientData( client_data_t *cdata, float flTime );
-int		DLLEXPORT HUD_Reset ( void );
+void	DLLEXPORT HUD_Reset ( void );
 void	DLLEXPORT HUD_PlayerMove( struct playermove_s *ppmove, int server );
 void	DLLEXPORT HUD_PlayerMoveInit( struct playermove_s *ppmove );
 char	DLLEXPORT HUD_PlayerMoveTexture( char *name );
-int		DLLEXPORT HUD_ConnectionlessPacket( struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
+int		DLLEXPORT HUD_ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
 int		DLLEXPORT HUD_GetHullBounds( int hullnumber, float *mins, float *maxs );
 void	DLLEXPORT HUD_Frame( double time );
 void	DLLEXPORT HUD_VoiceStatus(int entindex, qboolean bTalking);
-void	DLLEXPORT HUD_DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags);
+void	DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf );
 }
 
 /*
@@ -110,7 +110,7 @@ HUD_ConnectionlessPacket
   size of the response_buffer, so you must zero it out if you choose not to respond.
 ================================
 */
-int	DLLEXPORT HUD_ConnectionlessPacket( struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size )
+int	DLLEXPORT HUD_ConnectionlessPacket( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size )
 {
 	// Parse stuff from args
 	int max_buffer_size = *response_buffer_size;
@@ -183,12 +183,11 @@ the hud variables.
 ==========================
 */
 
-int DLLEXPORT HUD_Init( void )
+void DLLEXPORT HUD_Init( void )
 {
 	InitInput();
 	gHUD.Init();
 	Scheme_Init();
-	return 1;
 }
 
 
@@ -237,10 +236,9 @@ Called at start and end of demos to restore to "non"HUD state.
 ==========================
 */
 
-int DLLEXPORT HUD_Reset( void )
+void DLLEXPORT HUD_Reset( void )
 {
 	gHUD.VidInit();
-	return 1;
 }
 
 /*
@@ -280,9 +278,9 @@ Called when a director event message was received
 ==========================
 */
 
-void DLLEXPORT HUD_DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags)
+void DLLEXPORT HUD_DirectorMessage( int iSize, void *pbuf )
 {
-	 gHUD.m_Spectator.DirectorEvent(command, firstObject, secondObject, flags);
+	 gHUD.m_Spectator.DirectorMessage( iSize, pbuf );
 }
 
 

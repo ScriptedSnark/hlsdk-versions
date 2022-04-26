@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -32,6 +32,7 @@
 #include "../demo.h"
 
 extern globalvars_t *gpGlobals;
+extern int g_iUser1;
 
 // Pool of client side entities/entvars_t
 static entvars_t	ev[ 32 ];
@@ -44,6 +45,9 @@ static CBasePlayer	player;
 static globalvars_t	Globals; 
 
 static CBasePlayerWeapon *g_pWpns[ 32 ];
+
+float g_flApplyVel = 0.0;
+int   g_irunninggausspred = 0;
 
 vec3_t previousorigin;
 
@@ -213,6 +217,7 @@ BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel,
 	
 	SendWeaponAnim( iAnim, skiplocal, body );
 
+	g_irunninggausspred = false;
 	m_pPlayer->m_flNextAttack = 0.5;
 	m_flTimeWeaponIdle = 1.0;
 	return TRUE;
@@ -256,6 +261,7 @@ Put away weapon
 void CBasePlayerWeapon::Holster( int skiplocal /* = 0 */ )
 { 
 	m_fInReload = FALSE; // cancel any reload in progress.
+	g_irunninggausspred = false;
 	m_pPlayer->pev->viewmodel = 0; 
 }
 
@@ -452,6 +458,8 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	// Holster weapon immediately, to allow it to cleanup
 	if ( m_pActiveItem )
 		 m_pActiveItem->Holster( );
+	
+	g_irunninggausspred = false;
 }
 
 /*
@@ -464,6 +472,8 @@ void CBasePlayer::Spawn( void )
 {
 	if (m_pActiveItem)
 		m_pActiveItem->Deploy( );
+
+	g_irunninggausspred = false;
 }
 
 /*
@@ -859,7 +869,8 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	
 	// Don't go firing anything if we have died.
 	// Or if we don't have a weapon model deployed
-	if ( ( player.pev->deadflag != ( DEAD_DISCARDBODY + 1 ) ) && !CL_IsDead() && player.pev->viewmodel )
+	if ( ( player.pev->deadflag != ( DEAD_DISCARDBODY + 1 ) ) && 
+		 !CL_IsDead() && player.pev->viewmodel && !g_iUser1 )
 	{
 		if ( player.m_flNextAttack <= 0 )
 		{
@@ -1045,7 +1056,6 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 	g_finalstate = NULL;
 }
 
-
 /*
 =====================
 HUD_PostRunCmd
@@ -1072,6 +1082,14 @@ void _DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s
 		to->client.fov = g_lastFOV;
 	}
 
+	if ( g_irunninggausspred == 1 )
+	{
+		Vector forward;
+		gEngfuncs.pfnAngleVectors( v_angles, forward, NULL, NULL );
+		to->client.velocity = to->client.velocity - forward * g_flApplyVel * 5; 
+		g_irunninggausspred = false;
+	}
+	
 	// All games can use FOV state
 	g_lastFOV = to->client.fov;
 }

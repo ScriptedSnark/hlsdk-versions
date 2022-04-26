@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -15,9 +15,7 @@ void	Eng_Unload		( void);
 void	Eng_SetState	( int );
 void	Eng_SetSubState	( int );
 
-
 char	*CheckParm		( const char *psz, char **ppszValue = (char **)0 );
-
 
 extern int gDLLState;
 extern int gDLLStateInfo;

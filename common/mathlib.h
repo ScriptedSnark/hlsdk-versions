@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -124,8 +124,15 @@ void AngleMatrix (const vec3_t angles, float (*matrix)[4] );
 void AngleIMatrix (const vec3_t angles, float (*matrix)[4] );
 void VectorTransform (const vec3_t in1, float in2[3][4], vec3_t out);
 
+void NormalizeAngles( vec3_t angles );
+void InterpolateAngles( vec3_t start, vec3_t end, vec3_t output, float frac );
+float AngleBetweenVectors( const vec3_t v1, const vec3_t v2 );
+
+
 void VectorMatrix( vec3_t forward, vec3_t right, vec3_t up);
 void VectorAngles( const vec3_t forward, vec3_t angles );
+
+int InvertMatrix( const float * m, float *out );
 
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct mplane_s *plane);
 float	anglemod(float a);

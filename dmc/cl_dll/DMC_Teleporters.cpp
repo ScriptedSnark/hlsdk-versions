@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -8,6 +8,7 @@
 #include "extdll.h"
 #include "entity_state.h"
 #include "pm_defs.h"
+#include "pm_shared.h"
 #include "pm_movevars.h"
 #include "hud_iface.h"
 #include "com_model.h"
@@ -26,6 +27,7 @@ extern int g_runfuncs;
 extern Vector g_vecTeleMins[ MAX_TELES ];
 extern Vector g_vecTeleMaxs[ MAX_TELES ];
 extern int g_iTeleNum;
+extern int g_iUser1;
 extern bool g_bLoadedTeles;
 vec3_t  vecTempAngles;
 bool	bChangeAngles;
@@ -509,5 +511,6 @@ void Dmc_CheckTeleporters( struct local_state_s *from, struct local_state_s *to 
 	}
 
 	// Run test
-	Dmc_TouchTeleporters( to, s_teles, s_num_teles );
+	if ( g_iUser1 == OBS_NONE )
+		Dmc_TouchTeleporters( to, s_teles, s_num_teles );
 }

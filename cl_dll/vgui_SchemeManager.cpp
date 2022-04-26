@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2002 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -397,6 +397,8 @@ buildDefaultFont:
 			{
 				sprintf(fontFilename, "gfx\\vgui\\fonts\\%d_%s.tga", m_xRes, m_pSchemeList[i].schemeName);
 				pFontData = gEngfuncs.COM_LoadFile( fontFilename, 5, &fontFileLength );
+				if(!pFontData)
+					gEngfuncs.Con_Printf("Missing bitmap font: %s\n", fontFilename);
 			}
 
 			m_pSchemeList[i].font = new vgui::Font(

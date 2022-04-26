@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -40,7 +40,7 @@ struct DeathNoticeItem {
 #define MAX_DEATHNOTICES	4
 static int DEATHNOTICE_DISPLAY_TIME = 6;
 
-#define DEATHNOTICE_TOP		20
+#define DEATHNOTICE_TOP		32
 
 DeathNoticeItem rgDeathNoticeList[ MAX_DEATHNOTICES + 1 ];
 
@@ -51,13 +51,14 @@ float g_ColorBlue[3]	= { 0.6, 0.8, 1.0 };
 float g_ColorRed[3]		= { 1.0, 0.25, 0.25 };
 float g_ColorGreen[3]	= { 0.6, 1.0, 0.6 };
 float g_ColorYellow[3]	= { 1.0, 0.7, 0.0 };
+float g_ColorYellowish[3]	= { 1.0, 0.625, 0.0 };
 
 float *GetClientColor( int clientIndex )
 {
 	const char *teamName = g_PlayerExtraInfo[ clientIndex].teamname;
 
 	if ( !teamName || *teamName == 0 ) 
-		return NULL;
+		return g_ColorYellowish;
 
 	if ( !stricmp( "blue", teamName ) )
 		return g_ColorBlue;
@@ -68,7 +69,7 @@ float *GetClientColor( int clientIndex )
 	else if ( !stricmp( "yellow", teamName ) )
 		return g_ColorYellow;
 
-	return NULL;
+	return g_ColorYellowish;
 }
 
 int GetTeamIndex( int clientIndex )
@@ -130,9 +131,8 @@ int CHudDeathNotice :: Draw( float flTime )
 
 		rgDeathNoticeList[i].flDisplayTime = min( rgDeathNoticeList[i].flDisplayTime, gHUD.m_flTime + DEATHNOTICE_DISPLAY_TIME );
 
-		// Draw the death notice
-
-		y = DEATHNOTICE_TOP + (20 * i);  //!!!
+			// Draw the death notice
+			y = YRES(DEATHNOTICE_TOP) + 2 + (20 * i);  //!!!
 
 		int id = (rgDeathNoticeList[i].iId == -1) ? m_HUD_d_skull : rgDeathNoticeList[i].iId;
 		x = ScreenWidth - ConsoleStringLen(rgDeathNoticeList[i].szVictim) - (gHUD.GetSpriteRect(id).right - gHUD.GetSpriteRect(id).left);
@@ -183,7 +183,8 @@ int CHudDeathNotice :: MsgFunc_DeathMsg( const char *pszName, int iSize, void *p
 	strcpy( killedwith, "d_" );
 	strncat( killedwith, READ_STRING(), 32 );
 
-	gViewPort->DeathMsg( killer, victim );
+	if (gViewPort)
+		gViewPort->DeathMsg( killer, victim );
 
 	gHUD.m_Spectator.DeathMessage(victim);
 	for ( int i = 0; i < MAX_DEATHNOTICES; i++ )

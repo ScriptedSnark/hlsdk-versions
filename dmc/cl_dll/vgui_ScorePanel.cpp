@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2001, Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2002, Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -155,7 +155,6 @@ ScorePanel::ScorePanel(int x,int y,int wide,int tall) : Panel(x,y,wide,tall)
 		m_HeaderGrid.SetEntry(i, 0, &m_HeaderLabels[i]);
 
 		m_HeaderLabels[i].setBgColor(0,0,0,255);
-		m_HeaderLabels[i].setBgColor(0,0,0,255);
 		m_HeaderLabels[i].setFgColor(Scheme::sc_primary1);
 		m_HeaderLabels[i].setFont(smallfont);
 		m_HeaderLabels[i].setContentAlignment(g_ColumnInfo[i].m_Alignment);
@@ -201,7 +200,6 @@ ScorePanel::ScorePanel(int x,int y,int wide,int tall) : Panel(x,y,wide,tall)
 		}
 
 		pGridRow->setBgColor(0,0,0,255);
-//		pGridRow->SetSpacing(2, 0);
 		pGridRow->SetSpacing(0, 0);
 		pGridRow->CopyColumnWidths(&m_HeaderGrid);
 		pGridRow->AutoSetRowHeights();
@@ -234,6 +232,12 @@ void ScorePanel::Initialize( void )
 	m_iNumTeams = 0;
 	memset( g_PlayerExtraInfo, 0, sizeof g_PlayerExtraInfo );
 	memset( g_TeamInfo, 0, sizeof g_TeamInfo );
+}
+
+
+bool HACK_GetPlayerUniqueID( int iPlayer, char playerID[16] )
+{
+	return !!gEngfuncs.GetPlayerUniqueID( iPlayer, playerID );
 }
 
 //-----------------------------------------------------------------------------
@@ -705,7 +709,8 @@ void ScorePanel::FillGrid()
 					break;
 				case COLUMN_VOICE:
 					sz[0] = 0;
-					if (!pl_info->thisplayer)
+					// in HLTV mode allow spectator to turn on/off commentator voice
+					if (!pl_info->thisplayer || gEngfuncs.IsSpectateOnly() )
 					{
 						GetClientVoiceMgr()->UpdateSpeakerImage(pLabel, m_iSortedRows[row]);
 					}
@@ -869,11 +874,8 @@ void ScorePanel::MouseOverCell(int row, int col)
 	hud_player_info_t *pl_info = &g_PlayerInfoList[ m_iSortedRows[row] ];
 	if (!pl_info->name || !pl_info->name[0])
 		return;
-	if (pl_info->thisplayer)
-		return;
 
-	// only act on audible players
-	if (!GetClientVoiceMgr()->IsPlayerAudible(m_iSortedRows[row]))
+	if (pl_info->thisplayer && !gEngfuncs.IsSpectateOnly() )
 		return;
 
 	// setup the new highlight

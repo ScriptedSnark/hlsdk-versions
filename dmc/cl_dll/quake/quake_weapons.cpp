@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -52,6 +52,7 @@ int g_iWaterLevel;
 // HLDM Weapon placeholder entities.
 CQuakeGun g_QuakeGun;
 
+extern BEAM *pBeam;
 /*
 ======================
 AlertMessage
@@ -327,15 +328,16 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 	}
 	else if ( !(m_pPlayer->pev->button & (IN_ATTACK|IN_ATTACK2) ) )
 	{
+		// no fire buttons down
+
+		m_fFireOnEmpty = FALSE;
+
 		if ( !m_bPlayedIdleAnim )
 		{
 			m_bPlayedIdleAnim = TRUE;
-			SendWeaponAnim( 0, 1 );
-
+		
 			if ( m_pPlayer->m_iQuakeWeapon == IT_LIGHTNING )
-			{
 				 PLAYBACK_EVENT_FULL( FEV_NOTHOST, m_pPlayer->edict(), m_pPlayer->m_usLightning, 0, (float *)&m_pPlayer->pev->origin, (float *)&m_pPlayer->pev->angles, 0.0, 0.0, 0, 1, 0, 0 );
-			}
 		}
 
 		WeaponIdle( );
@@ -852,6 +854,11 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 		}
 	}
 
+	if ( player.m_iQuakeWeapon != IT_LIGHTNING && pBeam != NULL )
+	{
+		pBeam->die = 0.0;
+		pBeam = NULL;
+	}
 	// Copy in results of predcition code
 	
 	to->client.viewmodel				= player.pev->viewmodel;

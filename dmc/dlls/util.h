@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -435,17 +435,7 @@ extern DLL_GLOBAL int			g_Language;
 #define SVC_ROOMTYPE		37
 #define SVC_ADDANGLE	    38			// [vec3] add this angle to the view angle
 #define SVC_NEWUSERMSG      39
-#define	SVC_HLTV			50
-
-/* #define SVC_CROSSHAIRANGLE  50
-#define SVC_SOUNDFADE       51
-#define SVC_CLIENTMAXSPEED  52 */	// obsolete MO 
-
-// proxy director stuff
-#define DRC_EVENT			3	// informs the dircetor about an important game event
-
-#define DRC_FLAG_PRIO_MASK		0x0F	//	priorities between 0 and 15 (15 most important)
-#define DRC_FLAG_DRAMATIC		(1<<5)
+#define	SVC_DIRECTOR		51
 
 
 // triggers

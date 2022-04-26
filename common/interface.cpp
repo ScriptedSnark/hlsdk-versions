@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -11,6 +11,8 @@
 
 #ifndef _WIN32  // LINUX
 #include <dlfcn.h>
+#include <unistd.h> // getcwd
+#include <stdio.h> // sprintf
 #endif
 
 
@@ -142,7 +144,7 @@ CreateInterfaceFn Sys_GetFactory( HINTERFACEMODULE hModule )
 	if(!hModule)
 		return NULL;
 
-	return dlsym( (void *)hModule, CREATEINTERFACE_PROCNAME );
+	return (CreateInterfaceFn)dlsym( (void *)hModule, CREATEINTERFACE_PROCNAME );
 }
 
 #endif

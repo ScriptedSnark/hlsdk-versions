@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2001, Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2002, Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -19,6 +19,7 @@
 #include	"util.h"
 #include	"cbase.h"
 #include	"player.h"
+#include	"pm_shared.h"
 
 // Find the next client in the game for this player to spectate
 void CBasePlayer::Observer_FindNextPlayer()
@@ -46,7 +47,8 @@ void CBasePlayer::Observer_FindNextPlayer()
 	if ( m_hObserverTarget )
 	{
 		// Store the target in pev so the physics DLL can get to it
-		pev->iuser2 = ENTINDEX( m_hObserverTarget->edict() );
+		if (pev->iuser1 != OBS_ROAMING)
+			pev->iuser2 = ENTINDEX( m_hObserverTarget->edict() );
 		// Move to the target
 		UTIL_SetOrigin( pev, m_hObserverTarget->pev->origin );
 
@@ -68,21 +70,35 @@ void CBasePlayer::Observer_HandleButtons()
 	// Jump changes from modes: Chase to Roaming
 	if ( m_afButtonPressed & IN_JUMP )
 	{
-		if ( pev->iuser1 == OBS_ROAMING )
-			Observer_SetMode( OBS_CHASE_LOCKED );
-		else if ( pev->iuser1 == OBS_CHASE_LOCKED )
+		if ( pev->iuser1 == OBS_CHASE_LOCKED )
 			Observer_SetMode( OBS_CHASE_FREE );
-		else
+
+		else if ( pev->iuser1 == OBS_CHASE_FREE )
 			Observer_SetMode( OBS_ROAMING );
+
+		else if ( pev->iuser1 == OBS_ROAMING )
+			Observer_SetMode( OBS_IN_EYE );
+
+		else if ( pev->iuser1 == OBS_IN_EYE )
+			Observer_SetMode( OBS_MAP_FREE );
+
+		else if ( pev->iuser1 == OBS_MAP_FREE )
+			Observer_SetMode( OBS_MAP_CHASE );
+
+		else
+			Observer_SetMode( OBS_CHASE_FREE );	// don't use OBS_CHASE_LOCKED anymore
+
+		m_flNextObserverInput = gpGlobals->time + 0.2;
 	}
 
 	// Attack moves to the next player
 	if ( m_afButtonPressed & IN_ATTACK )
 	{
 		Observer_FindNextPlayer();
+
+		m_flNextObserverInput = gpGlobals->time + 0.2;
 	}
  
-	m_flNextObserverInput = gpGlobals->time + 0.3;
 }
 
 // Attempt to change the observer mode
@@ -92,53 +108,35 @@ void CBasePlayer::Observer_SetMode( int iMode )
 	if ( iMode == pev->iuser1 )
 		return;
 
-	// Changing to Roaming?
-	if ( iMode == OBS_ROAMING )
-	{
-		// MOD AUTHORS: If you don't want to allow roaming observers at all in your mod, just return here.
-		pev->iuser1 = OBS_ROAMING;
+	// is valid mode ?
+	if ( iMode < OBS_CHASE_LOCKED || iMode > OBS_MAP_CHASE )
+		iMode = OBS_IN_EYE; // now it is
 
-		ClientPrint( pev, HUD_PRINTCENTER, "Switched to CLASSIC observer mode" );
-		return;
+	// if we are not roaming, we need a valid target to track
+	if ( (iMode != OBS_ROAMING) && (m_hObserverTarget == NULL) )
+	{
+		Observer_FindNextPlayer();
+
+		// if we didn't find a valid target switch to roaming
+		if (m_hObserverTarget == NULL)
+		{
+			ClientPrint( pev, HUD_PRINTCENTER, "#Spec_NoTarget"  );
+			iMode = OBS_ROAMING;
+		}
 	}
 
-	// Changing to Chase Lock?
-	if ( iMode == OBS_CHASE_LOCKED )
-	{
-		// If changing from Roaming, or starting observing, make sure there is a target
-		if ( pev->iuser1 != OBS_CHASE_FREE )
-			Observer_FindNextPlayer();
+	// set spectator mode
+	pev->iuser1 = iMode;
 
-		if (m_hObserverTarget)
-		{
-			pev->iuser1 = OBS_CHASE_LOCKED;
-			ClientPrint( pev, HUD_PRINTCENTER, "Switched to LOCKED chase mode" );
-		}
-		else
-		{
-			ClientPrint( pev, HUD_PRINTCENTER, "No valid targets\nCan not switch to CHASE MODE"  );
-		}
+	// set target if not roaming
+	if (iMode == OBS_ROAMING)
+		pev->iuser2 = 0;
+	else
+		pev->iuser2 = ENTINDEX( m_hObserverTarget->edict() );
+	
+	// print spepctaor mode on client screen
 
-		return;
-	}
-
-	// Changing to Chase Freelook?
-	if ( iMode == OBS_CHASE_FREE )
-	{
-		// If changing from Roaming, or starting observing, make sure there is a target
-		if ( pev->iuser1 != OBS_CHASE_LOCKED )
-			Observer_FindNextPlayer();
-
-		if (m_hObserverTarget)
-		{
-			pev->iuser1 = OBS_CHASE_FREE;
-			ClientPrint( pev, HUD_PRINTCENTER, "Switched to FREELOOK chase mode" );
-		}
-		else
-		{
-			ClientPrint( pev, HUD_PRINTCENTER, "No valid targets\nCan not switch to CHASE MODE"  );
-		}
-
-		return;
-	}
+	char modemsg[16];
+	sprintf(modemsg,"#Spec_Mode%i", iMode);
+	ClientPrint( pev, HUD_PRINTCENTER, modemsg );
 }

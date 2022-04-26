@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -41,12 +41,14 @@
 #define MENU_CLASSHELP				6
 #define MENU_CLASSHELP2 			7
 #define MENU_REPEATHELP 			8
+#define MENU_SPECHELP				9
 
 
 using namespace vgui;
 
 class Cursor;
 class ScorePanel;
+class SpectatorPanel;
 class CCommandMenu;
 class CommandLabel;
 class CommandButton;
@@ -234,6 +236,8 @@ private:
 	CommandButton *m_aButtons[ MAX_BUTTONS ];
 	int			  m_iButtons;
 
+	// opens menu from top to bottom (0 = default), or from bottom to top (1)?
+	int				m_iDirection; 
 public:
 	CCommandMenu( CCommandMenu *pParentMenu, int x,int y,int wide,int tall ) : Panel(x,y,wide,tall)
 	{
@@ -241,6 +245,16 @@ public:
 		m_iXOffset = x;
 		m_iYOffset = y;
 		m_iButtons = 0;
+		m_iDirection = 0;
+	}
+
+	CCommandMenu( CCommandMenu *pParentMenu, int direction, int x,int y,int wide,int tall ) : Panel(x,y,wide,tall)
+	{
+		m_pParentMenu = pParentMenu;
+		m_iXOffset = x;
+		m_iYOffset = y;
+		m_iButtons = 0;
+		m_iDirection = direction;
 	}
 
 	void		AddButton( CommandButton *pButton );
@@ -251,6 +265,7 @@ public:
 	CCommandMenu *GetParentMenu() { return m_pParentMenu; };
 	int			GetXOffset() { return m_iXOffset; };
 	int			GetYOffset() { return m_iYOffset; };
+	int			GetDirection() { return m_iDirection; };
 	int			GetNumButtons() { return m_iButtons; };
 	CommandButton *FindButtonWithSubmenu( CCommandMenu *pSubMenu );
 
@@ -304,10 +319,6 @@ private:
 	// Server Browser
 	ServerBrowser *m_pServerBrowser;
 
-	// Spectator "menu"
-	CTransparentPanel	*m_pSpectatorMenu;
-	Label				*m_pSpectatorLabel;
-	Label				*m_pSpectatorHelpLabel;
 	int					m_iAllowSpectators;
 
 	// Data for specific sections of the Command Menu
@@ -327,24 +338,24 @@ public:
 	TeamFortressViewport(int x,int y,int wide,int tall);
 	void Initialize( void );
 
-	void CreateCommandMenu( void );
-	void CreateScoreBoard( void );
-	void CreateServerBrowser( void );
-	CommandButton *CreateCustomButton( char *pButtonText, char *pButtonName );
-	CCommandMenu *CreateDisguiseSubmenu( CommandButton *pButton, CCommandMenu *pParentMenu, const char *commandText );
+	int		CreateCommandMenu( char * menuFile, int direction, int yOffset );
+	void	CreateScoreBoard( void );
+	void	CreateServerBrowser( void );
+	CommandButton * CreateCustomButton( char *pButtonText, char * pButtonName, int  iYOffset );
+	CCommandMenu *	CreateDisguiseSubmenu( CommandButton *pButton, CCommandMenu *pParentMenu, const char *commandText, int iYOffset );
 
 	void UpdateCursorState( void );
-	void UpdateCommandMenu( void );
+	void UpdateCommandMenu(int menuIndex);
 	void UpdateOnPlayerInfo( void );
 	void UpdateHighlights( void );
-	void UpdateSpectatorMenu( void );
+	void UpdateSpectatorPanel( void );
 
 	int	 KeyInput( int down, int keynum, const char *pszCurrentBinding );
 	void InputPlayerSpecial( void );
 	void GetAllPlayersInfo( void );
 	void DeathMsg( int killer, int victim );
 
-	void ShowCommandMenu( void );
+	void ShowCommandMenu(int menuIndex);
 	void InputSignalHideCommandMenu( void );
 	void HideCommandMenu( void );
 	void SetCurrentCommandMenu( CCommandMenu *pNewMenu );
@@ -364,7 +375,7 @@ public:
 
 	CMenuPanel* CreateTextWindow( int iTextToShow );
 
-	CCommandMenu *CreateSubMenu( CommandButton *pButton, CCommandMenu *pParentMenu );
+	CCommandMenu *CreateSubMenu( CommandButton *pButton, CCommandMenu *pParentMenu, int iYOffset );
 
 	// Data Handlers
 	int GetValidClasses(int iTeam) { return m_iValidClasses[iTeam]; };
@@ -404,9 +415,12 @@ public:
 public:
 	// VGUI Menus
 	CMenuPanel		*m_pCurrentMenu;
+	int				m_SpectatorMenu;	// indexs in m_pCommandMenus
+	int				m_StandardMenu;
 //	CTeamMenuPanel	*m_pTeamMenu;
 //	CClassMenuPanel	*m_pClassMenu;
 	ScorePanel		*m_pScoreBoard;
+	SpectatorPanel  *m_pSpectatorPanel;
 	char			m_szServerName[ MAX_SERVERNAME_LENGTH ];
 };
 
@@ -558,6 +572,7 @@ public:
 #define SHOW_MAPBRIEFING	1
 #define SHOW_CLASSDESC		2
 #define SHOW_MOTD			3
+#define SHOW_SPECHELP		4
 
 class CMenuHandler_TextWindow : public ActionSignal
 {
@@ -583,6 +598,29 @@ public:
 	}
 };
 
+class CMenuHandler_ToggleCvar : public ActionSignal
+{
+private:
+	struct cvar_s * m_cvar;
+
+public:
+	CMenuHandler_ToggleCvar( char * cvarname )
+	{
+		m_cvar = gEngfuncs.pfnGetCvarPointer( cvarname );
+	}
+
+	virtual void actionPerformed(Panel* panel)
+	{
+		if ( m_cvar->value )
+			m_cvar->value = 0.0f;
+		else
+			m_cvar->value = 1.0f;
+
+		gViewPort->UpdateSpectatorPanel();
+	}
+
+	
+};
 class CDragNDropHandler : public InputSignal
 {
 private:
@@ -895,6 +933,92 @@ public:
 	}
 };
 
+//-----------------------------------------------------------------------------
+// Purpose: CommandButton which is only displayed if the player is on team X
+//-----------------------------------------------------------------------------
+class ToggleCommandButton : public CommandButton, public InputSignal
+{
+private:
+	struct cvar_s * m_cvar;
+	CImageLabel *	pLabelOn;
+	CImageLabel *	pLabelOff;
+	
+
+public:
+	ToggleCommandButton( const char* cvarname, const char* text,int x,int y,int wide,int tall ) : 
+	  CommandButton( text, x, y, wide, tall )
+	 {
+		m_cvar = gEngfuncs.pfnGetCvarPointer( cvarname );
+
+			// Put a > to show it's a submenu
+		pLabelOn = new CImageLabel( "checked", 0, 0 );
+		pLabelOn->setParent(this);
+		pLabelOn->addInputSignal(this);
+				
+		pLabelOff = new CImageLabel( "unchecked", 0, 0 );
+		pLabelOff->setParent(this);
+		pLabelOff->setEnabled(true);
+		pLabelOff->addInputSignal(this);
+
+		int textwide, texttall;
+		getTextSize( textwide, texttall);
+	
+		// Reposition
+		pLabelOn->setPos( textwide, (tall - pLabelOn->getTall()) / 2 );
+
+		pLabelOff->setPos( textwide, (tall - pLabelOff->getTall()) / 2 );
+		
+		// Set text color to orange
+		setFgColor(Scheme::sc_primary1);
+	}
+
+	virtual void cursorEntered(Panel* panel)
+	{
+		CommandButton::cursorEntered();
+	}
+
+	virtual void cursorExited(Panel* panel)
+	{
+		CommandButton::cursorExited();
+	}
+
+	virtual void mousePressed(MouseCode code,Panel* panel)
+	{
+		doClick();
+	};
+
+	virtual void cursorMoved(int x,int y,Panel* panel) {};
+	
+	virtual void mouseDoublePressed(MouseCode code,Panel* panel)  {};
+	virtual void mouseReleased(MouseCode code,Panel* panel) {};
+	virtual void mouseWheeled(int delta,Panel* panel) {};
+	virtual void keyPressed(KeyCode code,Panel* panel) {};
+	virtual void keyTyped(KeyCode code,Panel* panel) {};
+	virtual void keyReleased(KeyCode code,Panel* panel) {};
+	virtual void keyFocusTicked(Panel* panel) {};
+
+	virtual void paint( void )
+	{
+		if ( !m_cvar )
+		{
+			pLabelOff->setVisible(false);
+			pLabelOn->setVisible(false);
+		} 
+		else if ( m_cvar->value )
+		{
+			pLabelOff->setVisible(false);
+			pLabelOn->setVisible(true);
+		}
+		else
+		{
+			pLabelOff->setVisible(true);
+			pLabelOn->setVisible(false);
+		}
+
+		CommandButton::paint();
+
+	} 
+};
 //============================================================
 // Panel that can be dragged around
 class DragNDropPanel : public Panel

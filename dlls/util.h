@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -422,13 +422,9 @@ extern DLL_GLOBAL int			g_Language;
 #define SVC_CDTRACK			32
 #define SVC_WEAPONANIM		35
 #define SVC_ROOMTYPE		37
-#define	SVC_HLTV			50
+#define	SVC_DIRECTOR		51
 
-// prxoy director stuff
-#define DRC_EVENT			3	// informs the dircetor about ann important game event
 
-#define DRC_FLAG_PRIO_MASK		0x0F	//	priorities between 0 and 15 (15 most important)
-#define DRC_FLAG_DRAMATIC		(1<<5)
 
 // triggers
 #define	SF_TRIGGER_ALLOWMONSTERS	1// monsters allowed to fire this trigger

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -31,6 +31,11 @@
 #include "in_defs.h"
 
 #include <string.h>
+
+#include "r_studioint.h"
+#include "com_model.h"
+
+extern engine_studio_api_t IEngineStudio;
 
 static int tracerCount[ 32 ];
 
@@ -831,6 +836,8 @@ void EV_StopPreviousGauss( int idx )
 	gEngfuncs.pEventAPI->EV_StopSound( idx, CHAN_WEAPON, "ambience/pulsemachine.wav" );
 }
 
+extern float g_flApplyVel;
+
 void EV_FireGauss( event_args_t *args )
 {
 	int idx;
@@ -880,6 +887,10 @@ void EV_FireGauss( event_args_t *args )
 	{
 		V_PunchAxis( 0, -2.0 );
 		gEngfuncs.pEventAPI->EV_WeaponAnimation( GAUSS_FIRE2, 2 );
+
+		if ( m_fPrimaryFire == false )
+			 g_flApplyVel = flDamage;	
+			 
 	}
 
 	gEngfuncs.pEventAPI->EV_PlaySound( idx, origin, CHAN_WEAPON, "weapons/gauss2.wav", 0.5 + flDamage * (1.0 / 400.0), ATTN_NORM, 0, 85 + gEngfuncs.pfnRandomLong( 0, 0x1f ) );
@@ -1434,13 +1445,24 @@ void EV_EgonFire( event_args_t *args )
 			gEngfuncs.pEventAPI->EV_PopPMStates();
 
 			int iBeamModelIndex = gEngfuncs.pEventAPI->EV_FindModelIndex( EGON_BEAM_SPRITE );
+
+			float r = 50.0f;
+			float g = 50.0f;
+			float b = 125.0f;
+
+			if ( IEngineStudio.IsHardware() )
+			{
+				r /= 100.0f;
+				g /= 100.0f;
+			}
+				
 		
-			pBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint ( idx | 0x1000, tr.endpos, iBeamModelIndex, 99999, 3.5, 0.2, 0.075, 5, 0, 0.15, 5, 5, 25.5 );
+			pBeam = gEngfuncs.pEfxAPI->R_BeamEntPoint ( idx | 0x1000, tr.endpos, iBeamModelIndex, 99999, 3.5, 0.2, 0.7, 55, 0, 0, r, g, b );
 
 			if ( pBeam )
-				 pBeam->flags |= FBEAM_SINENOISE;
+				 pBeam->flags |= ( FBEAM_SINENOISE );
  
-			pBeam2 = gEngfuncs.pEfxAPI->R_BeamEntPoint ( idx | 0x1000, tr.endpos, iBeamModelIndex, 99999, 5.0, 0.08, 0.1, 2.5, 0, 0.15, 5, 5, 25.5 );
+			pBeam2 = gEngfuncs.pEfxAPI->R_BeamEntPoint ( idx | 0x1000, tr.endpos, iBeamModelIndex, 99999, 5.0, 0.08, 0.7, 25, 0, 0, r, g, b );
 		}
 	}
 }

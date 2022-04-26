@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -293,6 +293,7 @@ public:
 	void	Observer_SetMode( int iMode );
 	EHANDLE	m_hObserverTarget;
 	float	m_flNextObserverInput;
+	int		IsObserver() { return pev->iuser1; };
 
 
 	// QUAKECLASSIC
@@ -426,11 +427,6 @@ public:
 #define IT_INVULNERABILITY              (1 << 20)
 #define IT_SUIT                         (1 << 21)
 #define IT_QUAD                         (1 << 22)
-
-// Observer Movement modes (stored in pev->iuser1, so the physics code can get at them)
-#define OBS_CHASE_LOCKED		1
-#define OBS_CHASE_FREE			2
-#define OBS_ROAMING				3		
 
 extern int	gmsgHudText;
 extern BOOL gInitHUD;

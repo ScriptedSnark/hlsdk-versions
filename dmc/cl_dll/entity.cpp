@@ -1,7 +1,7 @@
 /****
 *
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -25,6 +25,7 @@
 #include "usercmd.h"
 #include "event_api.h"
 #include "pm_defs.h"
+#include "pm_shared.h"
 #include "pmtrace.h"
 #include "voice_status.h"
 
@@ -34,9 +35,6 @@ void Game_AddObjects( void );
 
 extern vec3_t v_origin;
 
-extern int		g_iJumpSpectator;
-extern vec3_t	g_vJumpOrigin;
-extern vec3_t	g_vJumpAngles;
 extern "C" 
 {
 	int DLLEXPORT HUD_AddEntity( int type, struct cl_entity_s *ent, const char *modelname );
@@ -69,8 +67,19 @@ int DLLEXPORT HUD_AddEntity( int type, struct cl_entity_s *ent, const char *mode
 	}
 
 	// each frame every entity passes this function, so the overview hooks it to filter the overview entities
-	if (gEngfuncs.IsSpectateOnly())
+	// in spectator mode:
+	// each frame every entity passes this function, so the overview hooks 
+	// it to filter the overview entities
+
+	if ( g_iUser1 )
+	{
 		gHUD.m_Spectator.AddOverviewEntity( type, ent, modelname );
+
+		if ( (	g_iUser1 == OBS_IN_EYE || gHUD.m_Spectator.m_pip->value == INSET_IN_EYE ) &&
+				ent->index == g_iUser2 )
+			return 0;	// don't draw the player we are following in eye
+
+	}
 	return 1;
 }
 
@@ -142,6 +151,14 @@ void DLLEXPORT HUD_ProcessPlayerState( struct entity_state_s *dst, const struct 
 	dst->playerclass			= src->playerclass;
 	dst->team					= src->team;
 	dst->colormap				= src->colormap;
+	// Save off some data so other areas of the Client DLL can get to it
+	cl_entity_t *player = gEngfuncs.GetLocalPlayer();	// Get the local player's index
+	if ( dst->number == player->index )
+	{
+		g_iUser1 = src->iuser1;
+		g_iUser2 = src->iuser2;
+		g_iUser3 = src->iuser3;
+	}
 }
 
 /*
@@ -186,14 +203,6 @@ void DLLEXPORT HUD_TxferPredictionData ( struct entity_state_s *ps, const struct
 		pcd->iuser1 = g_iUser1;	// observer mode
 		pcd->iuser2 = g_iUser2; // first target
 		pcd->iuser3 = g_iUser3; // second target
-
-		// in free roam mode, spectator can jump within level
-		if ( g_iJumpSpectator )
-		{
-			VectorCopy( g_vJumpOrigin, ps->origin );
-			VectorCopy( g_vJumpAngles, ps->angles );
-			g_iJumpSpectator	= 0;
-		}
 	}
 	// m_iQuakeItems
 	pcd->iuser3					= ppcd->iuser3;
@@ -201,6 +210,8 @@ void DLLEXPORT HUD_TxferPredictionData ( struct entity_state_s *ps, const struct
 	pcd->fuser1					= ppcd->fuser1;
 	// m_iNailIndex
 	pcd->fuser2					= ppcd->fuser2;
+	// m_iRuneStatus
+	pcd->fuser3					= ppcd->fuser3;
 
 	memcpy( wd, pwd, 32 * sizeof( weapon_data_t ) );
 }

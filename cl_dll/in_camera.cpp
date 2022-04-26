@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -612,7 +612,7 @@ void CAM_EndDistance(void)
 
 int DLLEXPORT CL_IsThirdPerson( void )
 {
-	return cam_thirdperson ? 1 : 0;
+	return (cam_thirdperson ? 1 : 0) || (g_iUser1 && (g_iUser2 == gEngfuncs.GetLocalPlayer()->index) );
 }
 
 void DLLEXPORT CL_CameraOffset( float *ofs )

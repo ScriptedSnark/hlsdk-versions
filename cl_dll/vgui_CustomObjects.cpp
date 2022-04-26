@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2002 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -78,14 +78,25 @@ CommandButton::CommandButton( const char* text,int x,int y,int wide,int tall, bo
 {
 	m_iPlayerClass = 0;
 	m_bNoHighlight = bNoHighlight;
+	m_bFlat = false;
 	Init();
 	setText( text );
 }
 
-CommandButton::CommandButton( int iPlayerClass, const char* text,int x,int y,int wide,int tall) : Button("",x,y,wide,tall)
+CommandButton::CommandButton( int iPlayerClass, const char* text,int x,int y,int wide,int tall, bool bFlat) : Button("",x,y,wide,tall)
 {
 	m_iPlayerClass = iPlayerClass;
 	m_bNoHighlight = false;
+	m_bFlat = bFlat;
+	Init();
+	setText( text );
+}
+
+CommandButton::CommandButton(const char *text, int x, int y, int wide, int tall, bool bNoHighlight, bool bFlat) : Button("",x,y,wide,tall)
+{
+	m_iPlayerClass = 0;
+	m_bFlat = bFlat;
+	m_bNoHighlight = bNoHighlight;
 	Init();
 	setText( text );
 }
@@ -120,7 +131,14 @@ void CommandButton::RecalculateText( void )
 
 	if ( m_cBoundKey != 0 )
 	{
-		sprintf( szBuf, "  %c  %s", m_cBoundKey, m_sMainText );
+		if ( m_cBoundKey == (char)255 )
+		{
+			strcpy( szBuf, m_sMainText );
+		}
+		else
+		{
+			sprintf( szBuf, "  %c  %s", m_cBoundKey, m_sMainText );
+		}
 		szBuf[MAX_BUTTON_SIZE-1] = 0;
 	}
 	else
@@ -192,16 +210,28 @@ void CommandButton::paint()
 
 void CommandButton::paintBackground()
 {
-	if ( isArmed() )
+	if ( m_bFlat )
 	{
-		// Orange highlight background
-		drawSetColor( Scheme::sc_primary2 );
-		drawFilledRect(0,0,_size[0],_size[1]);
+		if ( isArmed() )
+		{
+			// Orange Border
+			drawSetColor( Scheme::sc_secondary1 );
+			drawOutlinedRect(0,0,_size[0],_size[1]);
+		}
 	}
+	else
+	{
+		if ( isArmed() )
+		{
+			// Orange highlight background
+			drawSetColor( Scheme::sc_primary2 );
+			drawFilledRect(0,0,_size[0],_size[1]);
+		}
 
-	// Orange Border
-	drawSetColor( Scheme::sc_secondary1 );
-	drawOutlinedRect(0,0,_size[0],_size[1]);
+		// Orange Border
+		drawSetColor( Scheme::sc_secondary1 );
+		drawOutlinedRect(0,0,_size[0],_size[1]);
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -310,16 +340,61 @@ CImageLabel::CImageLabel( const char* pImageName,int x,int y,int wide,int tall )
 // Image size
 int CImageLabel::getImageWide( void )
 {
-	int iXSize, iYSize;
-	m_pTGA->getSize( iXSize, iYSize );
-	return iXSize;
+	if( m_pTGA )
+	{
+		int iXSize, iYSize;
+		m_pTGA->getSize( iXSize, iYSize );
+		return iXSize;
+	}
+	else
+	{
+		return 1;
+	}
 }
 
 int CImageLabel::getImageTall( void )
 {
-	int iXSize, iYSize;
-	m_pTGA->getSize( iXSize, iYSize );
-	return iYSize;
+	if( m_pTGA )
+	{
+		int iXSize, iYSize;
+		m_pTGA->getSize( iXSize, iYSize );
+		return iYSize;
+	}
+	else
+	{
+		return 1;
+	}
+}
+
+void CImageLabel::LoadImage(const char * pImageName)
+{
+	if ( m_pTGA )
+		delete m_pTGA;
+
+	// Load the Image
+	m_pTGA = LoadTGAForRes(pImageName);
+
+	if ( m_pTGA == NULL )
+	{
+		// we didn't find a matching image file for this resolution
+		// try to load file resolution independent
+
+		char sz[256];
+		sprintf(sz, "%s/%s",gEngfuncs.pfnGetGameDirectory(), pImageName );
+		FileInputStream* fis = new FileInputStream( sz, false );
+		m_pTGA = new BitmapTGA(fis,true);
+		fis->close();
+	}
+
+	if ( m_pTGA == NULL )
+		return;	// unable to load image
+	 	
+	int w,t;
+
+	m_pTGA->getSize( w, t );
+
+	setSize( XRES (w),YRES (t) );
+	setImage( m_pTGA );
 }
 
 //===========================================================
@@ -327,7 +402,12 @@ int CImageLabel::getImageTall( void )
 void CCommandMenu::paintBackground()
 {
 	// Transparent black background
-	drawSetColor(Scheme::sc_primary3);
+
+	if ( m_iSpectCmdMenu ) 
+		 drawSetColor( 0, 0, 0, 64 );
+	else
+		 drawSetColor(Scheme::sc_primary3);
+
 	drawFilledRect(0,0,_size[0],_size[1]);
 }
 

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -56,6 +56,10 @@ float CGauss::GetFullChargeTime( void )
 
 	return 4;
 }
+
+#ifdef CLIENT_DLL
+extern int g_irunninggausspred;
+#endif
 
 void CGauss::Spawn( )
 {
@@ -373,6 +377,11 @@ void CGauss::Fire( Vector vecOrigSrc, Vector vecDir, float flDamage )
 
 	pentIgnore = ENT( m_pPlayer->pev );
 
+#ifdef CLIENT_DLL
+	if ( m_fPrimaryFire == false )
+		 g_irunninggausspred = true;
+#endif
+	
 	// The main firing event is sent unreliably so it won't be delayed.
 	PLAYBACK_EVENT_FULL( FEV_NOTHOST, m_pPlayer->edict(), m_usGaussFire, 0.0, (float *)&m_pPlayer->pev->origin, (float *)&m_pPlayer->pev->angles, flDamage, 0.0, 0, 0, m_fPrimaryFire ? 1 : 0, 0 );
 

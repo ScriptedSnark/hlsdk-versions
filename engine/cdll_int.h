@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -28,6 +28,7 @@ extern "C" {
 
 #include "const.h"
 
+
 // this file is included by both the engine and the client-dll,
 // so make sure engine declarations aren't done twice
 
@@ -36,7 +37,7 @@ typedef int HSPRITE;	// handle to a graphic
 #define SCRINFO_SCREENFLASH 1
 #define SCRINFO_STRETCHED	2
 
-typedef struct
+typedef struct SCREENINFO_s
 {
 	int		iSize;
 	int		iWidth;
@@ -67,7 +68,7 @@ typedef struct client_sprite_s
 	wrect_t rc;
 } client_sprite_t;
 
-typedef struct
+typedef struct client_textmessage_s
 {
 	int		effect;
 	byte	r1, g1, b1, a1;		// 2 colors for effects
@@ -82,7 +83,7 @@ typedef struct
 	const char *pMessage;
 } client_textmessage_t;
 
-typedef struct
+typedef struct hud_player_info_s
 {
 	char *name;
 	short ping;
@@ -99,7 +100,6 @@ typedef struct
 } hud_player_info_t;
 
 
-// this is by no means complete,  or even accurate
 typedef struct cl_enginefuncs_s
 {
 	// sprite handlers
@@ -246,6 +246,10 @@ typedef struct cl_enginefuncs_s
 	// Same as pfnServerCmd, but the message goes in the unreliable stream so it can't clog the net stream
 	// (but it might not get there).
 	int							( *pfnServerCmdUnreliable )( char *szCmdString );
+
+	void						( *pfnGetMousePos )( struct tagPOINT *ppt );
+	void						( *pfnSetMousePos )( int x, int y );
+	void						( *pfnSetMouseEnable )( qboolean fEnable );
 } cl_enginefunc_t;
 
 #ifndef IN_BUTTONS_H
@@ -297,7 +301,7 @@ extern int ClientDLL_Key_Event( int down, int keynum, const char *pszCurrentBind
 extern void ClientDLL_TempEntUpdate( double ft, double ct, double grav, struct tempent_s **ppFreeTE, struct tempent_s **ppActiveTE, int ( *addTEntity )( struct cl_entity_s *pEntity ), void ( *playTESound )( struct tempent_s *pTemp, float damp ) );
 extern struct cl_entity_s *ClientDLL_GetUserEntity( int index );
 extern void ClientDLL_VoiceStatus(int entindex, qboolean bTalking);
-extern void ClientDLL_DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags);
+extern void ClientDLL_DirectorMessage( int iSize, void *pbuf );
 
 
 #ifdef __cplusplus

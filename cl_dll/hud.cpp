@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -103,6 +103,12 @@ int __MsgFunc_InitHUD(const char *pszName, int iSize, void *pbuf)
 	return 1;
 }
 
+int __MsgFunc_ViewMode(const char *pszName, int iSize, void *pbuf)
+{
+	gHUD.MsgFunc_ViewMode( pszName, iSize, pbuf );
+	return 1;
+}
+
 int __MsgFunc_SetFOV(const char *pszName, int iSize, void *pbuf)
 {
 	return gHUD.MsgFunc_SetFOV( pszName, iSize, pbuf );
@@ -123,7 +129,7 @@ void __CmdFunc_OpenCommandMenu(void)
 {
 	if ( gViewPort )
 	{
-		gViewPort->ShowCommandMenu();
+		gViewPort->ShowCommandMenu( gViewPort->m_StandardMenu );
 	}
 }
 
@@ -266,6 +272,7 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( ResetHUD );
 	HOOK_MESSAGE( GameMode );
 	HOOK_MESSAGE( InitHUD );
+	HOOK_MESSAGE( ViewMode );
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
 
@@ -304,7 +311,7 @@ void CHud :: Init( void )
 	CVAR_CREATE( "zoom_sensitivity_ratio", "1.2", 0 );
 	default_fov = CVAR_CREATE( "default_fov", "90", 0 );
 	m_pCvarStealMouse = CVAR_CREATE( "hud_capturemouse", "1", FCVAR_ARCHIVE );
-
+	m_pCvarDraw = CVAR_CREATE( "hud_draw", "1", FCVAR_ARCHIVE );
 	cl_lw = gEngfuncs.pfnGetCvarPointer( "cl_lw" );
 
 	m_pSpriteList = NULL;
@@ -327,6 +334,8 @@ void CHud :: Init( void )
 
 	m_Ammo.Init();
 	m_Health.Init();
+	m_SayText.Init();
+	m_Spectator.Init();
 	m_Geiger.Init();
 	m_Train.Init();
 	m_Battery.Init();
@@ -338,9 +347,7 @@ void CHud :: Init( void )
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
-	m_Spectator.Init();
 
-	m_SayText.Init();
 	m_Menu.Init();
 	
 	ServersInit();
@@ -474,6 +481,7 @@ void CHud :: VidInit( void )
 
 	m_Ammo.VidInit();
 	m_Health.VidInit();
+	m_Spectator.VidInit();
 	m_Geiger.VidInit();
 	m_Train.VidInit();
 	m_Battery.VidInit();
@@ -487,7 +495,6 @@ void CHud :: VidInit( void )
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
 	GetClientVoiceMgr()->VidInit();
-	m_Spectator.VidInit();
 }
 
 int CHud::MsgFunc_Logo(const char *pszName,  int iSize, void *pbuf)

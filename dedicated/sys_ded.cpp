@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -7,15 +7,22 @@
 
 #ifdef _WIN32
 #include <windows.h> 
+#define snprintf _snprintf
+#define vsnprintf _vsnprintf
 #else
-#include <unistd.h>
 #include <string.h>
 #include <dlfcn.h>
 #include <stdarg.h>
+#include <ctype.h>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <malloc.h>
+#include <errno.h>
+#include <unistd.h>
+#include <signal.h>
 #endif
+
+//#define FRAMERATE // define me to have hlds print out what it thinks the framerate is
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -24,34 +31,26 @@
 #include "conproc.h"
 #include "dedicated.h"
 #include "exefuncs.h"
-#include "crc.h"
 
 #include "dll_state.h"
 #include "enginecallback.h"
-#include "md5.h"
 #if defined( _WIN32 )
 #include "../utils/procinfo/procinfo.h"
 #endif
 
 #ifdef _WIN32
-static const char *g_pszengine = "sw.dll";
+static	HANDLE	hinput;
+static  HANDLE	houtput;
+
+static const char *g_pszengine = "swds.dll";
 #else
 static const char *g_pszengine = "engine_i386.so";
 static char g_szEXEName[ 256 ];
 #endif
 
-#define MINIMUM_WIN_MEMORY		0x0c00000 
-#define MAXIMUM_WIN_MEMORY		0x2000000 // max 32 mb
-#define FIFTEEN_MEGS ( 15 * 1024 * 1024 ) 
-
-#ifdef _WIN32
-static	HANDLE	hinput;
-static  HANDLE	houtput;
-#endif
-
 // System Memory & Size
 static unsigned char	*gpMemBase = NULL;
-static int				giMemSize = 0x1800000;  // 24 Mb Linux heapsize
+static int				giMemSize = 0x2000000;  // 32 Mb default heapsize
 
 exefuncs_t ef;
 
@@ -62,7 +61,10 @@ static long hDLLThirdParty = 0L;
 
 char			*gpszCmdLine = NULL;
 
-void Sys_Sleep( int msec )
+SleepType Sys_Sleep;
+
+
+void Sys_Sleep_Old( int msec )
 {
 #ifdef _WIN32
 	Sleep( msec );
@@ -70,6 +72,90 @@ void Sys_Sleep( int msec )
     usleep(msec * 1000);
 #endif
 }
+#if !defined ( _WIN32 )
+
+typedef int (*NET_Sleep_t)( void );
+NET_Sleep_t NET_Sleep =NULL;
+extern long ghMod; // from engine.cpp
+
+void Sys_Sleep_Net( int msec )
+{
+	if ( NET_Sleep != NULL) 
+	{
+		NET_Sleep();
+	} 
+	else
+	{
+		Sys_Sleep_Old(msec); // NET_Sleep isn't hooked yet, fallback to the old method
+	}
+}
+
+volatile char paused=0; // this checks if pause has run yet, tell the compiler it can change at any time
+// for Sys_Sleep_Timer()
+void alarmFunc(int num) {
+	signal( SIGALRM, alarmFunc ); // reset the signal handler
+	if(!paused) { // paused is 0, the timer has fired before the pause was called... Lets queue it again
+		struct itimerval itim;  
+		itim.it_interval.tv_sec = 0;   
+		itim.it_interval.tv_usec = 0;
+		itim.it_value.tv_sec = 0;
+		itim.it_value.tv_usec = 1000; // get it to run again real soon
+		setitimer( ITIMER_REAL, &itim, 0 );
+	}	
+
+}
+#endif
+
+void Sys_Sleep_Timer( int msec )
+{
+#ifdef _WIN32
+	Sleep( msec );
+#else
+// linux runs on a 100Hz scheduling clock, so the minimum latency from
+// usleep is 10msec. However, people want lower latency than this.. 
+//
+// There are a few solutions, one is to use the realtime scheduler in the 
+// kernel BUT this needs root privelleges to start. It also can play
+// unfriendly with other programs.
+
+// Another solution is to use software timers, they use the RTC of the 
+// system and are accurate to microseconds (or so).
+
+// timers, via setitimer() are used here
+
+	struct itimerval tm;
+
+	tm.it_value.tv_sec=msec/1000; // convert msec to seconds
+	tm.it_value.tv_usec=(msec%1000)*1E3; // get the number of msecs and change to micros
+	tm.it_interval.tv_sec  = 0;
+        tm.it_interval.tv_usec = 0;
+
+	paused=0;
+	if( setitimer(ITIMER_REAL,&tm,NULL)==0) 
+	{ // set the timer to trigger
+		pause();	 // wait for the signal
+	}
+	paused=1;
+
+#endif
+}
+
+
+void Sys_Sleep_Select( int msec )
+{
+#ifdef _WIN32
+	Sleep( msec );
+#else	// _WIN32
+	struct timeval tv;
+
+	// Assumes msec < 1000
+	tv.tv_sec	= 0;
+	tv.tv_usec	= 1000 * msec;
+
+	select( 1, NULL, NULL, NULL, &tv );
+#endif	// _WIN32
+}
+
 
 void *Sys_GetProcAddress( long library, const char *name )
 {
@@ -96,7 +182,7 @@ long Sys_LoadLibrary( char *lib )
     if (cwd[strlen(cwd)-1] == '/')
         cwd[strlen(cwd)-1] = 0;
         
-    sprintf(absolute_lib, "%s/%s", cwd, lib);
+    snprintf(absolute_lib, sizeof(absolute_lib), "%s/%s", cwd, lib);
     
     hDll = dlopen( absolute_lib, RTLD_NOW );
     if ( !hDll )
@@ -182,7 +268,7 @@ void UpdateStatus( int force )
 
 	tLast = tCurrent;
 
-	sprintf( szPrompt, "%.1f fps %2i(%2i spec)/%2i on %16s", (float)fps, n, spec, nMax, szMap);
+	snprintf( szPrompt, sizeof(szPrompt), "%.1f fps %2i(%2i spec)/%2i on %16s", (float)fps, n, spec, nMax, szMap);
 
 	WriteStatusText( szPrompt );
 }
@@ -237,7 +323,7 @@ void Sys_Printf(char *fmt, ...)
 	char szText[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (szText, fmt, argptr);
+	vsnprintf (szText, sizeof(szText), fmt, argptr);
 	va_end (argptr);
 
 	// Get Current text and append it.
@@ -259,115 +345,6 @@ void Load3rdParty( void )
 	{
 		hDLLThirdParty = Sys_LoadLibrary( "ghostinj.dll" );
 	}
-}
-
-/*
-============
-StripExtension
- 
-Strips the extension off a filename.  Works backward to insure stripping
-of extensions only, and not parts of the path that might contain a
-period (i.e. './hlds_run').
-============
-*/
-void StripExtension (char *in, char *out)
-{
-        char * in_current  = in + strlen(in);
-        char * out_current = out + strlen(in);
-        int    found_extension = 0;
- 
-        while (in_current >= in) {
-                if ((found_extension == 0) && (*in_current == '.')) {
-                        *out_current = 0;
-                        found_extension = 1;
-                }
-                else {
-                        if ((*in_current == '/') || (*in_current == '\\'))
-                                found_extension = 1;
- 
-                        *out_current = *in_current;
-                }
- 
-                in_current--;
-                out_current--;
-        }
-}
-
-/*
-==============
-CheckExeChecksum
-
-Simple self-crc check
-==============
-*/
-int CheckExeChecksum( void )
-{
-	unsigned char g_MD5[16];
-	char szFileName[ 256 ];
-	unsigned int newdat = 0;	
-	unsigned int olddat;
-	char datfile[ 256 ];
-
-	// Get our filename
-	if ( !Sys_GetExecutableName( szFileName ) )
-	{
-		return 0;
-	}
-
-	// compute raw 16 byte hash value
-	if ( !MD5_Hash_File( g_MD5, szFileName ) )
-	{
-		return 0;
-	}
-
-	StripExtension( szFileName, datfile );
-
-	strcat( datfile, ".dat" );
-
-	// Check .dat file ( or write a new one if running with -newdat )
-	FILE *fp = fopen( datfile, "rb" );
-	if ( !fp || CheckParm( "-newdat" ) )  // No existing file, or we are asked to create a new one
-	{
-		if ( fp )
-		{
-			fclose( fp );
-		}
-
-		newdat = *(unsigned int *)&g_MD5[0];
-		fp = fopen ( datfile, "wb" );
-		if ( fp )
-		{
-			fwrite( &newdat, sizeof( unsigned int ), 1, fp );
-			fclose( fp );
-		}
-	}
-	else
-	{
-		int bOk = 0;
-
-		if ( fread( &newdat, sizeof( unsigned int ), 1, fp ) == 1 )
-			bOk = 1;
-
-		fclose( fp );
-
-		if ( bOk )
-		{
-			olddat = *(unsigned int *)&g_MD5[0];
-			if ( olddat != newdat )
-			{
-				const char *pmsg = "Your Half-Life executable appears to have been modified.  Please check your system for viruses and then re-install Half-Life.";
-
-#ifdef _WIN32
-				MessageBox( NULL, pmsg, "Half-Life Dedicated Server", MB_OK );
-#else
-				printf( "%s\n", pmsg );
-#endif
-				return 0;
-			}
-		}
-	}
-
-	return 1;
 }
 
 /*
@@ -449,11 +426,6 @@ InitInstance
 int InitInstance( void )
 {
 	Load3rdParty();
-
-#if !defined( _DEBUG )
-	if ( !CheckExeChecksum() )
-		return 0;
-#endif
 
 	Eng_SetState( DLL_INACTIVE );
 
@@ -557,40 +529,45 @@ char *Sys_ConsoleInput (void)
 #else
 char *Sys_ConsoleInput(void)
 {
-	char ch;
-    int     len;
-	fd_set	fdset;
-    struct timeval timeout;
-	char szInput[256];
-	char iInput = 0;
+	struct timeval	tvTimeout;
+	fd_set			fdSet;
+	unsigned char	ch;
+ 
+	FD_ZERO( &fdSet );
+	FD_SET( STDIN_FILENO, &fdSet );
 
-	FD_ZERO(&fdset);
-	FD_SET(0, &fdset); // stdin
-	timeout.tv_sec = 0;
-	timeout.tv_usec = 0;
-	if (select (1, &fdset, NULL, NULL, &timeout) == -1 || !FD_ISSET(0, &fdset))
+	tvTimeout.tv_sec        = 0;
+	tvTimeout.tv_usec       = 0;
+
+	if ( select( 1, &fdSet, NULL, NULL, &tvTimeout ) == -1 || !FD_ISSET( STDIN_FILENO, &fdSet ) )
 		return NULL;
 
-	while (read(0,&ch,1))
+	console_textlen = 0;
+
+	// We're going to shove a newline onto the end of the input later in
+	// ProcessConsoleInput(), so only accept 254 chars instead of 255.    -LH
+
+	while ( read( STDIN_FILENO, &ch, 1 ) )
 	{
-		if (iInput >= 255)
-			continue;
-
-		if (ch == 10) 
+		if ( ( ch == 10 ) || ( console_textlen == 254 ) )
 		{
-			char *pszret = NULL;
+			// For commands longer than we can accept, consume the remainder of the input buffer
+			if ( ( console_textlen == 254 ) && ( ch != 10 ) )
+			{
+				while ( read( STDIN_FILENO, &ch, 1 ) )
+				{
+					if ( ch == 10 )
+						break;
+				}
+			}
 
-			//Null terminate string and return if we have anything
-			szInput[iInput] = 0;
-
-			if (iInput > 0)
-				pszret = szInput;
-			
-			iInput = 0;
-			return pszret;
+			//Null terminate string and return
+			console_text[ console_textlen ] = 0;
+			console_textlen = 0;
+			return console_text;
 		}
 
-		szInput[iInput++] = ch;
+		console_text[ console_textlen++ ] = ch;
 	}
 
 	return NULL;
@@ -618,8 +595,8 @@ void WriteStatusText( char *szText )
 		wAttrib[i] = FOREGROUND_RED | FOREGROUND_INTENSITY;
 	}
 
-	memset( szFullLine, 0, 81 );
-	strcpy( szFullLine, szText );
+	memset( szFullLine, 0, sizeof(szFullLine) );
+	snprintf( szFullLine, sizeof( szFullLine ), "%s", szText );
 
 	coord.X = 0;
 	coord.Y = 0;
@@ -688,7 +665,7 @@ void ProcessConsoleInput( void )
 		if (s)
 		{
 			char szBuf[ 256 ];
-			sprintf( szBuf, "%s\n", s );
+			snprintf( szBuf, sizeof(szBuf), "%s\n", s );
 			engineapi.Cbuf_AddText ( szBuf );
 		}
 	} while (s);
@@ -702,39 +679,6 @@ GameInit
 int GameInit(void)
 {
 	char *p;
-#ifdef _WIN32
-	MEMORYSTATUS Buffer;
-
-	memset( &Buffer, 0, sizeof( Buffer ) );
-	Buffer.dwLength = sizeof( MEMORYSTATUS );
-	
-	GlobalMemoryStatus ( &Buffer );
-
-	// take the greater of all the available memory or half the total memory,
-	// but at least 10 Mb and no more than 32 Mb, unless they explicitly
-	// request otherwise
-	giMemSize = Buffer.dwTotalPhys;
-
-	if ( giMemSize < FIFTEEN_MEGS )
-	{
-		return 0;
-	}
-
-	if ( giMemSize < (int)( Buffer.dwTotalPhys >> 1 ) )
-	{
-		giMemSize = (int)( Buffer.dwTotalPhys >> 1 );
-	}
-
-	// At least 10 mb, even if we have to swap a lot.
-	if (giMemSize <= MINIMUM_WIN_MEMORY)
-	{
-		giMemSize = MINIMUM_WIN_MEMORY;
-	}
-	else if (giMemSize > MAXIMUM_WIN_MEMORY)
-	{
-		giMemSize = MAXIMUM_WIN_MEMORY;
-	}
-#endif
 
 	// Command line override
 	if ( (CheckParm ("-heapsize", &p ) ) && p )
@@ -742,12 +686,37 @@ int GameInit(void)
 		giMemSize = atoi( p ) * 1024;
 	}
 
-	// Command line to force running with minimal memory.
-	if (CheckParm ("-minmemory", NULL))
+	Sys_Sleep=Sys_Sleep_Old;
+
+#if !defined ( _WIN32 )
+	char *pPingType;
+	int type;
+	if ( (CheckParm ("-pingboost", &pPingType)) && pPingType )
 	{
-		giMemSize = MINIMUM_WIN_MEMORY;
+		type=atoi( pPingType );
+		switch( type ) {
+			case 1:
+				//printf("Using timer method\n");
+				signal(SIGALRM,alarmFunc);
+				Sys_Sleep=Sys_Sleep_Timer;
+				break;
+			case 2:
+				Sys_Sleep = Sys_Sleep_Select;
+				break;
+			case 3:
+				Sys_Sleep = Sys_Sleep_Net;
+				// we Sys_GetProcAddress NET_Sleep() from 
+				//engine_i386.so later in this function
+				break;
+			default: // just in case
+				Sys_Sleep=Sys_Sleep_Old;
+				break;
+		}
+
 	}
+#endif
 	
+
 	// Try and allocated it
 #ifdef _WIN32
 	gpMemBase = (unsigned char *)::GlobalAlloc( GMEM_FIXED, giMemSize );
@@ -781,6 +750,14 @@ int GameInit(void)
 		return 0;
 	}
 
+#if !defined ( _WIN32 )
+	if ( type == 3 ) 
+	{
+		NET_Sleep=(NET_Sleep_t)Sys_GetProcAddress(ghMod,"NET_Sleep_Timeout");
+		//printf("Net_Sleep:%p\n",NET_Sleep);
+	}
+#endif
+
 	Eng_SetState( DLL_ACTIVE );
 
 	return 1;
@@ -808,6 +785,25 @@ void GameShutdown( void )
 }
 
 #ifdef _WIN32
+
+BOOL gbAppHasBeenTerminated = FALSE;
+BOOL CtrlHandler(DWORD fdwCtrlType)
+{
+	switch ( fdwCtrlType )
+	{
+		case CTRL_C_EVENT:
+		case CTRL_CLOSE_EVENT:
+		case CTRL_BREAK_EVENT:
+		case CTRL_LOGOFF_EVENT:
+		case CTRL_SHUTDOWN_EVENT:
+			gbAppHasBeenTerminated = TRUE;
+			return TRUE;
+
+		default:
+			return FALSE;
+	}
+}
+
 /*
 ==============
 WinMain
@@ -821,6 +817,8 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 
 	// Store off command line for argument searching
 	gpszCmdLine = strdup( GetCommandLine() );
+
+	Sys_Sleep=Sys_Sleep_Old; // win32 doesn't have pingbooster options :)
 
 	if ( !InitInstance() )
 	{
@@ -852,6 +850,9 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 		double newtime;
 		double dtime;
 
+		if ( gbAppHasBeenTerminated )
+			break;
+
 		// Try to allow other apps to get some CPU
 		Sys_Sleep( 1 );
 
@@ -868,6 +869,9 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 			
 			dtime = newtime - oldtime;
 
+			if ( gbAppHasBeenTerminated )
+				break;
+
 			if ( dtime > 0.001 )
 				break;
 
@@ -875,8 +879,12 @@ int PASCAL WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpszCmdL
 			Sys_Sleep( 1 );
 		}
 		
+
 		while ( ::PeekMessage( &msg, NULL, 0, 0, PM_NOREMOVE ) )
 		{
+			if ( gbAppHasBeenTerminated )
+				break;
+
 			if (!::GetMessage( &msg, NULL, 0, 0))
 			{
 				bDone = 1;
@@ -962,10 +970,11 @@ int main(int argc, char **argv)
 	int		iret = -1;
 
 #ifdef _DEBUG
-	strcpy(g_szEXEName, "hlds_run.dbg" );
+	snprintf(g_szEXEName, sizeof( g_szEXEName ), "hlds_run.dbg" );
 #else
-	strcpy(g_szEXEName, *argv);
+	snprintf(g_szEXEName, sizeof( g_szEXEName ), "%s", *argv );
 #endif
+
 	// Store off command line for argument searching
 	BuildCmdLine(argc, argv);
 	gpszCmdLine = strdup( GetCommandLine() );
@@ -998,7 +1007,29 @@ int main(int argc, char **argv)
 		double newtime;
 		double dtime;
 
-		// Try to allow other apps to get some CPU
+#ifdef FRAMERATE
+		static int frameNumber=0,frameRate=0;
+		static struct timeval beforeTime;		
+		if(frameRate==0) {
+			gettimeofday(&beforeTime,NULL);
+		}
+
+		frameRate++;
+
+		if(frameRate%1000==0) {
+			struct timeval afterTime;
+			float timediff;
+			
+			gettimeofday(&afterTime,NULL);
+			timediff= (float)(afterTime.tv_sec-beforeTime.tv_sec)+
+        		      ((float)(afterTime.tv_usec-beforeTime.tv_usec))/1E6;
+
+			printf("Frame Rate:%f\n",(float)frameRate/timediff);
+			frameRate=0;
+
+		}
+#endif
+
 		Sys_Sleep( 1 );
 
 		if ( !engineapi.Sys_FloatTime )
@@ -1021,14 +1052,9 @@ int main(int argc, char **argv)
 			Sys_Sleep( 1 );
 		}
 		
-		Eng_Frame( 0, dtime );
+		ProcessConsoleInput();
 
-		p = Sys_ConsoleInput();
-		if ( p )
-		{
-			engineapi.Cbuf_AddText( p );
-			engineapi.Cbuf_AddText( "\n" );
-		}
+		Eng_Frame( 0, dtime );
 
 		oldtime = newtime;
 	}

@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -146,6 +146,23 @@ void CVoiceGameMgr::ClientConnected(edict_t *pEdict)
 	g_SentBanMasks[index].Init(0);
 }
 
+// Called to determine if the Receiver has muted (blocked) the Sender
+// Returns true if the receiver has blocked the sender
+bool CVoiceGameMgr::PlayerHasBlockedPlayer(CBasePlayer *pReceiver, CBasePlayer *pSender)
+{
+	int iReceiverIndex, iSenderIndex;
+
+	if ( !pReceiver || !pSender )
+		return false;
+
+	iReceiverIndex = pReceiver->entindex() - 1;
+	iSenderIndex   = pSender->entindex() - 1;
+
+	if ( iReceiverIndex < 0 || iReceiverIndex >= m_nMaxPlayers || iSenderIndex < 0 || iSenderIndex >= m_nMaxPlayers )
+		return false;
+
+	return ( g_BanMasks[iReceiverIndex][iSenderIndex] ? true : false );
+}
 
 bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 {
@@ -176,7 +193,7 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 		}
 
 		// Force it to update the masks now.
-		UpdateMasks();		
+		//UpdateMasks();		
 		return true;
 	}
 	else if(stricmp(cmd, "VModEnable") == 0 && CMD_ARGC() >= 2)
@@ -184,7 +201,7 @@ bool CVoiceGameMgr::ClientCommand(CBasePlayer *pPlayer, const char *cmd)
 		VoiceServerDebug( "CVoiceGameMgr::ClientCommand: VModEnable (%d)\n", !!atoi(CMD_ARGV(1)) );
 		g_PlayerModEnable[playerClientIndex] = !!atoi(CMD_ARGV(1));
 		g_bWantModEnable[playerClientIndex] = false;
-		UpdateMasks();		
+		//UpdateMasks();		
 		return true;
 	}
 	else

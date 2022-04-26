@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -68,8 +68,8 @@ inline struct cvar_s *CVAR_CREATE( const char *cv, const char *val, const int fl
 #define ScreenWidth (gHUD.m_scrinfo.iWidth)
 
 // Use this to set any co-ords in 640x480 space
-#define XRES(x)		((x)  * ((float)ScreenWidth / 640))
-#define YRES(y)		((y)  * ((float)ScreenHeight / 480))
+#define XRES(x)		((int)(float(x)  * ((float)ScreenWidth / 640.0f) + 0.5f))
+#define YRES(y)		((int)(float(y)  * ((float)ScreenHeight / 480.0f) + 0.5f))
 
 // use this to project world coordinates to screen coordinates
 #define XPROJECT(x)	( (1.0f+(x))*ScreenWidth*0.5f )

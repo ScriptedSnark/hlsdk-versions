@@ -1,7 +1,7 @@
 #
-# Half-Life DMC SDK 2.2 dmc_i386.so Makefile for x86 Linux
+# Half-Life DMC SDK 2.3 dmc_i386.so Makefile for x86 Linux
 #
-# November 2001 by Leon Hartwig (hartwig@valvesoftware.com)
+# October 2002 by Leon Hartwig (hartwig@valvesoftware.com)
 #
 
 DLLNAME=dmc

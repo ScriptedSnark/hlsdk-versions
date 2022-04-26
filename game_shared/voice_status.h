@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -134,7 +134,7 @@ public:
 	// blocks the target client from being heard
 	void	SetPlayerBlockedState(int iPlayerIndex, bool blocked);
 
-private:
+public:
 
 	CVoiceLabel*	FindVoiceLabel(int clientindex);	// Find a CVoiceLabel representing the specified speaker. 
 													// Returns NULL if none.
@@ -151,7 +151,7 @@ private:
 	void			UpdateBanButton(int iClient);
 
 
-private:
+public:
 
 	enum			{MAX_VOICE_SPEAKERS=7};
 
@@ -209,12 +209,15 @@ public:
 	
 	CVoiceBanMgr		m_BanMgr;				// Tracks which users we have squelched and don't want to hear.
 
-private:
+public:
 
 	bool				m_bBanMgrInitialized;
 
 	// Labels telling who is speaking.
 	CVoiceLabel			m_Labels[MAX_VOICE_SPEAKERS];
+
+	// Cache the game directory for use when we shut down
+	char *				m_pchGameDir;
 };
 
 

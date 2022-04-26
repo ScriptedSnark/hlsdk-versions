@@ -1,16 +1,17 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
 // $NoKeywords: $
 //=============================================================================
-
+#include <stdio.h>
 #ifdef _WIN32
 #include <windows.h>
+#define snprintf _snprintf
 #else
-#include <stdio.h>
 #include <memory.h>
 #include <string.h>
+#include <stdlib.h> // exit()
 #endif
 
 #include "dedicated.h"
@@ -28,7 +29,14 @@ long		ghMod = 0;
 static engine_api_t nullapi;
 engine_api_t engineapi = nullapi;
 
+extern SleepType Sys_Sleep; // setup by sys_ded.cpp
+
 typedef int (*engine_api_func)( int version, int size, struct engine_api_s *api );
+
+#ifdef _WIN32
+// This is a big chunk of uninitialized memory that we reserve for loading blobs into.
+char g_rgchBlob[0x03800000];
+#endif	// _WIN32
 
 /*
 ==============
@@ -120,7 +128,7 @@ int Eng_Load( const char *cmdline, struct exefuncs_s *pef, int memory, void *pme
 #if defined( _DEBUG )
 	char *p;
 
-	if ( psz && !stricmp( psz, "sw.dll" ) && CheckParm( "-force", &p ) && p )
+	if ( psz && !stricmp( psz, "swds.dll" ) && CheckParm( "-force", &p ) && p )
 	{
 		psz = p;
 	}
@@ -164,7 +172,7 @@ int Eng_Load( const char *cmdline, struct exefuncs_s *pef, int memory, void *pme
 
 	Eng_SetSubState( iSubMode );
 
-	strcpy( szLastDLL, psz );
+	snprintf( szLastDLL, sizeof( szLastDLL ), "%s", psz );
 
 	ghMod		= hMod;
 
@@ -234,6 +242,14 @@ int Eng_Frame( int fForce, double time )
 				exit( 0 );
 #endif
 				break;
+			case DLL_RESTART:
+				Eng_Unload();
+#ifdef _WIN32
+				PostQuitMessage(1);
+#else			
+				exit( 1 );
+#endif
+				break;
 			default:
 				break;
 			}
@@ -277,7 +293,7 @@ int Eng_Frame( int fForce, double time )
 		}
 	}
 
-	if ( gDLLState == DLL_CLOSE )
+	if ( gDLLState == DLL_CLOSE || gDLLState == DLL_RESTART)
 	{
 		static int bQuitting = 0;
 		
@@ -297,7 +313,14 @@ int Eng_Frame( int fForce, double time )
 #ifdef _WIN32
 		PostQuitMessage(0);
 #else			
-		exit( 0 );
+		if ( gDLLState == DLL_RESTART ) 
+		{
+			exit( 1 );
+		}
+		else
+		{
+			exit( 0 );
+		}
 #endif
 	}
 

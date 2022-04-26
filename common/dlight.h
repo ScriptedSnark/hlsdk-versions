@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -18,7 +18,7 @@
 #pragma once
 #endif
 
-typedef struct
+typedef struct dlight_s
 {
 	vec3_t	origin;
 	float	radius;

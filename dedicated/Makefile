@@ -1,5 +1,5 @@
 #
-# hlds_run (front end for hlds_l) Makefile for Linux i386
+# hlds (front end for hlds_l) Makefile for Linux i386
 #
 # May 2000, Leon Hartwig (hartwig@valvesoftware.com)
 #
@@ -40,16 +40,15 @@ $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 
 OBJ = \
 	$(OBJDIR)/sys_ded.o \
-	$(OBJDIR)/engine.o \
-	$(OBJDIR)/md5.o 
+	$(OBJDIR)/engine.o
 
-hlds_run : neat $(OBJ)
+hlds : neat $(OBJ)
 	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(OBJ)
 neat:
 	-mkdir $(OBJDIR)
 clean:
 	-rm -f $(OBJ)
-	-rm -f hlds_run
+	-rm -f hlds
 spotless: clean
 	-rm -r $(OBJDIR)
 

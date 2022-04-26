@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -37,6 +37,8 @@
 // #define DUCKFIX
 
 extern bool g_bHaveMOTD;
+#include "pm_shared.h"
+#include "hltv.h"
 
 extern DLL_GLOBAL ULONG		g_ulModelIndexPlayer;
 extern DLL_GLOBAL BOOL		g_fGameOver;
@@ -1101,11 +1103,8 @@ void CBasePlayer::StartObserver( Vector vecPosition, Vector vecViewAngle )
 	pev->deadflag = DEAD_RESPAWNABLE;
 
 	// Tell the physics code that this player's now in observer mode
-	pev->iuser1 = OBS_CHASE_LOCKED;
+	Observer_SetMode(OBS_CHASE_LOCKED);
 	m_flNextObserverInput = 0;
-
-	// Find a player to watch
-	Observer_FindNextPlayer();
 }
 
 // 
@@ -3364,6 +3363,7 @@ void CBasePlayer :: ForceClientDllUpdate( void )
 	m_iTrain |= TRAIN_NEW;  // Force new train message.
 	m_fWeapon = FALSE;          // Force weapon send
 	m_fKnownItem = FALSE;    // Force weaponinit messages.
+	m_fInitHUD = TRUE;		// Force HUD gmsgResetHUD message
 
 	// Now force all the necessary messages
 	//  to be sent.
@@ -3461,9 +3461,7 @@ void CBasePlayer::ImpulseCommands( )
 			}
 
 			break;
-		case    204:  //  Demo recording, update client dll specific data again.
-			ForceClientDllUpdate(); 
-			break;
+
 		default:
 			// check all of the cheat impulse commands now
 			CheatImpulseCommands( iImpulse );

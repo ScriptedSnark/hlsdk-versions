@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -67,25 +67,59 @@ int CHud :: Redraw( float flTime, int intermission )
 	if ( m_flTimeDelta < 0 )
 		m_flTimeDelta = 0;
 
+	// Bring up the scoreboard during intermission
+	if (gViewPort)
+	{
+		if ( m_iIntermission && !intermission )
+		{
+			// Have to do this here so the scoreboard goes away
+			m_iIntermission = intermission;
+			gViewPort->HideCommandMenu();
+			gViewPort->HideScoreBoard();
+			gViewPort->UpdateSpectatorPanel();
+		}
+		else if ( !m_iIntermission && intermission )
+		{
+			m_iIntermission = intermission;
+			gViewPort->HideCommandMenu();
+			gViewPort->HideVGUIMenu();
+			gViewPort->ShowScoreBoard();
+			gViewPort->UpdateSpectatorPanel();
+
+			// Take a screenshot if the client's got the cvar set
+			if ( CVAR_GET_FLOAT( "hud_takesshots" ) != 0 )
+				m_flShotTime = flTime + 1.0;	// Take a screenshot in a second
+		}
+	}
+
+	if (m_flShotTime && m_flShotTime < flTime)
+	{
+		gEngfuncs.pfnClientCmd("snapshot\n");
+		m_flShotTime = 0;
+	}
 	// if no redrawing is necessary
 	// return 0;
 	
-	HUDLIST *pList = m_pHudList;
-
-	while (pList)
+	// draw all registered HUD elements
+	if ( m_pCvarDraw->value )
 	{
-		if ( !intermission )
-		{
-			if ((pList->p->m_iFlags & HUD_ACTIVE) && !(m_iHideHUDDisplay & HIDEHUD_ALL))
-				pList->p->Draw(flTime);
-		}
-		else
-		{  // it's an intermission,  so only draw hud elements that are set to draw during intermissions
-			if ( pList->p->m_iFlags & HUD_INTERMISSION )
-				pList->p->Draw( flTime );
-		}
+		HUDLIST *pList = m_pHudList;
 
-		pList = pList->pNext;
+		while (pList)
+		{
+			if ( !intermission )
+			{
+				if ((pList->p->m_iFlags & HUD_ACTIVE) && !(m_iHideHUDDisplay & HIDEHUD_ALL))
+					pList->p->Draw(flTime);
+			}
+			else
+			{  // it's an intermission,  so only draw hud elements that are set to draw during intermissions
+				if ( pList->p->m_iFlags & HUD_INTERMISSION )
+					pList->p->Draw( flTime );
+			}
+
+			pList = pList->pNext;
+		}
 	}
 
 	// are we in demo mode? do we need to draw the logo in the top corner?
@@ -109,35 +143,6 @@ int CHud :: Redraw( float flTime, int intermission )
 		SPR_DrawAdditive(i, x, y, NULL);
 	}
 	
-// Bring up the scoreboard during intermission
-	if (gViewPort)
-	{
-		if ( m_iIntermission && !intermission )
-		{
-			// Have to do this here so the scoreboard goes away
-			m_iIntermission = intermission;
-			gViewPort->HideCommandMenu();
-			gViewPort->HideScoreBoard();
-		}
-		else if ( !m_iIntermission && intermission )
-		{
-			gViewPort->HideCommandMenu();
-			gViewPort->HideVGUIMenu();
-			gViewPort->ShowScoreBoard();
-
-			// Take a screenshot if the client's got the cvar set
-			if ( CVAR_GET_FLOAT( "hud_takesshots" ) != 0 )
-				m_flShotTime = flTime + 1.0;	// Take a screenshot in a second
-		}
-	}
-
-	if (m_flShotTime && m_flShotTime < flTime)
-	{
-		gEngfuncs.pfnClientCmd("snapshot\n");
-		m_flShotTime = 0;
-	}
-
-	m_iIntermission = intermission;
 
 	return 1;
 }

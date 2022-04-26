@@ -23,8 +23,8 @@ CFG=cl_dll - Win32 Release
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/GoldSrc/dmc/cl_dlls", STQCAAAA"
-# PROP Scc_LocalPath "."
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
 CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
@@ -341,6 +341,10 @@ SOURCE=..\..\game_shared\vgui_slider2.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\vgui_SpectatorPanel.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\vgui_viewport.cpp
 # End Source File
 # Begin Source File
@@ -469,10 +473,6 @@ SOURCE=..\dlls\quake_gun.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\r_studioint.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\StudioModelRenderer.h
 # End Source File
 # Begin Source File
@@ -522,6 +522,10 @@ SOURCE=.\vgui_ScorePanel.h
 # Begin Source File
 
 SOURCE=.\vgui_ServerBrowser.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\vgui_SpectatorPanel.h
 # End Source File
 # Begin Source File
 

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -29,17 +29,12 @@
 
 #ifdef CLIENT_DLL
 	// Spectator Mode
-	#include "..\common\hltv.h"
-	float	vecNewViewAngles[3];
-	float	vecNewViewOrigin[3];
-	int		iHasNewViewAngles;
-	int		iHasNewViewOrigin;
-	int		iIsSpectator;
-	unsigned int	uiDirectorFlags;
+	int		iJumpSpectator;
+	float	vJumpOrigin[3];
+	float	vJumpAngles[3];
 #endif
 
 static int pm_shared_initialized = 0;
-void InterpolateAngles( float *start, float *end, float *output, float frac );
 
 #pragma warning( disable : 4305 )
 
@@ -1579,41 +1574,6 @@ int PM_CheckStuck (void)
 	return 1;
 }
 
-#define	CHASE_DISTANCE		112		// Desired distance from target
-#define CHASE_PADDING		4		// Minimum allowable distance between the view and a solid face
-
-// Get the origin of the Observer based around the target's position and angles
-void GetChaseOrigin( vec3_t targetangles, int iTargetIndex, vec3_t offset, vec3_t *returnvec )
-{
-	vec3_t forward;
-	vec3_t vecEnd;
-	vec3_t vecStart;
-	struct pmtrace_s *trace;
-	physent_t *target;
-
-	target = &(pmove->physents[ iTargetIndex ]);
-
-	// Trace back from the target using the player's view angles
-	AngleVectors(targetangles, forward, NULL, NULL);
-
-	// Without view_ofs, just guess at adding 28 (standing player) to the origin to get the eye-height
-	VectorCopy( target->origin, vecStart );
-	vecStart[2] += 28;
-	VectorMA(offset, CHASE_DISTANCE, forward, vecEnd);
-	VectorSubtract( vecStart, vecEnd, vecEnd );
-
-	trace = pmove->PM_TraceLine( vecStart, vecEnd, 0, 2, iTargetIndex );
-
-	// Return the position
-	VectorMA( trace->endpos, CHASE_PADDING, trace->plane.normal, *returnvec );
-
-#ifdef CLIENT_DLL
-	//	pmove->Con_NPrintf( 9, "vecStart %f %f %f.\n", vecStart[0], vecStart[1], vecStart[2] );
-	//	pmove->Con_NPrintf( 10, "  vecEnd %f %f %f.\n", vecEnd[0], vecEnd[1], vecEnd[2] );
-	//	pmove->Con_NPrintf( 11, "  EndPos %f %f %f.\n", trace->endpos[0], trace->endpos[1], trace->endpos[2] );
-#endif
-}
-
 /*
 ===============
 PM_SpectatorMove
@@ -1629,136 +1589,27 @@ void PM_SpectatorMove (void)
 	float		fmove, smove;
 	vec3_t		wishdir;
 	float		wishspeed;
-	static	vec3_t		lastAngle;
-
-#ifdef CLIENT_DLL
-	if ( pmove->runfuncs )
-	{
-		// Set spectator flag
-		iIsSpectator = SPEC_IS_SPECTATOR;
-	}
-#endif
-
-	// Are we not roaming and locked onto a target?
-	if ( (pmove->iuser1 != OBS_ROAMING) && pmove->iuser2 )
-	{
-		vec3_t vecViewAngle;
-		vec3_t vecNewOrg;
-		vec3_t vecOffset;
-		int target1,target2 = 0;
-
-		// Find the client this player's targeting
-		for (target1 = 0; target1 < pmove->numphysent; target1++)
-		{
-			if ( pmove->physents[target1].info == pmove->iuser2 )
-				break;
-		}
-
-		if (target1 == pmove->numphysent)
-		{
-#ifdef CLIENT_DLL
-			if ( pmove->runfuncs )
-			{
-				// Force the client to keep last know view
-				iHasNewViewAngles = true;
-				iHasNewViewOrigin = true;
-			}
-#endif
-			return;	// if we don't find the observers primary target, stop whole function
-		}
-
-		VectorCopy( vec3_origin, vecOffset );
-
+	// this routine keeps track of the spectators psoition
+	// there a two different main move types : track player or moce freely (OBS_ROAMING)
+	// doesn't need excate track position, only to generate PVS, so just copy
+	// targets position and real view position is calculated on client (saves server CPU)
 	
-		if ( (pmove->iuser1 == OBS_DIRECTED) && pmove->iuser3 )
-		{
-			// find cameras seconds target
-			// Find the client this player's targeting
-			for (target2 = 0; target2 < pmove->numphysent; target2++)
-			{
-				if ( pmove->physents[target2].info == pmove->iuser3 )
-					break;
-			}
-
-			if (target2 == pmove->numphysent)
-			{
-				target2 = 0; // if we don't find the second target, continue only with primary target
-			}
-		}
-
-		// Calculate a camera position based upon the target's origin and angles
-		if ( (pmove->iuser1 == OBS_CHASE_LOCKED) )
-		{
-			// use the targets directon as viewangles
-			VectorCopy( pmove->physents[target1].angles, vecViewAngle );
-			vecViewAngle[0] = 0;
-
 #ifdef CLIENT_DLL
-			if ( pmove->runfuncs )
-			{
-				// Force the client to start smoothing both the spectator's origin and angles
-				iIsSpectator |= (SPEC_SMOOTH_ANGLES | SPEC_SMOOTH_ORIGIN);
-			}
-#endif
-		}
-		else if ( pmove->iuser1 == OBS_DIRECTED )
+		// execute all jumps
+		if ( iJumpSpectator )
 		{
-			// use angles between primary and second target as viewangle
-			// tracking also seconds target 
-#ifdef CLIENT_DLL
-			if ( target2 )
-			{
-				VectorSubtract( pmove->physents[target2].origin, pmove->physents[target1].origin, vecViewAngle );
-				VectorAngles(vecViewAngle, vecViewAngle );
-				vecViewAngle[0] = -vecViewAngle[0];
-
-			if ( uiDirectorFlags & DRC_FLAG_SIDE )
-				vecViewAngle[1]+=22.5f;
-			else
-				vecViewAngle[1]-=22.5f;
-
-			if ( uiDirectorFlags & DRC_FLAG_DRAMATIC )
-				vecViewAngle[0]-=12.5f;
-			else
-				vecViewAngle[0]+=12.5f;
-			}
-
-
-			if ( pmove->runfuncs )
-			{
-				// Force the client to start smoothing both the spectator's origin and angles
-				iIsSpectator |= (SPEC_SMOOTH_ANGLES | SPEC_SMOOTH_ORIGIN);
-				InterpolateAngles( lastAngle, vecViewAngle, vecViewAngle, 0.1f );
-				VectorCopy( vecViewAngle, lastAngle );
-			}
-#endif
-		}
-		else
-		{
-			// Freelooking around the target
-			VectorCopy( pmove->angles, vecViewAngle );
-		}
-
-		GetChaseOrigin( vecViewAngle, target1, vecOffset, &vecNewOrg);
-		VectorCopy( vecNewOrg, pmove->origin );
-		VectorCopy( vecViewAngle, pmove->angles );
-		VectorCopy( vec3_origin, pmove->velocity );
-
-#ifdef CLIENT_DLL
-		if ( pmove->runfuncs )
-		{
-			// Copy the desired angles into the client global var so we can force them to the player's view
-			VectorCopy( pmove->angles, vecNewViewAngles );
-			iHasNewViewAngles = true;
-			VectorCopy( pmove->origin, vecNewViewOrigin );
-			iHasNewViewOrigin = true;
+			VectorCopy( vJumpOrigin, pmove->origin );
+			VectorCopy( vJumpAngles, pmove->angles );
+			VectorCopy( vec3_origin, pmove->velocity );
+			iJumpSpectator	= 0;
+			return;
 		}
 #endif
-	}
-	else
+
+	if ( pmove->iuser1 == OBS_ROAMING)
 	{
 		// Move around in normal spectator method
-		// friction
+	
 		speed = Length (pmove->velocity);
 		if (speed < 1)
 		{
@@ -1810,6 +1661,7 @@ void PM_SpectatorMove (void)
 		addspeed = wishspeed - currentspeed;
 		if (addspeed <= 0)
 			return;
+
 		accelspeed = pmove->movevars->accelerate*pmove->frametime*wishspeed;
 		if (accelspeed > addspeed)
 			accelspeed = addspeed;
@@ -1819,6 +1671,29 @@ void PM_SpectatorMove (void)
 
 		// move
 		VectorMA (pmove->origin, pmove->frametime, pmove->velocity, pmove->origin);
+	}
+	else
+	{
+		// all other modes just track some kind of target, so spectator PVS = target PVS
+
+		int target;
+
+		// Find the client this player's targeting
+		for (target = 0; target < pmove->numphysent; target++)
+		{
+			if ( pmove->physents[target].info == pmove->iuser2 )
+				break;
+		}
+
+		if (target == pmove->numphysent)
+			return;
+
+		// use targets position as own origin for PVS
+		VectorCopy( pmove->physents[target].angles, pmove->angles );
+		VectorCopy( pmove->physents[target].origin, pmove->origin );
+
+		// no velocity
+		VectorCopy( vec3_origin, pmove->velocity );
 	}
 }
 
@@ -2534,15 +2409,6 @@ void PM_PlayerMove ( qboolean server )
 	AngleVectors (pmove->angles, pmove->forward, pmove->right, pmove->up);
 
 	// PM_ShowClipBox();
-
-#ifdef CLIENT_DLL
-	if ( pmove->runfuncs )
-	{
-		iIsSpectator = false;
-		iHasNewViewAngles = false;
-		iHasNewViewOrigin = false;
-	}
-#endif
 
 	// Special handling for spectator and observers. (iuser1 is set if the player's in observer mode)
 	if ( pmove->spectator || pmove->iuser1 > 0 )

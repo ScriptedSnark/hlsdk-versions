@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -176,6 +176,8 @@
 								// be chosen by players, only enforced by maps
 #define PC_LASTCLASS	12 		// Use this as the high-boundary for any loops
 								// through the playerclass.
+
+#define SENTRY_COLOR	10		// will be in the PC_RANDOM slot for team colors
 
 // These are just for the scanner
 #define SCAN_SENTRY		13
@@ -360,14 +362,6 @@ enum
 // Silent Spy Feign
 #define TF_SPY_SILENTDIE		199
 
-
-/*==================================================*/
-/*	Colors											*/
-/*==================================================*/
-#define TEAM1_COLOR		150
-#define TEAM2_COLOR		250
-#define TEAM3_COLOR		45
-#define TEAM4_COLOR		100
 
 /*==================================================*/
 /* Defines for the ENGINEER's Building ability		*/
@@ -676,7 +670,7 @@ enum
 #define PC_SOLDIER_INITAMMO_ROCKET	10 
 #define PC_SOLDIER_GRENADE_TYPE_1	GR_TYPE_NORMAL
 #define PC_SOLDIER_GRENADE_TYPE_2	GR_TYPE_NAIL
-#define PC_SOLDIER_GRENADE_INIT_1	4 	 
+#define PC_SOLDIER_GRENADE_INIT_1	2
 #define PC_SOLDIER_GRENADE_INIT_2	1 	 
 #define PC_SOLDIER_TF_ITEMS			0 
 
@@ -711,8 +705,8 @@ enum
 #define PC_DEMOMAN_INITAMMO_DETPACK	1 
 #define PC_DEMOMAN_GRENADE_TYPE_1	GR_TYPE_NORMAL
 #define PC_DEMOMAN_GRENADE_TYPE_2	GR_TYPE_MIRV
-#define PC_DEMOMAN_GRENADE_INIT_1	4 	 
-#define PC_DEMOMAN_GRENADE_INIT_2	4 	 
+#define PC_DEMOMAN_GRENADE_INIT_1	2
+#define PC_DEMOMAN_GRENADE_INIT_2	2 	 
 #define PC_DEMOMAN_TF_ITEMS			0 
 
 // Class Details for COMBAT MEDIC
@@ -739,7 +733,7 @@ enum
 #define PC_MEDIC_INITAMMO_MEDIKIT	50 
 #define PC_MEDIC_GRENADE_TYPE_1		GR_TYPE_NORMAL
 #define PC_MEDIC_GRENADE_TYPE_2		GR_TYPE_CONCUSSION
-#define PC_MEDIC_GRENADE_INIT_1		3 	 
+#define PC_MEDIC_GRENADE_INIT_1		2
 #define PC_MEDIC_GRENADE_INIT_2		2 	 
 #define PC_MEDIC_TF_ITEMS			0 
 #define PC_MEDIC_REGEN_TIME			3   // Number of seconds between each regen.
@@ -767,7 +761,7 @@ enum
 #define PC_HVYWEAP_INITAMMO_ROCKET	0 
 #define PC_HVYWEAP_GRENADE_TYPE_1	GR_TYPE_NORMAL
 #define PC_HVYWEAP_GRENADE_TYPE_2	GR_TYPE_MIRV
-#define PC_HVYWEAP_GRENADE_INIT_1	4 	 
+#define PC_HVYWEAP_GRENADE_INIT_1	2
 #define PC_HVYWEAP_GRENADE_INIT_2	1 	 
 #define PC_HVYWEAP_TF_ITEMS			0 
 #define PC_HVYWEAP_CELL_USAGE		7	// Amount of cells spent to power up assault cannon
@@ -796,7 +790,7 @@ enum
 #define PC_PYRO_INITAMMO_ROCKET	5 
 #define PC_PYRO_GRENADE_TYPE_1	GR_TYPE_NORMAL
 #define PC_PYRO_GRENADE_TYPE_2	GR_TYPE_NAPALM
-#define PC_PYRO_GRENADE_INIT_1	1 	 
+#define PC_PYRO_GRENADE_INIT_1	2
 #define PC_PYRO_GRENADE_INIT_2	4 	 
 #define PC_PYRO_TF_ITEMS		0
 #define PC_PYRO_ROCKET_USAGE	3	// Number of rockets per incendiary cannon shot
@@ -980,7 +974,7 @@ enum
 /*==========================================================================*/
 /* Flamethrower																*/
 /*==========================================================================*/
-#define FLAME_PLYRMAXTIME	4.5 // lifetime in seconds of a flame on a player
+#define FLAME_PLYRMAXTIME	5.0 // lifetime in seconds of a flame on a player
 #define FLAME_MAXBURNTIME	8  	// lifetime in seconds of a flame on the world (big ones)
 #define NAPALM_MAXBURNTIME	20 	// lifetime in seconds of flame from a napalm grenade
 #define FLAME_MAXPLYRFLAMES	4 	// maximum number of flames on a player
@@ -990,6 +984,7 @@ enum
 #define FLAME_DAMAGE_TIME	1	// Interval between damage burns from flames
 #define FLAME_EFFECT_TIME	0.2	// frequency at which we display flame effects.
 #define FLAME_THINK_TIME	0.1	// Seconds between times the flame checks burn
+#define PER_FLAME_DAMAGE	2	// Damage taken per second per flame by burning players
 
 /*==================================================*/
 /* CTF Support defines 								*/
@@ -1114,6 +1109,7 @@ float already_chosen_map;
 #define MENU_CLASSHELP2 			7
 #define MENU_REPEATHELP 			8
 
+#define MENU_SPECHELP				9
 
 
 #define MENU_SPY					12
@@ -1147,10 +1143,12 @@ float already_chosen_map;
 #define TF_TIMER_BUILD				11
 #define TF_TIMER_CHECKBUILDDISTANCE 12
 #define TF_TIMER_DISGUISE			13
+#define TF_TIMER_DISPENSERREFILL	14
 
 // Non Player timers
 #define TF_TIMER_RETURNITEM			100
 #define TF_TIMER_DELAYEDGOAL		101
+#define TF_TIMER_ENDROUND			102
 
 //============================
 // Teamscore printing
@@ -1159,6 +1157,14 @@ float already_chosen_map;
 #define TS_PRINT_LONG_TO_ALL		3
 
 #ifndef TF_DEFS_ONLY
+
+typedef struct
+{
+	int topColor;
+	int bottomColor;
+} team_color_t;
+
+
 /*==================================================*/
 /* GLOBAL VARIABLES									*/
 /*==================================================*/
@@ -1167,7 +1173,9 @@ extern float number_of_teams;	// number of teams supported by the map
 extern int   illegalclasses[5];	// Illegal playerclasses for all teams
 extern int   civilianteams;		// Bitfield holding Civilian teams
 extern Vector  rgbcolors[5];		 // RGB colors for each of the 4 teams
-extern int   teamcolors[5];		// Colours for each of the 4 teams
+
+extern team_color_t teamcolors[5][PC_LASTCLASS]; // Colors for each of the 4 teams
+
 extern int   teamscores[5];		// Goal Score of each team
 extern int	 g_iOrderedTeams[5]; // Teams ordered into order of winners->losers
 extern int	 teamfrags[5];		// Total Frags for each team
@@ -1196,6 +1204,7 @@ extern float old_grens;
 extern float flagem_checked;
 extern float flNextEqualisationCalc;
 extern BOOL  cease_fire;
+extern BOOL  no_cease_fire_text;
 extern BOOL  initial_cease_fire;
 extern BOOL  last_cease_fire;
 // Autokick stuff
@@ -1206,7 +1215,8 @@ extern float deathmsg;		// Global, which is set before every T_Damage, to indica
 
 extern char *sTeamSpawnNames[];
 extern char *sClassNames[];
-extern char *sClassModelFiles[];
+extern char *sNewClassModelFiles[];
+extern char *sOldClassModelFiles[];
 extern char *sClassModels[];
 extern char *sClassCfgs[];
 extern char *sGrenadeNames[];
@@ -1286,6 +1296,7 @@ extern cvar_t	tfc_spam_limit; // at this many points, gag the spammer
 extern cvar_t	tfc_clanbattle, tfc_clanbattle_prematch, tfc_prematch, tfc_clanbattle_ceasefire, tfc_balance_teams, tfc_balance_scores;
 extern cvar_t   tfc_clanbattle_locked, tfc_birthday, tfc_autokick_kills, tfc_fragscoring, tfc_autokick_time, tfc_adminpwd;
 extern cvar_t	weaponstay, footsteps, flashlight, aimcrosshair, falldamage, teamplay;
+extern cvar_t	allow_spectators;
 
 /*==========================================================================*/
 class CTFFlame : public CBaseMonster
@@ -1336,7 +1347,11 @@ class CTFSpawn : public CBaseEntity
 {
 public:
 	void	Spawn( void );
+	void	Activate( void );
 	int		Classify ( void ) { return	CLASS_TFSPAWN; }
+	BOOL	CheckTeam( int iTeamNo );
+
+	EHANDLE m_pTeamCheck;
 };
 
 class CTFDetect : public CBaseEntity
@@ -1351,6 +1366,21 @@ class CTelefragDeath : public CBaseEntity
 public:
 	void		Spawn( void );
 	void		EXPORT	DeathTouch( CBaseEntity *pOther );
+};
+
+class CTeamCheck : public CBaseDelay
+{
+public:
+	void Spawn( void );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
+	BOOL TeamMatches( int iTeam );
+};
+
+class CTeamSet : public CBaseDelay
+{
+public:
+	void Spawn( void );
+	void Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value );
 };
 
 #endif // TF_DEFS_ONLY

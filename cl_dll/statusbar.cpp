@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -184,20 +184,16 @@ int CHudStatusBar :: Draw( float fTime )
 		m_bReparseString = FALSE;
 	}
 
+	int Y_START = ScreenHeight - YRES(32 + 4);
+
 	// Draw the status bar lines
 	for ( int i = 0; i < MAX_STATUSBAR_LINES; i++ )
 	{
 		int TextHeight, TextWidth;
 		GetConsoleStringSize( m_szStatusBar[i], &TextWidth, &TextHeight );
 
-		int Y_START;
-		if ( ScreenHeight >= 480 )
-			Y_START = ScreenHeight - 55;
-		else
-			Y_START = ScreenHeight - 45;
-
-		int x = 5;
-		int y = Y_START - ( TextHeight * i ); // draw along bottom of screen
+		int x = 4;
+		int y = Y_START - ( 4 + TextHeight * i ); // draw along bottom of screen
 
 		// let user set status ID bar centering
 		if ( (i == STATUSBAR_ID_LINE) && CVAR_GET_FLOAT("hud_centerid") )

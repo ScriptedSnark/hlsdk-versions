@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -11,17 +11,16 @@
 
 #include "cl_entity.h"
 
-#define MAIN_CHASE_LOCKED		1
-#define MAIN_CHASE_FREE			2
-#define MAIN_ROAMING			3
-#define MAIN_IN_EYE				4
-#define MAIN_MAP_FREE			5
 
 
 #define INSET_OFF				0
 #define	INSET_CHASE_FREE		1
 #define	INSET_IN_EYE			2
 #define	INSET_MAP_FREE			3
+#define	INSET_MAP_CHASE			4
+
+#define MAX_SPEC_HUD_MESSAGES	8
+
 
 
 #define OVERVIEW_TILE_SIZE		128		// don't change this
@@ -32,6 +31,7 @@
 //-----------------------------------------------------------------------------
 
 typedef struct overviewInfo_s {
+	char		map[64];	// cl.levelname or empty
 	vec3_t		origin;		// center of map
 	float		zoom;		// zoom of map images
 	int			layers;		// how may layers do we have
@@ -57,6 +57,10 @@ typedef struct overviewEntity_s {
 class CHudSpectator : public CHudBase
 {
 public:
+	void Reset();
+	int  ToggleInset(bool allowOff);
+	void CheckSettings();
+	void InitHUDData( void );
 	bool AddOverviewEntityToList( HSPRITE sprite, cl_entity_t * ent, double killTime);
 	void DeathMessage(int victim);
 	bool AddOverviewEntity( int type, struct cl_entity_s *ent, const char *modelname );
@@ -72,26 +76,38 @@ public:
 	void HandleButtonsDown(int ButtonPressed);
 	void HandleButtonsUp(int ButtonPressed);
 	void FindNextPlayer( bool bReverse );
-	void DirectorEvent(unsigned char command, unsigned int firstObject, unsigned int secondObject, unsigned int flags);
+	void DirectorMessage( int iSize, void *pbuf );
 	void SetSpectatorStartPosition();
 	int Init();
 	int VidInit();
 
 	int Draw(float flTime);
 
-	int m_iMainMode;	
-	int m_iInsetMode;
 	int m_iDrawCycle;
+	client_textmessage_t m_HUDMessages[MAX_SPEC_HUD_MESSAGES];
+	char				m_HUDMessageText[MAX_SPEC_HUD_MESSAGES][128];
+	int					m_lastHudMessage;
 	overviewInfo_t		m_OverviewData;
 	overviewEntity_t	m_OverviewEntities[MAX_OVERVIEW_ENTITIES];
-	int					m_iObserverTarget;
-
+	int					m_iObserverFlags;
+	int					m_iSpectatorNumber;
+	
 	float				m_mapZoom;		// zoom the user currently uses
 	vec3_t				m_mapOrigin;	// origin where user rotates around
-	vec3_t				m_mapAngles;	// cuurent map view angles
+	cvar_t *			m_drawnames;
+	cvar_t *			m_drawcone;
+	cvar_t *			m_drawstatus;
+	cvar_t *			m_autoDirector;
+	cvar_t *			m_pip;
+	
+
+	qboolean			m_chatEnabled;
+
+	vec3_t				m_cameraOrigin;	// a help camera
+	vec3_t				m_cameraAngles;	// and it's angles
+
 
 private:
-	cvar_t		* m_drawnames;
 	vec3_t		m_vPlayerPos[MAX_PLAYERS];
 	HSPRITE		m_hsprPlayerBlue;
 	HSPRITE		m_hsprPlayerRed;
@@ -102,6 +118,9 @@ private:
 	HSPRITE		m_hsprUnkownMap;
 	HSPRITE		m_hsprBeam;
 	HSPRITE		m_hCrosshair;
+
+	wrect_t		m_crosshairRect;
+
 	struct model_s * m_MapSprite;	// each layer image is saved in one sprite, where each tile is a sprite frame
 	float		m_flNextObserverInput;
 	float		m_zoomDelta;

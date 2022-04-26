@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -63,6 +63,8 @@ typedef int BOOL;
 #endif
 
 #define itoa(a,b,c) sprintf(b, "%d", a) 
+#define _snprintf snprintf
+#define _vsnprintf vsnprintf
 #endif //_WIN32
 
 // Misc C-runtime library headers

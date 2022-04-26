@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -346,10 +346,10 @@ void CHalfLifeTeamplay::ClientUserInfoChanged( CBasePlayer *pPlayer, char *infob
 	sprintf( text, "* %s has changed to team \'%s\'\n", STRING(pPlayer->pev->netname), mdls );
 	UTIL_SayTextAll( text, pPlayer );
 
-	UTIL_LogPrintf( "\"%s<%i><%u><%s>\" joined team \"%s\"\n", 
+	UTIL_LogPrintf( "\"%s<%i><%s><%s>\" joined team \"%s\"\n", 
 		STRING(pPlayer->pev->netname),
 		GETPLAYERUSERID( pPlayer->edict() ),
-		GETPLAYERWONID( pPlayer->edict() ),
+		GETPLAYERAUTHID( pPlayer->edict() ),
 		pPlayer->m_szTeamName,
 		mdls );
 

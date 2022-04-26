@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -274,6 +274,9 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	strcat( text, p );
 	strcat( text, "\n" );
 
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer* player = GetClassPtr((CBasePlayer *)pev);
+
 	// loop through all players
 	// Start with the first player.
 	// This may return the world in single player if the client types something between levels or during spawn
@@ -289,6 +292,8 @@ void Host_Say( edict_t *pEntity, int teamonly )
 			continue;
 
 		if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
+			continue;
+		if ( ((CHalfLifeMultiplay *)g_pGameRules)->m_VoiceGameMgr.PlayerHasBlockedPlayer( client, player ) )
 			continue;
 
 		if ( teamonly && g_pGameRules->PlayerRelationship(client, CBaseEntity::Instance(pEntity)) != GR_TEAMMATE )
@@ -316,10 +321,10 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	else
 		temp = "say";
 
-	UTIL_LogPrintf( "\"%s<%i><%u><%i>\" %s \"%s\"\n", 
+	UTIL_LogPrintf( "\"%s<%i><%s><%i>\" %s \"%s\"\n", 
 		STRING( pEntity->v.netname ), 
 		GETPLAYERUSERID( pEntity ),
-		GETPLAYERWONID( pEntity ),
+		GETPLAYERAUTHID( pEntity ),
 		GETPLAYERUSERID( pEntity ),
 		temp,
 		p );
@@ -353,6 +358,10 @@ void ClientCommand( edict_t *pEntity )
 	{
 		Host_Say( pEntity, 1 );
 	}
+	else if ( FStrEq(pcmd, "fullupdate" ) )
+	{
+		GetClassPtr((CBasePlayer *)pev)->ForceClientDllUpdate(); 
+	}
 	else if ( FStrEq(pcmd, "give" ) )
 	{
 		if ( g_flWeaponCheat != 0.0)
@@ -372,6 +381,16 @@ void ClientCommand( edict_t *pEntity )
 		}
 	}
 
+	else if ( FStrEq(pcmd, "spectate" ) )
+	{
+		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
+
+		if ( pPlayer->pev->flags & FL_PROXY )
+		{
+			edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot( pPlayer );
+			pPlayer->StartObserver( pev->origin, VARS(pentSpawnSpot)->angles);
+		}
+	}
 	else if (FStrEq(pcmd, "lastinv" ))
 	{
 		GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
@@ -379,6 +398,18 @@ void ClientCommand( edict_t *pEntity )
 	else if ( g_pGameRules->ClientCommand( GetClassPtr((CBasePlayer *)pev), pcmd ) )
 	{
 		// MenuSelect returns true only if the command is properly handled,  so don't print a warning
+	}
+	else if ( FStrEq( pcmd, "specmode" )  )	// new spectator mode
+	{
+		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
+		if ( pPlayer->IsObserver() )
+			pPlayer->Observer_SetMode( atoi( CMD_ARGV(1) ) );
+	}
+	else if ( FStrEq( pcmd, "follownext" )  )	// follow next player
+	{
+		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
+		if ( pPlayer->IsObserver() )
+			pPlayer->Observer_FindNextPlayer();
 	}
 	else
 	{
@@ -413,10 +444,10 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 			WRITE_STRING( text );
 		MESSAGE_END();
 
-		UTIL_LogPrintf( "\"%s<%i><%u><%i>\" changed name to \"%s\"\n", 
+		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" changed name to \"%s\"\n", 
 			STRING( pEntity->v.netname ), 
 			GETPLAYERUSERID( pEntity ), 
-			GETPLAYERWONID( pEntity ),
+			GETPLAYERAUTHID( pEntity ),
 			GETPLAYERUSERID( pEntity ), 
 			g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
 	}
@@ -1482,6 +1513,7 @@ void UpdateClientData ( const struct edict_s *ent, int sendweapons, struct clien
 	// Observer
 	cd->iuser1			= ent->v.iuser1;
 	cd->iuser2			= ent->v.iuser2;
+	cd->iuser3			= ent->v.iuser3;
 
 	if ( sendweapons )
 	{

@@ -23,8 +23,8 @@ CFG=cl_dll - Win32 Release
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
-# PROP Scc_ProjName ""$/GoldSrc/cl_dll", HGEBAAAA"
-# PROP Scc_LocalPath "."
+# PROP Scc_ProjName ""
+# PROP Scc_LocalPath ""
 CPP=cl.exe
 MTL=midl.exe
 RSC=rc.exe
@@ -188,10 +188,6 @@ SOURCE=..\game_shared\voice_banmgr.cpp
 # Begin Source File
 
 SOURCE=..\game_shared\voice_status.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\game_shared\voice_vgui_tweakdlg.cpp
 # End Source File
 # End Group
 # Begin Source File
@@ -417,6 +413,10 @@ SOURCE=.\vgui_ServerBrowser.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\vgui_SpectatorPanel.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\vgui_TeamFortressViewport.cpp
 # End Source File
 # Begin Source File
@@ -570,6 +570,10 @@ SOURCE=.\vgui_ScorePanel.h
 # Begin Source File
 
 SOURCE=.\vgui_ServerBrowser.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\vgui_SpectatorPanel.h
 # End Source File
 # Begin Source File
 

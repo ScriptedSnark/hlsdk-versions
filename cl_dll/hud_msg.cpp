@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -49,6 +49,13 @@ int CHud :: MsgFunc_ResetHUD(const char *pszName, int iSize, void *pbuf )
 	m_iConcussionEffect = 0;
 
 	return 1;
+}
+
+void CAM_ToFirstPerson(void);
+
+void CHud :: MsgFunc_ViewMode( const char *pszName, int iSize, void *pbuf )
+{
+	CAM_ToFirstPerson();
 }
 
 void CHud :: MsgFunc_InitHUD( const char *pszName, int iSize, void *pbuf )

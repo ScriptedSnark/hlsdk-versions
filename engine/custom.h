@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -35,11 +35,10 @@ typedef enum
 	t_model,
 	t_decal,
 	t_generic,
-	t_eventscript
+	t_eventscript,
+	t_world,		// Fake type for world, is really t_model
 } resourcetype_t;
 
-// Fake type for world
-#define t_world 6
 
 typedef struct
 {
@@ -48,7 +47,7 @@ typedef struct
 
 typedef struct resourceinfo_s
 {
-	_resourceinfo_t info[ 7 ];
+	_resourceinfo_t info[ 8 ];
 } resourceinfo_t;
 
 #define RES_FATALIFMISSING (1<<0)   // Disconnect if we can't get this file.

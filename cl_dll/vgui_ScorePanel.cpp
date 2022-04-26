@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2002 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -28,6 +28,7 @@
 #include "vgui_ScorePanel.h"
 #include "..\game_shared\vgui_helpers.h"
 #include "..\game_shared\vgui_loadtga.h"
+#include "vgui_SpectatorPanel.h"
 
 hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
 extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
@@ -156,7 +157,6 @@ ScorePanel::ScorePanel(int x,int y,int wide,int tall) : Panel(x,y,wide,tall)
 		m_HeaderGrid.SetEntry(i, 0, &m_HeaderLabels[i]);
 
 		m_HeaderLabels[i].setBgColor(0,0,0,255);
-		m_HeaderLabels[i].setBgColor(0,0,0,255);
 		m_HeaderLabels[i].setFgColor(Scheme::sc_primary1);
 		m_HeaderLabels[i].setFont(smallfont);
 		m_HeaderLabels[i].setContentAlignment(g_ColumnInfo[i].m_Alignment);
@@ -219,6 +219,16 @@ ScorePanel::ScorePanel(int x,int y,int wide,int tall) : Panel(x,y,wide,tall)
 	m_HitTestPanel.setBounds(0, 0, wide, tall);
 	m_HitTestPanel.addInputSignal(this);
 
+	m_pCloseButton = new CommandButton( "x", wide-XRES(12 + 4), YRES(2), XRES( 12 ) , YRES( 12 ) );
+	m_pCloseButton->setParent( this );
+	m_pCloseButton->addActionSignal( new CMenuHandler_StringCommandWatch( "-showscores", true ) );
+	m_pCloseButton->setBgColor(0,0,0,255);
+	m_pCloseButton->setFgColor( 255, 255, 255, 0 );
+	m_pCloseButton->setFont(tfont);
+	m_pCloseButton->setBoundKey( (char)255 );
+	m_pCloseButton->setContentAlignment(Label::a_center);
+
+
 	Initialize();
 }
 
@@ -237,6 +247,11 @@ void ScorePanel::Initialize( void )
 	memset( g_TeamInfo, 0, sizeof g_TeamInfo );
 }
 
+bool HACK_GetPlayerUniqueID( int iPlayer, char playerID[16] )
+{
+	return !!gEngfuncs.GetPlayerUniqueID( iPlayer, playerID );
+}
+		
 //-----------------------------------------------------------------------------
 // Purpose: Recalculate the internal scoreboard data
 //-----------------------------------------------------------------------------
@@ -271,6 +286,15 @@ void ScorePanel::Update()
 	m_PlayerList.SetScrollRange(m_iRows);
 
 	FillGrid();
+
+	if ( gViewPort->m_pSpectatorPanel->m_menuVisible )
+	{
+		 m_pCloseButton->setVisible ( true );
+	}
+	else 
+	{
+		 m_pCloseButton->setVisible ( false );
+	}
 }
 
 //-----------------------------------------------------------------------------
@@ -917,10 +941,6 @@ void ScorePanel::MouseOverCell(int row, int col)
 	if (pl_info->thisplayer && !gEngfuncs.IsSpectateOnly() )
 		return;
 
-	// only act on audible players
-	if (!GetClientVoiceMgr()->IsPlayerAudible(m_iSortedRows[row]))
-		return;
-
 	// setup the new highlight
 	m_pCurrentHighlightLabel = label;
 	m_iHighlightRow = row;
@@ -973,6 +993,13 @@ void CLabelHeader::paint()
 	// get size of the panel and the image
 	if (_image)
 	{
+		Color imgColor;
+		getFgColor( imgColor );
+		if( _useFgColorAsImageColor )
+		{
+			_image->setColor( imgColor );
+		}
+
 		_image->getSize(iwide, itall);
 		calcAlignment(iwide, itall, x, y);
 		_image->setPos(x, y);

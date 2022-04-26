@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -199,6 +199,9 @@ void ClientPutInServer( edict_t *pEntity )
 	pPlayer->pev->effects |= EF_NOINTERP;
 }
 
+#include "voice_gamemgr.h"
+extern CVoiceGameMgr g_VoiceGameMgr;
+
 //// HOST_SAY
 // String comes in as
 // say blah blah blah
@@ -219,6 +222,13 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	// We can get a raw string now, without the "say " prepended
 	if ( CMD_ARGC() == 0 )
 		return;
+
+	entvars_t *pev = &pEntity->v;
+	CBasePlayer* player = GetClassPtr((CBasePlayer *)pev);
+
+	//Not yet.
+	if ( player->m_flNextChatTime > gpGlobals->time )
+		 return;
 
 	if ( !stricmp( pcmd, cpSay) || !stricmp( pcmd, cpSayTeam ) )
 	{
@@ -278,6 +288,9 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	strcat( text, p );
 	strcat( text, "\n" );
 
+
+	player->m_flNextChatTime = gpGlobals->time + CHAT_INTERVAL;
+
 	// loop through all players
 	// Start with the first player.
 	// This may return the world in single player if the client types something between levels or during spawn
@@ -293,6 +306,10 @@ void Host_Say( edict_t *pEntity, int teamonly )
 			continue;
 
 		if ( !(client->IsNetClient()) )	// Not a client ? (should never be true)
+			continue;
+
+		// can the receiver hear the sender? or has he muted him?
+		if ( g_VoiceGameMgr.PlayerHasBlockedPlayer( client, player ) )
 			continue;
 
 		if ( teamonly && g_pGameRules->PlayerRelationship(client, CBaseEntity::Instance(pEntity)) != GR_TEAMMATE )
@@ -323,20 +340,20 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	// team match?
 	if ( g_teamplay )
 	{
-		UTIL_LogPrintf( "\"%s<%i><%u><%s>\" %s \"%s\"\n", 
+		UTIL_LogPrintf( "\"%s<%i><%s><%s>\" %s \"%s\"\n", 
 			STRING( pEntity->v.netname ), 
 			GETPLAYERUSERID( pEntity ),
-			GETPLAYERWONID( pEntity ),
+			GETPLAYERAUTHID( pEntity ),
 			g_engfuncs.pfnInfoKeyValue( g_engfuncs.pfnGetInfoKeyBuffer( pEntity ), "model" ),
 			temp,
 			p );
 	}
 	else
 	{
-		UTIL_LogPrintf( "\"%s<%i><%u><%i>\" %s \"%s\"\n", 
+		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" %s \"%s\"\n", 
 			STRING( pEntity->v.netname ), 
 			GETPLAYERUSERID( pEntity ),
-			GETPLAYERWONID( pEntity ),
+			GETPLAYERAUTHID( pEntity ),
 			GETPLAYERUSERID( pEntity ),
 			temp,
 			p );
@@ -371,6 +388,10 @@ void ClientCommand( edict_t *pEntity )
 	else if ( FStrEq(pcmd, "say_team" ) )
 	{
 		Host_Say( pEntity, 1 );
+	}
+	else if ( FStrEq(pcmd, "fullupdate" ) )
+	{
+		GetClassPtr((CBasePlayer *)pev)->ForceClientDllUpdate(); 
 	}
 	else if ( FStrEq(pcmd, "give" ) )
 	{
@@ -408,6 +429,13 @@ void ClientCommand( edict_t *pEntity )
 	else if (FStrEq(pcmd, "lastinv" ))
 	{
 		GetClassPtr((CBasePlayer *)pev)->SelectLastItem();
+	}
+	else if ( FStrEq( pcmd, "spectate" ) && (pev->flags & FL_PROXY) )	// added for proxy support
+	{
+		CBasePlayer * pPlayer = GetClassPtr((CBasePlayer *)pev);
+
+		edict_t *pentSpawnSpot = g_pGameRules->GetPlayerSpawnSpot( pPlayer );
+		pPlayer->StartObserver( pev->origin, VARS(pentSpawnSpot)->angles);
 	}
 	else if ( g_pGameRules->ClientCommand( GetClassPtr((CBasePlayer *)pev), pcmd ) )
 	{
@@ -473,19 +501,19 @@ void ClientUserInfoChanged( edict_t *pEntity, char *infobuffer )
 		// team match?
 		if ( g_teamplay )
 		{
-			UTIL_LogPrintf( "\"%s<%i><%u><%s>\" changed name to \"%s\"\n", 
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" changed name to \"%s\"\n", 
 				STRING( pEntity->v.netname ), 
 				GETPLAYERUSERID( pEntity ), 
-				GETPLAYERWONID( pEntity ),
+				GETPLAYERAUTHID( pEntity ),
 				g_engfuncs.pfnInfoKeyValue( infobuffer, "model" ), 
 				g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
 		}
 		else
 		{
-			UTIL_LogPrintf( "\"%s<%i><%u><%i>\" changed name to \"%s\"\n", 
+			UTIL_LogPrintf( "\"%s<%i><%s><%i>\" changed name to \"%s\"\n", 
 				STRING( pEntity->v.netname ), 
 				GETPLAYERUSERID( pEntity ), 
-				GETPLAYERWONID( pEntity ),
+				GETPLAYERAUTHID( pEntity ),
 				GETPLAYERUSERID( pEntity ), 
 				g_engfuncs.pfnInfoKeyValue( infobuffer, "name" ) );
 		}

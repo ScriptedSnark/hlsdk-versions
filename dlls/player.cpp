@@ -1,6 +1,6 @@
 	/***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -34,6 +34,7 @@
 #include "decals.h"
 #include "gamerules.h"
 #include "game.h"
+#include "hltv.h"
 
 // #define DUCKFIX
 
@@ -183,6 +184,11 @@ int gmsgShowMenu = 0;
 int gmsgGeigerRange = 0;
 int gmsgTeamNames = 0;
 
+int gmsgStatusText = 0;
+int gmsgStatusValue = 0; 
+
+
+
 void LinkUserMessages( void )
 {
 	// Already taken care of?
@@ -224,6 +230,10 @@ void LinkUserMessages( void )
 	gmsgFade = REG_USER_MSG("ScreenFade", sizeof(ScreenFade));
 	gmsgAmmoX = REG_USER_MSG("AmmoX", 2);
 	gmsgTeamNames = REG_USER_MSG( "TeamNames", -1 );
+
+	gmsgStatusText = REG_USER_MSG("StatusText", -1);
+	gmsgStatusValue = REG_USER_MSG("StatusValue", 3); 
+
 }
 
 LINK_ENTITY_TO_CLASS( player, CBasePlayer );
@@ -503,8 +513,9 @@ int CBasePlayer :: TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, 
 	}
 
 	// tell director about it
-	MESSAGE_BEGIN( MSG_SPEC, SVC_HLTV );
-		WRITE_BYTE ( DRC_EVENT );	// take damage event
+	MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+		WRITE_BYTE ( 9 );	// command length in bytes
+		WRITE_BYTE ( DRC_CMD_EVENT );	// take damage event
 		WRITE_SHORT( ENTINDEX(this->edict()) );	// index number of primary entity
 		WRITE_SHORT( ENTINDEX(ENT(pevInflictor)) );	// index number of secondary entity
 		WRITE_LONG( 5 );   // eventflags (priority and flags)
@@ -1641,6 +1652,110 @@ void CBasePlayer::AddPointsToTeam( int score, BOOL bAllowNegativeScore )
 	}
 }
 
+//Player ID
+void CBasePlayer::InitStatusBar()
+{
+	m_flStatusBarDisappearDelay = 0;
+	m_SbarString1[0] = m_SbarString0[0] = 0; 
+}
+
+void CBasePlayer::UpdateStatusBar()
+{
+	int newSBarState[ SBAR_END ];
+	char sbuf0[ SBAR_STRING_SIZE ];
+	char sbuf1[ SBAR_STRING_SIZE ];
+
+	memset( newSBarState, 0, sizeof(newSBarState) );
+	strcpy( sbuf0, m_SbarString0 );
+	strcpy( sbuf1, m_SbarString1 );
+
+	// Find an ID Target
+	TraceResult tr;
+	UTIL_MakeVectors( pev->v_angle + pev->punchangle );
+	Vector vecSrc = EyePosition();
+	Vector vecEnd = vecSrc + (gpGlobals->v_forward * MAX_ID_RANGE);
+	UTIL_TraceLine( vecSrc, vecEnd, dont_ignore_monsters, edict(), &tr);
+
+	if (tr.flFraction != 1.0)
+	{
+		if ( !FNullEnt( tr.pHit ) )
+		{
+			CBaseEntity *pEntity = CBaseEntity::Instance( tr.pHit );
+
+			if (pEntity->Classify() == CLASS_PLAYER )
+			{
+				newSBarState[ SBAR_ID_TARGETNAME ] = ENTINDEX( pEntity->edict() );
+				strcpy( sbuf1, "1 %p1\n2 Health: %i2%%\n3 Armor: %i3%%" );
+
+				// allies and medics get to see the targets health
+				if ( g_pGameRules->PlayerRelationship( this, pEntity ) == GR_TEAMMATE )
+				{
+					newSBarState[ SBAR_ID_TARGETHEALTH ] = 100 * (pEntity->pev->health / pEntity->pev->max_health);
+					newSBarState[ SBAR_ID_TARGETARMOR ] = pEntity->pev->armorvalue; //No need to get it % based since 100 it's the max.
+				}
+
+				m_flStatusBarDisappearDelay = gpGlobals->time + 1.0;
+			}
+		}
+		else if ( m_flStatusBarDisappearDelay > gpGlobals->time )
+		{
+			// hold the values for a short amount of time after viewing the object
+			newSBarState[ SBAR_ID_TARGETNAME ] = m_izSBarState[ SBAR_ID_TARGETNAME ];
+			newSBarState[ SBAR_ID_TARGETHEALTH ] = m_izSBarState[ SBAR_ID_TARGETHEALTH ];
+			newSBarState[ SBAR_ID_TARGETARMOR ] = m_izSBarState[ SBAR_ID_TARGETARMOR ];
+		}
+	}
+
+	BOOL bForceResend = FALSE;
+
+	if ( strcmp( sbuf0, m_SbarString0 ) )
+	{
+		MESSAGE_BEGIN( MSG_ONE, gmsgStatusText, NULL, pev );
+			WRITE_BYTE( 0 );
+			WRITE_STRING( sbuf0 );
+		MESSAGE_END();
+
+		strcpy( m_SbarString0, sbuf0 );
+
+		// make sure everything's resent
+		bForceResend = TRUE;
+	}
+
+	if ( strcmp( sbuf1, m_SbarString1 ) )
+	{
+		MESSAGE_BEGIN( MSG_ONE, gmsgStatusText, NULL, pev );
+			WRITE_BYTE( 1 );
+			WRITE_STRING( sbuf1 );
+		MESSAGE_END();
+
+		strcpy( m_SbarString1, sbuf1 );
+
+		// make sure everything's resent
+		bForceResend = TRUE;
+	}
+
+	// Check values and send if they don't match
+	for (int i = 1; i < SBAR_END; i++)
+	{
+		if ( newSBarState[i] != m_izSBarState[i] || bForceResend )
+		{
+			MESSAGE_BEGIN( MSG_ONE, gmsgStatusValue, NULL, pev );
+				WRITE_BYTE( i );
+				WRITE_SHORT( newSBarState[i] );
+			MESSAGE_END();
+
+			m_izSBarState[i] = newSBarState[i];
+		}
+	}
+}
+
+
+
+
+
+
+
+
 
 #define CLIMB_SHAKE_FREQUENCY	22	// how many frames in between screen shakes when climbing
 #define	MAX_CLIMB_SPEED			200	// fastest vertical climbing speed possible
@@ -2730,6 +2845,8 @@ void CBasePlayer::Spawn( void )
 	}
 
 	m_lastx = m_lasty = 0;
+	
+	m_flNextChatTime = gpGlobals->time;
 
 	g_pGameRules->PlayerSpawn( this );
 }
@@ -3206,6 +3323,7 @@ void CBasePlayer :: ForceClientDllUpdate( void )
 	m_iTrain |= TRAIN_NEW;  // Force new train message.
 	m_fWeapon = FALSE;          // Force weapon send
 	m_fKnownItem = FALSE;    // Force weaponinit messages.
+	m_fInitHUD = TRUE;		// Force HUD gmsgResetHUD message
 
 	// Now force all the necessary messages
 	//  to be sent.
@@ -3285,9 +3403,7 @@ void CBasePlayer::ImpulseCommands( )
 		}
 
 		break;
-	case    204:  //  Demo recording, update client dll specific data again.
-		ForceClientDllUpdate(); 
-		break;
+
 	default:
 		// check all of the cheat impulse commands now
 		CheatImpulseCommands( iImpulse );
@@ -3764,7 +3880,10 @@ void CBasePlayer :: UpdateClientData( void )
 				FireTargets( "game_playerjoin", this, this, USE_TOGGLE, 0 );
 			}
 		}
+
 		FireTargets( "game_playerspawn", this, this, USE_TOGGLE, 0 );
+
+		InitStatusBar();
 	}
 
 	if ( m_iHideHUD != m_iClientHideHUD )
@@ -3957,6 +4076,13 @@ void CBasePlayer :: UpdateClientData( void )
 	// Cache and client weapon change
 	m_pClientActiveItem = m_pActiveItem;
 	m_iClientFOV = m_iFOV;
+
+	// Update Status Bar
+	if ( m_flNextSBarUpdateTime < gpGlobals->time )
+	{
+		UpdateStatusBar();
+		m_flNextSBarUpdateTime = gpGlobals->time + 0.2;
+	}
 }
 
 

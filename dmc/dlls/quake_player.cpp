@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001,, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002,, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -25,6 +25,7 @@
 #include "cbase.h"
 #include "player.h"
 #include "gamerules.h"
+#include "hltv.h"
 
 extern entvars_t *g_pevLastInflictor;
 extern int gmsgStatusText;
@@ -219,8 +220,9 @@ int CBasePlayer::TakeDamage( entvars_t *pevInflictor, entvars_t *pevAttacker, fl
 	pev->health -= (int)flTake;
 
 	// tell director about it
-	MESSAGE_BEGIN( MSG_SPEC, SVC_HLTV );
-		WRITE_BYTE ( DRC_EVENT );	// take damage event
+	MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+		WRITE_BYTE ( 9 );	// command length in bytes
+		WRITE_BYTE ( DRC_CMD_EVENT );	// take damage event
 		WRITE_SHORT( ENTINDEX(this->edict()) );	// index number of primary entity
 		WRITE_SHORT( ENTINDEX(ENT(pevInflictor)) );	// index number of secondary entity
 		WRITE_LONG( 5 );   // eventflags (priority and flags)

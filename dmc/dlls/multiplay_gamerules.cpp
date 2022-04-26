@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -24,6 +24,7 @@
 #include	"skill.h"
 #include	"game.h"
 #include	"items.h"
+#include	"hltv.h"
 
 #define INTERMISSION_TIME		60
 
@@ -195,8 +196,8 @@ void CHalfLifeMultiplay :: Think ( void )
 	{
 		// bounds check
 		int time = (int)CVAR_GET_FLOAT( "mp_chattime" );
-		if ( time < 10 )
-			CVAR_SET_STRING( "mp_chattime", "10" );
+		if ( time < 1 )
+			CVAR_SET_STRING( "mp_chattime", "1" );
 		else if ( time > INTERMISSION_TIME )
 			CVAR_SET_STRING( "mp_chattime", UTIL_dtos1( INTERMISSION_TIME ) );
 
@@ -420,10 +421,10 @@ void CHalfLifeMultiplay :: InitHUD( CBasePlayer *pl )
 	UTIL_ClientPrintAll( HUD_PRINTNOTIFY, UTIL_VarArgs( "%s has joined the game\n", 
 		( pl->pev->netname && STRING(pl->pev->netname)[0] != 0 ) ? STRING(pl->pev->netname) : "unconnected" ) );
 
-	UTIL_LogPrintf( "\"%s<%i><%u><%i>\" entered the game\n",  
+	UTIL_LogPrintf( "\"%s<%i><%s><%i>\" entered the game\n",  
 		STRING( pl->pev->netname ), 
 		GETPLAYERUSERID( pl->edict() ),
-		GETPLAYERWONID( pl->edict() ),
+		GETPLAYERAUTHID( pl->edict() ),
 		GETPLAYERUSERID( pl->edict() ) );
 
 	UpdateGameMode( pl );
@@ -475,10 +476,10 @@ void CHalfLifeMultiplay :: ClientDisconnected( edict_t *pClient )
 		{
 			FireTargets( "game_playerleave", pPlayer, pPlayer, USE_TOGGLE, 0 );
 
-			UTIL_LogPrintf( "\"%s<%i><%u><%i>\" disconnected\n",  
+			UTIL_LogPrintf( "\"%s<%i><%s><%i>\" disconnected\n",  
 				STRING( pPlayer->pev->netname ), 
 				GETPLAYERUSERID( pPlayer->edict() ),
-				GETPLAYERWONID( pPlayer->edict() ),
+				GETPLAYERAUTHID( pPlayer->edict() ),
 				GETPLAYERUSERID( pPlayer->edict() ) );
 
 			pPlayer->RemoveAllItems( TRUE );// destroy all of the players weapons and items
@@ -737,41 +738,43 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 	if ( pVictim->pev == pKiller )  
 	{  
 		// killed self
-		UTIL_LogPrintf( "\"%s<%i><%u><%i>\" committed suicide with \"%s\"\n",  
+		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" committed suicide with \"%s\"\n",  
 			STRING( pVictim->pev->netname ), 
 			GETPLAYERUSERID( pVictim->edict() ),
-			GETPLAYERWONID( pVictim->edict() ),
+			GETPLAYERAUTHID( pVictim->edict() ),
 			GETPLAYERUSERID( pVictim->edict() ),
 			killer_weapon_name );		
 	}
 	else if ( pKiller->flags & FL_CLIENT )
 	{
-		UTIL_LogPrintf( "\"%s<%i><%u><%i>\" killed \"%s<%i><%u><%i>\" with \"%s\"\n",  
+		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" killed \"%s<%i><%s><%i>\" with \"%s\"\n",  
 			STRING( pKiller->netname ),
 			GETPLAYERUSERID( ENT(pKiller) ),
-			GETPLAYERWONID( ENT(pKiller) ),
+			GETPLAYERAUTHID( ENT(pKiller) ),
 			GETPLAYERUSERID( ENT(pKiller) ),
 			STRING( pVictim->pev->netname ),
 			GETPLAYERUSERID( pVictim->edict() ),
-			GETPLAYERWONID( pVictim->edict() ),
+			GETPLAYERAUTHID( pVictim->edict() ),
 			GETPLAYERUSERID( pVictim->edict() ),
 			killer_weapon_name );
 	}
 	else
 	{  
 		// killed by the world
-		UTIL_LogPrintf( "\"%s<%i><%u><%i>\" committed suicide with \"%s\" (world)\n",
+		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" committed suicide with \"%s\" (world)\n",
 			STRING( pVictim->pev->netname ), 
 			GETPLAYERUSERID( pVictim->edict() ), 
-			GETPLAYERWONID( pVictim->edict() ),
+			GETPLAYERAUTHID( pVictim->edict() ),
 			GETPLAYERUSERID( pVictim->edict() ),
 			killer_weapon_name );				
 	}
 
 	g_szDeathType = NULL;
 
-	MESSAGE_BEGIN( MSG_SPEC, SVC_HLTV );
-		WRITE_BYTE ( DRC_EVENT );	// player killed
+	// HLTV event msg
+	MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+		WRITE_BYTE ( 9 );	// command length in bytes
+		WRITE_BYTE ( DRC_CMD_EVENT );	// player killed
 		WRITE_SHORT( ENTINDEX(pVictim->edict()) );	// index number of primary entity
 		if (pevInflictor)
 			WRITE_SHORT( ENTINDEX(ENT(pevInflictor)) );	// index number of secondary entity
@@ -779,6 +782,7 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 			WRITE_SHORT( ENTINDEX(ENT(pKiller)) );	// index number of secondary entity
 		WRITE_LONG( 7 | DRC_FLAG_DRAMATIC);   // eventflags (priority and flags)
 	MESSAGE_END();
+
 //  Print a standard message
 	// TODO: make this go direct to console
 	return; // just remove for now
@@ -1058,8 +1062,8 @@ void CHalfLifeMultiplay :: GoToIntermission( void )
 
 	// bounds check
 	int time = (int)CVAR_GET_FLOAT( "mp_chattime" );
-	if ( time < 10 )
-		CVAR_SET_STRING( "mp_chattime", "10" );
+	if ( time < 1 )
+		CVAR_SET_STRING( "mp_chattime", "1" );
 	else if ( time > INTERMISSION_TIME )
 		CVAR_SET_STRING( "mp_chattime", UTIL_dtos1( INTERMISSION_TIME ) );
 

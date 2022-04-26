@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -383,6 +383,9 @@ public:
 	int MsgFunc_SayText( const char *pszName, int iSize, void *pbuf );
 	void SayTextPrint( const char *pszBuf, int iBufSize, int clientIndex = -1 );
 	void EnsureTextFitsInOneLineAndWrapIfHaveTo( int line );
+
+	struct cvar_s *	m_HUD_saytext;
+	struct cvar_s *	m_HUD_saytext_time;
 };
 
 //
@@ -460,6 +463,7 @@ public:
 	int YPosition( float y, int height );
 
 	void MessageAdd( const char *pName, float time );
+	void MessageAdd(client_textmessage_t * newMessage );
 	void MessageDrawScan( client_textmessage_t *pMessage, float time );
 	void MessageScanStart( void );
 	void MessageScanNextChar( void );
@@ -548,6 +552,7 @@ public:
 	int		m_Teamplay;
 	int		m_iRes;
 	cvar_t  *m_pCvarStealMouse;
+	cvar_t	*m_pCvarDraw;
 
 	// QUAKECLASSIC
 	int		m_iQuakeItems;
@@ -588,6 +593,7 @@ public:
 
 	CHudAmmo	m_Ammo;
 	CHudHealth	m_Health;
+	CHudSpectator		m_Spectator;
 	CHudGeiger	m_Geiger;
 	CHudBattery	m_Battery;
 	CHudTrain	m_Train;
@@ -601,7 +607,6 @@ public:
 	CHudAmmoSecondary	m_AmmoSecondary;
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
-	CHudSpectator   m_Spectator;
 
 	void Init( void );
 	void VidInit( void );

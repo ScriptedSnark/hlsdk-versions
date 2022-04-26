@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -223,7 +223,7 @@ AngleBetweenVectors
 
 ===================
 */
-float AngleBetweenVectors( vec3_t v1, vec3_t v2 )
+float AngleBetweenVectors( const vec3_t v1, const vec3_t v2 )
 {
 	float angle;
 	float l1 = Length( v1 );
@@ -303,14 +303,20 @@ double sqrt(double x);
 float Length(const vec3_t v)
 {
 	int		i;
-	float	length;
-	
-	length = 0;
+	float	length = 0.0f;
+		
 	for (i=0 ; i< 3 ; i++)
 		length += v[i]*v[i];
 	length = sqrt (length);		// FIXME
 
 	return length;
+}
+
+float Distance(const vec3_t v1, const vec3_t v2)
+{
+	vec3_t d;
+	VectorSubtract(v2,v1,d);
+	return Length(d);
 }
 
 float VectorNormalize (vec3_t v)

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -21,6 +21,7 @@
 #include "hud.h"
 #include "cl_util.h"
 #include "parsemsg.h"
+#include "pm_shared.h"
 
 #include <string.h>
 #include <stdio.h>
@@ -538,6 +539,9 @@ int CHudAmmo::MsgFunc_HideWeapon( const char *pszName, int iSize, void *pbuf )
 	
 	gHUD.m_iHideHUDDisplay = READ_BYTE();
 
+	if (gEngfuncs.IsSpectateOnly())
+		return 1;
+
 	if ( gHUD.m_iHideHUDDisplay & ( HIDEHUD_WEAPONS | HIDEHUD_ALL ) )
 	{
 		static wrect_t nullrc;
@@ -581,14 +585,17 @@ int CHudAmmo::MsgFunc_CurWeapon(const char *pszName, int iSize, void *pbuf )
 		return 0;
 	}
 
-	// Is player dead???
-	if ((iId == -1) && (iClip == -1))
+	if ( g_iUser1 != OBS_IN_EYE )
 	{
-		gHUD.m_fPlayerDead = TRUE;
-		gpActiveSel = NULL;
-		return 1;
+		// Is player dead???
+		if ((iId == -1) && (iClip == -1))
+		{
+			gHUD.m_fPlayerDead = TRUE;
+			gpActiveSel = NULL;
+			return 1;
+		}
+		gHUD.m_fPlayerDead = FALSE;
 	}
-	gHUD.m_fPlayerDead = FALSE;
 
 	WEAPON *pWeapon = gWR.GetWeapon( iId );
 
@@ -606,22 +613,20 @@ int CHudAmmo::MsgFunc_CurWeapon(const char *pszName, int iSize, void *pbuf )
 
 	m_pWeapon = pWeapon;
 
-	if ( !(gHUD.m_iHideHUDDisplay & ( HIDEHUD_WEAPONS | HIDEHUD_ALL )) )
-	{
-		if ( gHUD.m_iFOV >= 90 )
-		{ // normal crosshairs
-			if (fOnTarget && m_pWeapon->hAutoaim)
-				SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, 255, 255, 255);
-			else
-				SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
-		}
+	if ( gHUD.m_iFOV >= 90 )
+	{ // normal crosshairs
+		if (fOnTarget && m_pWeapon->hAutoaim)
+			SetCrosshair(m_pWeapon->hAutoaim, m_pWeapon->rcAutoaim, 255, 255, 255);
 		else
-		{ // zoomed crosshairs
-			if (fOnTarget && m_pWeapon->hZoomedAutoaim)
-				SetCrosshair(m_pWeapon->hZoomedAutoaim, m_pWeapon->rcZoomedAutoaim, 255, 255, 255);
-			else
-				SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, 255, 255, 255);
-		}
+			SetCrosshair(m_pWeapon->hCrosshair, m_pWeapon->rcCrosshair, 255, 255, 255);
+	}
+	else
+	{ // zoomed crosshairs
+		if (fOnTarget && m_pWeapon->hZoomedAutoaim)
+			SetCrosshair(m_pWeapon->hZoomedAutoaim, m_pWeapon->rcZoomedAutoaim, 255, 255, 255);
+		else
+			SetCrosshair(m_pWeapon->hZoomedCrosshair, m_pWeapon->rcZoomedCrosshair, 255, 255, 255);
+
 	}
 
 	m_fFade = 200.0f; //!!!

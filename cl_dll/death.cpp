@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -41,7 +41,7 @@ struct DeathNoticeItem {
 #define MAX_DEATHNOTICES	4
 static int DEATHNOTICE_DISPLAY_TIME = 6;
 
-#define DEATHNOTICE_TOP		20
+#define DEATHNOTICE_TOP		32
 
 DeathNoticeItem rgDeathNoticeList[ MAX_DEATHNOTICES + 1 ];
 
@@ -49,6 +49,7 @@ float g_ColorBlue[3]	= { 0.6, 0.8, 1.0 };
 float g_ColorRed[3]		= { 1.0, 0.25, 0.25 };
 float g_ColorGreen[3]	= { 0.6, 1.0, 0.6 };
 float g_ColorYellow[3]	= { 1.0, 0.7, 0.0 };
+float g_ColorGrey[3]	= { 0.8, 0.8, 0.8 };
 
 float *GetClientColor( int clientIndex )
 {
@@ -58,6 +59,9 @@ float *GetClientColor( int clientIndex )
 	case 2: return g_ColorRed;
 	case 3: return g_ColorYellow;
 	case 4: return g_ColorGreen;
+	case 0: return g_ColorYellow;
+
+		default	: return g_ColorGrey;
 	}
 
 	return NULL;
@@ -111,7 +115,7 @@ int CHudDeathNotice :: Draw( float flTime )
 		if ( gViewPort && gViewPort->AllowedToPrintText() )
 		{
 			// Draw the death notice
-			y = DEATHNOTICE_TOP + (20 * i);  //!!!
+			y = YRES(DEATHNOTICE_TOP) + 2 + (20 * i);  //!!!
 
 			int id = (rgDeathNoticeList[i].iId == -1) ? m_HUD_d_skull : rgDeathNoticeList[i].iId;
 			x = ScreenWidth - ConsoleStringLen(rgDeathNoticeList[i].szVictim) - (gHUD.GetSpriteRect(id).right - gHUD.GetSpriteRect(id).left);

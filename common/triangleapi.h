@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -14,7 +14,9 @@
 ****/
 #if !defined( TRIANGLEAPIH )
 #define TRIANGLEAPIH
+#ifdef _WIN32
 #pragma once
+#endif
 
 typedef enum 
 {
@@ -50,6 +52,8 @@ typedef struct triangleapi_s
 	int			( *SpriteTexture ) ( struct model_s *pSpriteModel, int frame );
 	int			( *WorldToScreen ) ( float *world, float *screen );  // Returns 1 if it's z clipped
 	void		( *Fog ) ( float flFogColor[3], float flStart, float flEnd, int bOn ); //Works just like GL_FOG, flFogColor is r/g/b.
+	void		( *ScreenToWorld ) ( float *screen, float *world  ); 
+
 } triangleapi_t;
 
 #endif // !TRIANGLEAPIH

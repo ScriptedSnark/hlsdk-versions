@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -11,10 +11,10 @@
 #pragma once
 #endif
 
+typedef void (*SleepType)(int);
 long Sys_LoadLibrary( char *lib );
 void Sys_FreeLibrary( long library );
 void *Sys_GetProcAddress( long library, const char *name );
-void Sys_Sleep( int msec );
 void Sys_Printf(char *fmt, ...);
 void Sys_ErrorMessage( int level, const char *msg );
 

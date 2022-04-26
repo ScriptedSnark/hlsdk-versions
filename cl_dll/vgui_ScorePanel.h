@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -178,17 +178,17 @@ public:
 		Color color(r,g,b,a);
 		_dualImage->setColor(color);
 		_dualImage->setColor2(color);
-		if (_image && _useFgColorAsImageColor)
-		{
-			_image->setColor(color);
-		}
 		repaint();
 	}
 
 	void setFgColor(Scheme::SchemeColor sc)
 	{
+		int r, g, b, a;
 		Label::setFgColor(sc);
-		_dualImage->setColor(sc);
+		Label::getFgColor( r, g, b, a );
+
+		// Call the r,g,b,a version so it sets the color in the dualImage..
+		setFgColor( r, g, b, a );
 	}
 
 	void setFont(Font *font)
@@ -261,7 +261,7 @@ private:
 	CLabelHeader	m_PlayerEntries[NUM_COLUMNS][NUM_ROWS];	// Labels for the grid entries.
 
 	ScorePanel::HitTestPanel	m_HitTestPanel;
-
+	CommandButton				*m_pCloseButton;
 	CLabelHeader*	GetPlayerEntry(int x, int y)	{return &m_PlayerEntries[x][y];}
 
 public:

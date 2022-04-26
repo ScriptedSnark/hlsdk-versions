@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -9,6 +9,9 @@
 #if defined( DMC_BUILD )
 	#include "../dmc/cl_dll/hud.h"
 	#include "../dmc/cl_dll/cl_util.h"
+#elif defined( RICOCHET_BUILD )
+	#include "../ricochet/cl_dll/hud.h"
+	#include "../ricochet/cl_dll/cl_util.h"
 #else
 	#include "../cl_dll/hud.h"
 	#include "../cl_dll/cl_util.h"
@@ -22,6 +25,10 @@
 	#include "../dmc/cl_dll/parsemsg.h"
 	#include "../dmc/cl_dll/hud_servers.h"
 	#include "../dmc/cl_dll/demo.h"
+#elif defined( RICOCHET_BUILD )
+	#include "../ricochet/cl_dll/parsemsg.h"
+	#include "../ricochet/cl_dll/hud_servers.h"
+	#include "../ricochet/cl_dll/demo.h"
 #else
 	#include "../cl_dll/parsemsg.h"
 	#include "../cl_dll/hud_servers.h"
@@ -39,9 +46,13 @@
 #include "vgui_helpers.h"
 #include "vgui_mousecode.h"
 
+
+
 using namespace vgui;
 
+
 extern int cam_thirdperson;
+
 
 #define VOICE_MODEL_INTERVAL		0.3
 #define SCOREBOARD_BLINK_FREQUENCY	0.3	// How often to blink the scoreboard icons.
@@ -140,6 +151,8 @@ CVoiceStatus::CVoiceStatus()
 	memset(m_pBanButtons, 0, sizeof(m_pBanButtons));
 
 	m_bServerModEnable = -1;
+
+	m_pchGameDir = NULL;
 }
 
 
@@ -164,12 +177,14 @@ CVoiceStatus::~CVoiceStatus()
 
 	FreeBitmaps();
 
-	if(gEngfuncs.pfnGetGameDirectory())
+	if(m_pchGameDir)
 	{
 		if(m_bBanMgrInitialized)
 		{
-			m_BanMgr.SaveState(gEngfuncs.pfnGetGameDirectory());
+			m_BanMgr.SaveState(m_pchGameDir);
 		}
+
+		free(m_pchGameDir);
 	}
 }
 
@@ -206,6 +221,7 @@ int CVoiceStatus::Init(
 
 		if(pLabel->m_pLabel = new Label(""))
 		{
+			pLabel->m_pLabel->setVisible( true );
 			pLabel->m_pLabel->setFont( Scheme::sf_primary2 );
 			pLabel->m_pLabel->setTextAlignment( Label::a_east );
 			pLabel->m_pLabel->setContentAlignment( Label::a_east );
@@ -214,6 +230,7 @@ int CVoiceStatus::Init(
 
 		if( pLabel->m_pIcon = new ImagePanel( NULL ) )
 		{
+			pLabel->m_pIcon->setVisible( true );
 			pLabel->m_pIcon->setParent( pLabel->m_pBackground );
 		}
 
@@ -230,6 +247,12 @@ int CVoiceStatus::Init(
 	m_iFlags = HUD_ACTIVE;
 	HOOK_MESSAGE(VoiceMask);
 	HOOK_MESSAGE(ReqState);
+
+	// Cache the game directory for use when we shut down
+	const char *pchGameDirT = gEngfuncs.pfnGetGameDirectory();
+	m_pchGameDir = (char *)malloc(strlen(pchGameDirT) + 1);
+	strcpy(m_pchGameDir, pchGameDirT);
+
 	return 1;
 }
 
@@ -241,12 +264,12 @@ int CVoiceStatus::VidInit()
 
 	if( m_pLocalBitmap = vgui_LoadTGA("gfx/vgui/icntlk_pl.tga") )
 	{
-		m_pLocalBitmap->setColor(Color(255,255,255,1));	// Give just a tiny bit of translucency so software draws correctly.
+		m_pLocalBitmap->setColor(Color(255,255,255,135));
 	}
 
 	if( m_pAckBitmap = vgui_LoadTGA("gfx/vgui/icntlk_sv.tga") )
 	{
-		m_pAckBitmap->setColor(Color(255,255,255,1));	// Give just a tiny bit of translucency so software draws correctly.
+		m_pAckBitmap->setColor(Color(255,255,255,135));	// Give just a tiny bit of translucency so software draws correctly.
 	}
 
 	m_pLocalLabel->setImage( m_pLocalBitmap );
@@ -308,12 +331,12 @@ void CVoiceStatus::Frame(double frametime)
 	if( m_pHelper->CanShowSpeakerLabels() )
 	{
 		for( int i=0; i < MAX_VOICE_SPEAKERS; i++ )
-			m_Labels[i].m_pLabel->setVisible( m_Labels[i].m_clientindex != -1 );
+			m_Labels[i].m_pBackground->setVisible( m_Labels[i].m_clientindex != -1 );
 	}
 	else
 	{
 		for( int i=0; i < MAX_VOICE_SPEAKERS; i++ )
-			m_Labels[i].m_pLabel->setVisible( false );
+			m_Labels[i].m_pBackground->setVisible( false );
 	}
 
 	for(int i=0; i < VOICE_MAX_PLAYERS; i++)
@@ -400,7 +423,7 @@ void CVoiceStatus::UpdateSpeakerStatus(int entindex, qboolean bTalking)
 	{
 		m_bServerAcked = !!bTalking;
 	}
-	else if(entindex >= 0 && entindex < VOICE_MAX_PLAYERS)
+	else if(entindex >= 0 && entindex <= VOICE_MAX_PLAYERS)
 	{
 		int iClient = entindex - 1;
 		if(iClient < 0)
@@ -430,7 +453,7 @@ void CVoiceStatus::UpdateSpeakerStatus(int entindex, qboolean bTalking)
 
 					if( pLabel->m_pBackground )
 					{
-						pLabel->m_pBackground->setBgColor( color[0], color[1], color[2], 100 );
+						pLabel->m_pBackground->setBgColor( color[0], color[1], color[2], 135 );
 						pLabel->m_pBackground->setParent( *m_pParentPanel );
 						pLabel->m_pBackground->setVisible( m_pHelper->CanShowSpeakerLabels() );
 					}
@@ -453,7 +476,7 @@ void CVoiceStatus::UpdateSpeakerStatus(int entindex, qboolean bTalking)
 			// If we have a label for this guy, kill it.
 			if(pLabel)
 			{
-				pLabel->m_pLabel->setVisible(false);
+				pLabel->m_pBackground->setVisible(false);
 				pLabel->m_clientindex = -1;
 			}
 		}
@@ -560,22 +583,18 @@ void CVoiceStatus::UpdateBanButton(int iClient)
 		return;
 
 	char playerID[16];
-	if(!gEngfuncs.GetPlayerUniqueID(iClient+1, playerID))
+	extern bool HACK_GetPlayerUniqueID( int iPlayer, char playerID[16] );
+	if(!HACK_GetPlayerUniqueID(iClient+1, playerID))
 		return;
 
 	// Figure out if it's blinking or not.
 	bool bBlink   = fmod(m_BlinkTimer, SCOREBOARD_BLINK_FREQUENCY*2) < SCOREBOARD_BLINK_FREQUENCY;
 	bool bTalking = !!m_VoicePlayers[iClient];
-	bool bSquelch = !IsPlayerAudible(iClient+1);
 	bool bBanned  = m_BanMgr.GetPlayerBan(playerID);
 	bool bNeverSpoken = !m_VoiceEnabledPlayers[iClient];
 
 	// Get the appropriate image to display on the panel.
-	if (bSquelch)
-	{
-		pPanel->setImage(NULL);
-	}
-	else if (bBanned)
+	if (bBanned)
 	{
 		pPanel->setImage(m_pScoreboardBanned);
 	}
@@ -695,14 +714,8 @@ void CVoiceStatus::RepositionLabels()
 
 		if( pLabel->m_clientindex == -1 || !pLabel->m_pLabel )
 		{
-			if( pLabel->m_pIcon )
-				pLabel->m_pIcon->setVisible( false );
-
 			if( pLabel->m_pBackground )
 				pLabel->m_pBackground->setVisible( false );
-			
-			if( pLabel->m_pLabel )
-				pLabel->m_pLabel->setVisible( false );
 
 			continue;
 		}
@@ -729,13 +742,7 @@ void CVoiceStatus::RepositionLabels()
 		if( pLabel->m_pIcon )
 		{
 			pLabel->m_pIcon->setImage( m_pSpeakerLabelIcon );
-			pLabel->m_pIcon->setVisible( true );
-		
 			pLabel->m_pIcon->setBounds( iconLeft, iconTop, iconWide, iconTall );
-		}
-		else
-		{
-			pLabel->m_pIcon->setVisible( false );
 		}
 
 		y += bgTall + 2;
@@ -855,16 +862,13 @@ void CVoiceStatus::SetPlayerBlockedState(int iPlayer, bool blocked)
 	}
 
 	// Squelch or (try to) unsquelch this player.
-	if (m_AudiblePlayers[iPlayer-1])
+	if (gEngfuncs.pfnGetCvarFloat("voice_clientdebug"))
 	{
-		if (gEngfuncs.pfnGetCvarFloat("voice_clientdebug"))
-		{
-			char str[256];
-			sprintf(str, "CVoiceStatus::SetPlayerBlockedState: setting player %d ban to %d\n", iPlayer, !m_BanMgr.GetPlayerBan(playerID));
-			gEngfuncs.pfnConsolePrint(str);
-		}
-
-		m_BanMgr.SetPlayerBan(playerID, !m_BanMgr.GetPlayerBan(playerID));
-		UpdateServerState(false);
+		char str[256];
+		sprintf(str, "CVoiceStatus::SetPlayerBlockedState: setting player %d ban to %d\n", iPlayer, !m_BanMgr.GetPlayerBan(playerID));
+		gEngfuncs.pfnConsolePrint(str);
 	}
+
+	m_BanMgr.SetPlayerBan( playerID, blocked );
+	UpdateServerState(false);
 }

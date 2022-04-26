@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -43,6 +43,8 @@ typedef struct exefuncs_s
 	void		(*unused23)(void);
 	void		(*unused24)(void);
 	void		(*unused25)(void);
+	void		(*unused26)(void);
+	void		(*unused27)(void);
 } exefuncs_t;
 
 #endif

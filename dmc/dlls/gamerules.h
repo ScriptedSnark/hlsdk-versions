@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -352,6 +352,8 @@ public:
 
 	// Immediately end a multiplayer game
 	virtual void EndMultiplayerGame( void ) { GoToIntermission(); }
+	
+	CVoiceGameMgr	m_VoiceGameMgr;
 
 protected:
 	virtual void ChangeLevel( void );
@@ -363,8 +365,6 @@ protected:
 
 	float m_flGameEndTime;
 	virtual void ClientUserInfoChanged( CBasePlayer *pPlayer, char *infobuffer );
-
-	CVoiceGameMgr	m_VoiceGameMgr;
 };
 
 extern DLL_GLOBAL CGameRules*	g_pGameRules;

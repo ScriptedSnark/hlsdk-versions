@@ -1,7 +1,7 @@
 #
-# Half-Life Full SDK 2.2 hl_i386.so Makefile for x86 Linux
+# Half-Life Full SDK 2.3 hl_i386.so Makefile for x86 Linux
 #
-# August 2001 by Leon Hartwig (hartwig@valvesoftware.com)
+# October 2002 by Leon Hartwig (hartwig@valvesoftware.com)
 #
 
 DLLNAME=hl

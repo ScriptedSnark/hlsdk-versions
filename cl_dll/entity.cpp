@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -18,7 +18,7 @@
 #include "event_api.h"
 #include "pm_defs.h"
 #include "pmtrace.h"	
-
+#include "pm_shared.h"
 
 #define DLLEXPORT __declspec( dllexport )
 
@@ -59,13 +59,16 @@ int DLLEXPORT HUD_AddEntity( int type, struct cl_entity_s *ent, const char *mode
 		break;
 	}
 	// each frame every entity passes this function, so the overview hooks it to filter the overview entities
-	if (gEngfuncs.IsSpectateOnly())
+	// in spectator mode:
+	// each frame every entity passes this function, so the overview hooks 
+	// it to filter the overview entities
+
+	if ( g_iUser1 )
 	{
 		gHUD.m_Spectator.AddOverviewEntity( type, ent, modelname );
 
-		if ( (	gHUD.m_Spectator.m_iMainMode == MAIN_IN_EYE ||
-				gHUD.m_Spectator.m_iInsetMode == INSET_IN_EYE ) &&
-				ent->index == gHUD.m_Spectator.m_iObserverTarget )
+		if ( (	g_iUser1 == OBS_IN_EYE || gHUD.m_Spectator.m_pip->value == INSET_IN_EYE ) &&
+				ent->index == g_iUser2 )
 			return 0;	// don't draw the player we are following in eye
 
 	}
@@ -158,7 +161,6 @@ void DLLEXPORT HUD_ProcessPlayerState( struct entity_state_s *dst, const struct 
 		g_iUser1 = src->iuser1;
 		g_iUser2 = src->iuser2;
 		g_iUser3 = src->iuser3;
-
 	}
 }
 
@@ -533,7 +535,6 @@ void DLLEXPORT HUD_CreateEntities( void )
 #if defined( BEAM_TEST )
 	Beams();
 #endif
-
 
 	// Add in any game specific objects
 	Game_AddObjects();

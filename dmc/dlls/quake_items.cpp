@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2001, Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2002, Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -24,6 +24,7 @@
 #include "../engine/studio.h"
 #include "weapons.h"
 #include "quake_gun.h"
+#include "hltv.h"
 
 extern unsigned short g_usPowerUp;
 
@@ -568,7 +569,10 @@ BOOL CItemWeapon::MyTouch( CBasePlayer *pPlayer )
 
 	// Update HUD
 	pPlayer->W_SetCurrentAmmo();
-	pPlayer->ForceClientDllUpdate();
+	pPlayer->m_iClientQuakeWeapon  = -1;
+	pPlayer->m_fWeapon = FALSE;
+	pPlayer->m_fKnownItem = FALSE;
+	pPlayer->UpdateClientData();
 
 	if (bLeaveWeapon)
 		return FALSE;
@@ -1059,7 +1063,7 @@ BOOL CItemPowerup::MyTouch( CBasePlayer *pPlayer )
 
 	pPlayer->m_iQuakeItems |= m_iPowerupBit;
 	
-	int iPowerUp;
+	int iPowerUp = 0;
 
 	// Invincibility
 	if (invincible_finished)
@@ -1148,8 +1152,9 @@ BOOL CItemPowerup::MyTouch( CBasePlayer *pPlayer )
 	}
 	
 	// tell director about it
-	MESSAGE_BEGIN( MSG_SPEC, SVC_HLTV );
-		WRITE_BYTE ( DRC_EVENT );	// powerup pickup
+	MESSAGE_BEGIN( MSG_SPEC, SVC_DIRECTOR );
+		WRITE_BYTE ( 9 );	// command length in bytes
+		WRITE_BYTE ( DRC_CMD_EVENT );	// powerup pickup
 		WRITE_SHORT( ENTINDEX(pPlayer->edict()) );	// player is primary target
 		WRITE_SHORT( ENTINDEX(this->edict()) );	// powerup as second target
 		WRITE_LONG( 9 );   // highst prio in game
@@ -1518,7 +1523,10 @@ BOOL CItemBackpack::MyTouch( CBasePlayer *pPlayer )
 		}
 	}
 	pPlayer->W_SetCurrentAmmo();
-	pPlayer->ForceClientDllUpdate();
+	pPlayer->m_iClientQuakeWeapon  = -1;
+	pPlayer->m_fWeapon = FALSE;
+	pPlayer->m_fKnownItem = FALSE;
+	pPlayer->UpdateClientData();
 
 	UTIL_Remove( this );
 

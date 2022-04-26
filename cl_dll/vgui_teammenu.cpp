@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2001 Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1996-2002 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -303,6 +303,7 @@ void CTeamMenuPanel::Update( void )
 				int iXSize, iYSize;
 				m_pBriefing->getTextImage()->getTextSize( iXSize, iYSize );
 				m_pBriefing->setSize( iXSize, iYSize );
+				gEngfuncs.COM_FreeFile( pfile );
 			}
 
 			m_bUpdatedMapName = true;

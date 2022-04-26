@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -461,12 +461,16 @@ extern void __CmdFunc_InputPlayerSpecial(void);
 void IN_Attack2Down(void) 
 {
 	KeyDown(&in_attack2);
-	__CmdFunc_InputPlayerSpecial();
+
 	gHUD.m_Spectator.HandleButtonsDown( IN_ATTACK2 );
 }
 
 void IN_Attack2Up(void) {KeyUp(&in_attack2);}
-void IN_UseDown (void) {KeyDown(&in_use);}
+void IN_UseDown (void)
+{
+	KeyDown(&in_use);
+	gHUD.m_Spectator.HandleButtonsDown( IN_USE );
+}
 void IN_UseUp (void) {KeyUp(&in_use);}
 void IN_JumpDown (void)
 {

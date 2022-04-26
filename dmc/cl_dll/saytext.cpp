@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -54,7 +54,8 @@ int CHudSayText :: Init( void )
 
 	InitHUDData();
 
-	CVAR_CREATE( "hud_saytext_time", "5", 0 );
+	m_HUD_saytext =			gEngfuncs.pfnRegisterVariable( "hud_saytext", "1", 0 );
+	m_HUD_saytext_time =	gEngfuncs.pfnRegisterVariable( "hud_saytext_time", "5", 0 );
 
 	return 1;
 }
@@ -98,16 +99,16 @@ int CHudSayText :: Draw( float flTime )
 	int y = Y_START;
 
 	// make sure the scrolltime is within reasonable bounds,  to guard against the clock being reset
-	flScrollTime = min( flScrollTime, flTime + SCROLL_SPEED );
+	flScrollTime = min( flScrollTime, flTime + m_HUD_saytext_time->value );
 
 	// make sure the scrolltime is within reasonable bounds,  to guard against the clock being reset
-	flScrollTime = min( flScrollTime, flTime + SCROLL_SPEED );
+	flScrollTime = min( flScrollTime, flTime + m_HUD_saytext_time->value );
 
 	if ( flScrollTime <= flTime )
 	{
 		if ( *g_szLineBuffer[0] )
 		{
-			flScrollTime = flTime + SCROLL_SPEED;
+			flScrollTime = flTime + m_HUD_saytext_time->value;
 			// push the console up
 			ScrollTextUp();
 		}
@@ -204,8 +205,7 @@ void CHudSayText :: SayTextPrint( const char *pszBuf, int iBufSize, int clientIn
 	// Set scroll time
 	if ( i == 0 )
 	{
-		SCROLL_SPEED = CVAR_GET_FLOAT( "hud_saytext_time" );
-		flScrollTime = gHUD.m_flTime + SCROLL_SPEED;
+		flScrollTime = gHUD.m_flTime + m_HUD_saytext_time->value;
 	}
 
 	m_iFlags |= HUD_ACTIVE;

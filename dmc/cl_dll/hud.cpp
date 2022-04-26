@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -187,7 +187,7 @@ void CHud :: Init( void )
 	default_fov = CVAR_CREATE( "default_fov", "90", 0 );
 	cl_lw = gEngfuncs.pfnGetCvarPointer( "cl_lw" );
 	m_pCvarStealMouse = CVAR_CREATE( "hud_capturemouse", "1", FCVAR_ARCHIVE );
-
+	m_pCvarDraw = CVAR_CREATE( "hud_draw", "1", FCVAR_ARCHIVE );
 	/************************ CLIENT CVAR DEFINITIONS ************************/
 	cl_autowepswitch = gEngfuncs.pfnRegisterVariable ( "cl_autowepswitch", "2", FCVAR_USERINFO|FCVAR_ARCHIVE );
 	cl_rollangle = gEngfuncs.pfnRegisterVariable ( "cl_rollangle", "0.65", FCVAR_CLIENTDLL|FCVAR_ARCHIVE );
@@ -215,6 +215,8 @@ void CHud :: Init( void )
 
 	m_Ammo.Init();
 	m_Health.Init();
+	m_SayText.Init();
+	m_Spectator.Init();
 	m_Geiger.Init();
 	m_Train.Init();
 	m_Battery.Init();
@@ -226,11 +228,10 @@ void CHud :: Init( void )
 	m_AmmoSecondary.Init();
 	m_TextMessage.Init();
 	m_StatusIcons.Init();
-	m_Spectator.Init();
 
 	GetClientVoiceMgr()->Init(&g_VoiceStatusHelper, (vgui::Panel**)&gViewPort);
 
-	m_SayText.Init();
+	
 	m_Menu.Init();
 
 	ServersInit();
@@ -368,6 +369,7 @@ void CHud :: VidInit( void )
 
 	m_Ammo.VidInit();
 	m_Health.VidInit();
+	m_Spectator.VidInit();
 	m_Geiger.VidInit();
 	m_Train.VidInit();
 	m_Battery.VidInit();
