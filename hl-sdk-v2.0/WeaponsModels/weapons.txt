@@ -1,0 +1,3 @@
+There are source files for two Half-Life weapons here, the Gluon Gun and the Assault Rifle.  There are three versions of each model: the weapon as seen if lying on the ground in the world (the world model); the weapon as seen held by an opposing player (the DMplayer model); and the weapon as seen when armed by the player himself/herself (the view model).  All three versions must be created for a complete Half-Life weapon.
+
+Note that the paths referenced in the .qc file for each model are not necessarily the paths of the directory structure on your machine.  Alter each .qc file as appropriate to not only reflect your new model names but also your directory structure.
