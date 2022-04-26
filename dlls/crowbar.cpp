@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -39,7 +39,7 @@ public:
 	void PrimaryAttack( void );
 	int Swing( int fFirst );
 	BOOL Deploy( void );
-	void Holster( void );
+	void Holster( int skiplocal = 0 );
 	int m_iSwing;
 	TraceResult m_trHit;
 };
@@ -106,9 +106,9 @@ BOOL CCrowbar::Deploy( )
 	return DefaultDeploy( "models/v_crowbar.mdl", "models/p_crowbar.mdl", CROWBAR_DRAW, "crowbar" );
 }
 
-void CCrowbar::Holster( )
+void CCrowbar::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	SendWeaponAnim( CROWBAR_HOLSTER );
 }
 

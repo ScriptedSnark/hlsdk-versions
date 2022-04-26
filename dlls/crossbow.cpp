@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -249,7 +249,7 @@ public:
 	void SecondaryAttack( void );
 	int AddToPlayer( CBasePlayer *pPlayer );
 	BOOL Deploy( );
-	void Holster( );
+	void Holster( int skiplocal = 0 );
 	void Reload( void );
 	void WeaponIdle( void );
 
@@ -317,7 +317,7 @@ BOOL CCrossbow::Deploy( )
 	return DefaultDeploy( "models/v_crossbow.mdl", "models/p_crossbow.mdl", CROSSBOW_DRAW2, "bow" );
 }
 
-void CCrossbow::Holster( )
+void CCrossbow::Holster( int skiplocal /* = 0 */ )
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
@@ -326,7 +326,7 @@ void CCrossbow::Holster( )
 		SecondaryAttack( );
 	}
 
-	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	if (m_iClip)
 		SendWeaponAnim( CROSSBOW_HOLSTER1 );
 	else

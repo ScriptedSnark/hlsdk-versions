@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -1991,7 +1991,7 @@ LINK_ENTITY_TO_CLASS( trigger_endsection, CTriggerEndSection );
 void CTriggerEndSection::EndSectionUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
 	// Only save on clients
-	if ( !pActivator->IsNetClient() )
+	if ( pActivator && !pActivator->IsNetClient() )
 		return;
     
 	SetUse( NULL );

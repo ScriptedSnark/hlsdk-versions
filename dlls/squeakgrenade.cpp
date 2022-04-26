@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -338,7 +338,7 @@ void CSqueakGrenade::SuperBounceTouch( CBaseEntity *pOther )
 	// higher pitch as squeeker gets closer to detonation time
 	flpitch = 155.0 - 60.0 * ((m_flDie - gpGlobals->time) / SQUEEK_DETONATE_DELAY);
 
-	if ( pOther->pev->takedamage && m_flNextAttack < gpGlobals->time)
+	if ( pOther->pev->takedamage && m_flNextAttack < gpGlobals->time )
 	{
 		// attack!
 
@@ -418,7 +418,7 @@ public:
 	void PrimaryAttack( void );
 	void SecondaryAttack( void );
 	BOOL Deploy( void );
-	void Holster( void );
+	void Holster( int skiplocal = 0 );
 	void WeaponIdle( void );
 	int m_fJustThrown;
 };
@@ -487,7 +487,7 @@ BOOL CSqueak::Deploy( )
 }
 
 
-void CSqueak::Holster( )
+void CSqueak::Holster( int skiplocal /* = 0 */ )
 {
 	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
 	
@@ -510,9 +510,18 @@ void CSqueak::PrimaryAttack()
 	{
 		UTIL_MakeVectors( m_pPlayer->pev->v_angle );
 		TraceResult tr;
+		Vector trace_origin;
+
+		// HACK HACK:  Ugly hacks to handle change in origin based on new physics code for players
+		// Move origin up if crouched and start trace a bit outside of body ( 20 units instead of 16 )
+		trace_origin = m_pPlayer->pev->origin;
+		if ( m_pPlayer->pev->flags & FL_DUCKING )
+		{
+			trace_origin = trace_origin - ( VEC_HULL_MIN - VEC_DUCK_HULL_MIN );
+		}
 
 		// find place to toss monster
-		UTIL_TraceLine( m_pPlayer->pev->origin + gpGlobals->v_forward * 16, m_pPlayer->pev->origin + gpGlobals->v_forward * 64, dont_ignore_monsters, NULL, &tr );
+		UTIL_TraceLine( trace_origin + gpGlobals->v_forward * 20, trace_origin + gpGlobals->v_forward * 64, dont_ignore_monsters, NULL, &tr );
 
 		if (tr.fAllSolid == 0 && tr.fStartSolid == 0 && tr.flFraction > 0.25)
 		{

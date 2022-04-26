@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -549,6 +549,11 @@ void CWorld :: Precache( void )
 		PRECACHE_MODEL( "models/agibs.mdl" );
 	}
 
+	PRECACHE_SOUND ("weapons/ric1.wav");
+	PRECACHE_SOUND ("weapons/ric2.wav");
+	PRECACHE_SOUND ("weapons/ric3.wav");
+	PRECACHE_SOUND ("weapons/ric4.wav");
+	PRECACHE_SOUND ("weapons/ric5.wav");
 //
 // Setup light animation tables. 'a' is total darkness, 'z' is maxbright.
 //

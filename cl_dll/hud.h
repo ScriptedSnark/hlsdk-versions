@@ -25,11 +25,7 @@
 #define RGB_REDISH 0x00FF1010 //255,160,0
 #define RGB_GREENISH 0x0000A000 //0,160,0
 
-typedef struct rect_s
-{
-	int				left, right, top, bottom;
-} wrect_t;
-
+#include "wrect.h"
 #include "cl_dll.h"
 #include "ammo.h"
 
@@ -53,6 +49,8 @@ typedef struct {
 #define HUD_INTERMISSION 2
 
 #define MAX_PLAYER_NAME_LENGTH		32
+
+#define	MAX_MOTD_LENGTH				1024
 
 //
 //-----------------------------------------------------
@@ -98,6 +96,7 @@ public:
 	int MsgFunc_ItemPickup( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_HideWeapon( const char *pszName, int iSize, void *pbuf );
 
+	void SlotInput( int iSlot );
 	void _cdecl UserCmd_Slot1( void );
 	void _cdecl UserCmd_Slot2( void );
 	void _cdecl UserCmd_Slot3( void );
@@ -189,6 +188,9 @@ private:
 //
 //-----------------------------------------------------
 //
+// REMOVED: Vgui has replaced this.
+//
+/*
 class CHudMOTD : public CHudBase
 {
 public:
@@ -200,12 +202,12 @@ public:
 	int MsgFunc_MOTD( const char *pszName, int iSize, void *pbuf );
 
 protected:
-	enum { MAX_MOTD_LENGTH = 241, };
 	static int MOTD_DISPLAY_TIME;
 	char m_szMOTD[ MAX_MOTD_LENGTH ];
-	float m_flActiveTill;
+	float m_flActiveRemaining;
 	int m_iLines;
 };
+*/
 
 //
 //-----------------------------------------------------
@@ -239,6 +241,9 @@ protected:
 //
 //-----------------------------------------------------
 //
+// REMOVED: Vgui has replaced this.
+//
+/*
 class CHudScoreboard: public CHudBase
 {
 public:
@@ -254,34 +259,6 @@ public:
 	int MsgFunc_TeamScore( const char *pszName, int iSize, void *pbuf );
 	void DeathMsg( int killer, int victim );
 
-	enum { 
-		MAX_PLAYERS = 64,
-		MAX_TEAMS = 64,
-		MAX_TEAM_NAME = 16,
-	};
-
-	struct extra_player_info_t {
-		short frags;
-		short deaths;
-		char teamname[MAX_TEAM_NAME];
-	};
-
-	struct team_info_t {
-		char name[MAX_TEAM_NAME];
-		short frags;
-		short deaths;
-		short ping;
-		short packetloss;
-		short ownteam;
-		short players;
-		int already_drawn;
-		int scores_overriden;
-	};
-
-	hud_player_info_t m_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
-	extra_player_info_t m_PlayerExtraInfo[MAX_PLAYERS+1];  // additional player info sent directly to the client dll
-	team_info_t m_TeamInfo[MAX_TEAMS+1];
-
 	int m_iNumTeams;
 
 	int m_iLastKilledBy;
@@ -290,7 +267,47 @@ public:
 	int m_iShowscoresHeld;
 
 	void GetAllPlayersInfo( void );
+private:
+	struct cvar_s *cl_showpacketloss;
+
 };
+*/
+
+enum 
+{ 
+	MAX_PLAYERS = 64,
+	MAX_TEAMS = 64,
+	MAX_TEAM_NAME = 16,
+};
+
+struct extra_player_info_t 
+{
+	short frags;
+	short deaths;
+	short playerclass;
+	short teamnumber;
+	char teamname[MAX_TEAM_NAME];
+};
+
+struct team_info_t 
+{
+	char name[MAX_TEAM_NAME];
+	short frags;
+	short deaths;
+	short ping;
+	short packetloss;
+	short ownteam;
+	short players;
+	int already_drawn;
+	int scores_overriden;
+	int teamnumber;
+};
+
+extern hud_player_info_t	g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
+extern extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
+extern team_info_t			g_TeamInfo[MAX_TEAMS+1];
+extern int					g_IsSpectator[MAX_PLAYERS+1];
+
 
 //
 //-----------------------------------------------------
@@ -340,7 +357,7 @@ public:
 	int VidInit( void );
 	int Draw( float flTime );
 	int MsgFunc_SayText( const char *pszName, int iSize, void *pbuf );
-	void SayTextPrint( const char *pszBuf, int iBufSize );
+	void SayTextPrint( const char *pszBuf, int iBufSize, int clientIndex = -1 );
 	void EnsureTextFitsInOneLineAndWrapIfHaveTo( int line );
 };
 
@@ -422,8 +439,8 @@ class CHudTextMessage: public CHudBase
 {
 public:
 	int Init( void );
-	char *LocaliseTextString( const char *msg, char *dst_buffer, int buffer_size );
-	char *BufferedLocaliseTextString( const char *msg );
+	static char *LocaliseTextString( const char *msg, char *dst_buffer, int buffer_size );
+	static char *BufferedLocaliseTextString( const char *msg );
 	char *LookupString( const char *msg_name, int *msg_dest = NULL );
 	int MsgFunc_TextMsg(const char *pszName, int iSize, void *pbuf);
 };
@@ -501,10 +518,11 @@ private:
 
 };
 
-
 //
 //-----------------------------------------------------
 //
+
+typedef struct cvar_s cvar_t;
 
 class CHud
 {
@@ -520,6 +538,7 @@ private:
 
 public:
 
+	HSPRITE						m_hsprCursor;
 	float m_flTime;	   // the current client time
 	float m_fOldTime;  // the time at which the HUD was last redrawn
 	double m_flTimeDelta; // the difference between flTime and fOldTime
@@ -530,6 +549,7 @@ public:
 	int		m_iFOV;
 	int		m_Teamplay;
 	int		m_iRes;
+	cvar_t  *m_pCvarStealMouse;
 
 	int m_iFontHeight;
 	int DrawHudNumber(int x, int y, int iFlags, int iNumber, int r, int g, int b );
@@ -545,6 +565,7 @@ private:
 	wrect_t *m_rgrcRects;	/*[HUD_SPRITE_COUNT]*/
 	char *m_rgszSpriteNames; /*[HUD_SPRITE_COUNT][MAX_SPRITE_NAME_LENGTH]*/
 
+	struct cvar_s *default_fov;
 public:
 	HSPRITE GetSprite( int index ) 
 	{
@@ -566,8 +587,6 @@ public:
 	CHudTrain	m_Train;
 	CHudFlashlight m_Flash;
 	CHudMessage m_Message;
-	CHudScoreboard m_Scoreboard;
-	CHudMOTD    m_MOTD;
 	CHudStatusBar    m_StatusBar;
 	CHudDeathNotice m_DeathNotice;
 	CHudSayText m_SayText;
@@ -606,6 +625,17 @@ public:
 
 	void AddHudElem(CHudBase *p);
 
+	float GetSensitivity();
+
 };
 
+class TeamFortressViewport;
+
 extern CHud gHUD;
+extern TeamFortressViewport *gViewPort;
+
+extern int g_iPlayerClass;
+extern int g_iTeamNumber;
+extern int g_iUser1;
+extern int g_iUser2;
+

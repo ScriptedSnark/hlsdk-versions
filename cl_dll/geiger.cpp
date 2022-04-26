@@ -19,7 +19,7 @@
 //
 
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include <string.h>
 #include <time.h>
 #include <stdio.h>

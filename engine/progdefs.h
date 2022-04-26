@@ -14,7 +14,9 @@
 ****/
 #ifndef PROGDEFS_H
 #define PROGDEFS_H
-
+#ifdef _WIN32
+#pragma once
+#endif
 
 typedef struct
 {	
@@ -53,7 +55,7 @@ typedef struct
 } globalvars_t;
 
 
-typedef struct
+typedef struct entvars_s
 {
 	string_t	classname;
 	string_t	globalname;
@@ -70,6 +72,13 @@ typedef struct
 	vec3_t		avelocity;		// angle velocity (degrees per second)
 	vec3_t		punchangle;		// auto-decaying view angle adjustment
 	vec3_t		v_angle;		// Viewing angle (player only)
+
+	// For parametric entities
+	vec3_t		endpos;
+	vec3_t		startpos;
+	float		impacttime;
+	float		starttime;
+
 	int			fixangle;		// 0:nothing, 1:force view angles, 2:add avelocity
 	float		idealpitch;
 	float		pitch_speed;
@@ -170,6 +179,45 @@ typedef struct
 	float		radsuit_finished;
 	
 	edict_t		*pContainingEntity;
+
+	int			playerclass;
+	float		maxspeed;
+
+	float		fov;
+	int			weaponanim;
+
+	int			pushmsec;
+
+	int			bInDuck;
+	int			flTimeStepSound;
+	int			flSwimTime;
+	int			flDuckTime;
+	int			iStepLeft;
+	float		flFallVelocity;
+
+	int			gamestate;
+
+	int			oldbuttons;
+
+	int			groupinfo;
+
+	// For mods
+	int			iuser1;
+	int			iuser2;
+	int			iuser3;
+	int			iuser4;
+	float		fuser1;
+	float		fuser2;
+	float		fuser3;
+	float		fuser4;
+	vec3_t		vuser1;
+	vec3_t		vuser2;
+	vec3_t		vuser3;
+	vec3_t		vuser4;
+	edict_t		*euser1;
+	edict_t		*euser2;
+	edict_t		*euser3;
+	edict_t		*euser4;
 } entvars_t;
 
 

@@ -18,15 +18,19 @@
 // generic menu handler
 //
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include "parsemsg.h"
 
 #include <string.h>
 #include <stdio.h>
 
+#include "vgui_TeamFortressViewport.h"
+
 #define MAX_MENU_STRING	512
 char g_szMenuString[MAX_MENU_STRING];
 char g_szPrelocalisedMenuString[MAX_MENU_STRING];
+
+int KB_ConvertString( char *in, char **ppout );
 
 DECLARE_MESSAGE( m_Menu, ShowMenu );
 
@@ -73,7 +77,7 @@ int CHudMenu :: Draw( float flTime )
 	}
 
 	// don't draw the menu if the scoreboard is being shown
-	if ( gHUD.m_Scoreboard.m_iShowscoresHeld )
+	if ( gViewPort && gViewPort->IsScoreBoardVisible() )
 		return 1;
 
 	// draw the menu, along the left-hand side of the screen
@@ -131,6 +135,8 @@ void CHudMenu :: SelectMenuItem( int menu_item )
 // if this message is never received, then scores will simply be the combined totals of the players.
 int CHudMenu :: MsgFunc_ShowMenu( const char *pszName, int iSize, void *pbuf )
 {
+	char *temp = NULL;
+
 	BEGIN_READ( pbuf, iSize );
 
 	m_bitsValidSlots = READ_SHORT();
@@ -157,6 +163,13 @@ int CHudMenu :: MsgFunc_ShowMenu( const char *pszName, int iSize, void *pbuf )
 		if ( !NeedMore )
 		{  // we have the whole string, so we can localise it now
 			strcpy( g_szMenuString, gHUD.m_TextMessage.BufferedLocaliseTextString( g_szPrelocalisedMenuString ) );
+
+			// Swap in characters
+			if ( KB_ConvertString( g_szMenuString, &temp ) )
+			{
+				strcpy( g_szMenuString, temp );
+				free( temp );
+			}
 		}
 
 		m_fMenuDisplayed = 1;

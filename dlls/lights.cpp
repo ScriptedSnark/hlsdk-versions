@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -170,11 +170,11 @@ void CEnvLight::KeyValue( KeyValueData* pkvd )
 
 		pkvd->fHandled = TRUE;
 		sprintf( szColor, "%d", r );
-		CVAR_SET_STRING( "cl_skycolor_r", szColor );
+		CVAR_SET_STRING( "sv_skycolor_r", szColor );
 		sprintf( szColor, "%d", g );
-		CVAR_SET_STRING( "cl_skycolor_g", szColor );
+		CVAR_SET_STRING( "sv_skycolor_g", szColor );
 		sprintf( szColor, "%d", b );
-		CVAR_SET_STRING( "cl_skycolor_b", szColor );
+		CVAR_SET_STRING( "sv_skycolor_b", szColor );
 	}
 	else
 	{
@@ -189,11 +189,11 @@ void CEnvLight :: Spawn( void )
 	UTIL_MakeAimVectors( pev->angles );
 
 	sprintf( szVector, "%f", gpGlobals->v_forward.x );
-	CVAR_SET_STRING( "cl_skyvec_x", szVector );
+	CVAR_SET_STRING( "sv_skyvec_x", szVector );
 	sprintf( szVector, "%f", gpGlobals->v_forward.y );
-	CVAR_SET_STRING( "cl_skyvec_y", szVector );
+	CVAR_SET_STRING( "sv_skyvec_y", szVector );
 	sprintf( szVector, "%f", gpGlobals->v_forward.z );
-	CVAR_SET_STRING( "cl_skyvec_z", szVector );
+	CVAR_SET_STRING( "sv_skyvec_z", szVector );
 
 	CLight::Spawn( );
 }

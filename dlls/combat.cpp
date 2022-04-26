@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -1420,6 +1420,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 			switch( iBulletType )
 			{
 			case BULLET_PLAYER_MP5:
+				break;
 			case BULLET_MONSTER_MP5:
 			case BULLET_MONSTER_9MM:
 			case BULLET_MONSTER_12MM:
@@ -1433,20 +1434,7 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 					WRITE_COORD( tr.vecEndPos.y );
 					WRITE_COORD( tr.vecEndPos.z );
 				MESSAGE_END();
-
 				break;
-				/*
-			case BULLET_12MM:
-				WRITE_BYTE(MSG_BROADCAST, SVC_TEMPENTITY);
-				WRITE_BYTE(MSG_BROADCAST, TE_RAILTRAIL);
-				WRITE_COORD(MSG_BROADCAST, vecSrc.x);
-				WRITE_COORD(MSG_BROADCAST, vecSrc.y);
-				WRITE_COORD(MSG_BROADCAST, vecSrc.z);
-				WRITE_COORD(MSG_BROADCAST, tr.vecEndPos.x);
-				WRITE_COORD(MSG_BROADCAST, tr.vecEndPos.y);
-				WRITE_COORD(MSG_BROADCAST, tr.vecEndPos.z);
-				break;
-				*/
 			}
 		}
 		// do damage, paint decals
@@ -1466,39 +1454,19 @@ void CBaseEntity::FireBullets(ULONG cShots, Vector vecSrc, Vector vecDirShooting
 			default:
 			case BULLET_PLAYER_9MM:		
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg9MM, vecDir, &tr, DMG_BULLET); 
-				if ( !tracer )
-				{
-					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-					DecalGunshot( &tr, iBulletType );
-				}
 				break;
 
 			case BULLET_PLAYER_MP5:		
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgMP5, vecDir, &tr, DMG_BULLET); 
-				if ( !tracer )
-				{
-					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-					DecalGunshot( &tr, iBulletType );
-				}
 				break;
 
 			case BULLET_PLAYER_BUCKSHOT:	
 				 // make distance based!
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmgBuckshot, vecDir, &tr, DMG_BULLET); 
-				if ( !tracer )
-				{
-					// TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-					DecalGunshot( &tr, iBulletType );
-				}
 				break;
 			
 			case BULLET_PLAYER_357:		
 				pEntity->TraceAttack(pevAttacker, gSkillData.plrDmg357, vecDir, &tr, DMG_BULLET); 
-				if ( !tracer )
-				{
-					TEXTURETYPE_PlaySound(&tr, vecSrc, vecEnd, iBulletType);
-					DecalGunshot( &tr, iBulletType );
-				}
 				break;
 
 			case BULLET_MONSTER_9MM:

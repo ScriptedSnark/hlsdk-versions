@@ -14,8 +14,11 @@
 ****/
 // Customization.h
 
-#ifndef INC_CUSTOMIZATION
-#define INC_CUSTOMIZATION
+#ifndef CUSTOM_H
+#define CUSTOM_H
+#ifdef _WIN32
+#pragma once
+#endif
 
 #define MAX_QPATH 64    // Must match value in quakedefs.h
 
@@ -25,24 +28,34 @@
 // For automatic downloading.
 typedef enum
 {
-	t_sound,
+	t_sound = 0,
 	t_skin,
 	t_model,
 	t_decal,
-	t_generic
+	t_generic,
+	t_eventscript
 } resourcetype_t;
+
+// Fake type for world
+#define t_world 6
+
+typedef struct
+{
+	int				size;
+} _resourceinfo_t;
+
+typedef struct resourceinfo_s
+{
+	_resourceinfo_t info[ 7 ];
+} resourceinfo_t;
 
 #define RES_FATALIFMISSING (1<<0)   // Disconnect if we can't get this file.
 #define RES_WASMISSING     (1<<1)   // Do we have the file locally, did we get it ok?
 #define RES_CUSTOM         (1<<2)   // Is this resource one that corresponds to another player's customization
 								    //  or is it a server startup resource.
-// MD5 Hash
-typedef struct
-{
-	unsigned int buf[4];
-    unsigned int bits[2];
-    unsigned char in[64];
-} MD5Context_t;
+#define RES_REQUESTED	   (1<<3)	// Already requested a download of this one
+
+#include "crc.h"
 
 typedef struct resource_s
 {
@@ -56,6 +69,7 @@ typedef struct resource_s
 	unsigned char     rgucMD5_hash[16];    // To determine if we already have it.
 	unsigned char     playernum;           // Which player index this resource is associated with, if it's a custom resource.
 
+	unsigned char	  rguc_reserved[ 32 ]; // For future expansion
 	struct resource_s *pNext;              // Next in chain.
 	struct resource_s *pPrev;
 } resource_t;
@@ -73,4 +87,13 @@ typedef struct customization_s
 	struct customization_s *pNext; // Next in chain
 } customization_t;
 
-#endif // !Customization
+#define FCUST_FROMHPAK		( 1<<0 )
+#define FCUST_WIPEDATA		( 1<<1 )
+#define FCUST_IGNOREINIT	( 1<<2 )
+
+void		COM_ClearCustomizationList( struct customization_s *pHead, qboolean bCleanDecals);
+qboolean	COM_CreateCustomization( struct customization_s *pListHead, struct resource_s *pResource, int playernumber, int flags, 
+				struct customization_s **pCustomization, int *nLumps ); 
+int			COM_SizeofResourceList ( struct resource_s *pList, struct resourceinfo_s *ri );
+
+#endif // CUSTOM_H

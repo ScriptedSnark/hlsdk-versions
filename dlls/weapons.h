@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -241,7 +241,7 @@ public:
 		 { return TRUE; };
 
 	virtual BOOL CanHolster( void ) { return TRUE; };// can this weapon be put away right now?
-	virtual void Holster( );
+	virtual void Holster( int skiplocal = 0 );
 	virtual void UpdateItemInfo( void ) { return; };
 
 	virtual void ItemPreFrame( void )	{ return; }		// called each frame by the player PreThink
@@ -255,6 +255,8 @@ public:
 	virtual int SecondaryAmmoIndex() { return -1; };
 
 	virtual int UpdateClientData( CBasePlayer *pPlayer ) { return 0; }
+
+	virtual CBasePlayerItem *GetWeaponPtr( void ) { return NULL; };
 
 	static ItemInfo ItemInfoArray[ MAX_WEAPONS ];
 	static AmmoInfo AmmoInfoArray[ MAX_AMMO_SLOTS ];
@@ -310,11 +312,11 @@ public:
 	virtual BOOL PlayEmptySound( void );
 	virtual void ResetEmptySound( void );
 
-	virtual void SendWeaponAnim( int iAnim );
+	virtual void SendWeaponAnim( int iAnim, int skiplocal = 0 );  // skiplocal is 1 if client is predicting weapon animations
 
 	virtual BOOL CanDeploy( void );
 	virtual BOOL IsUseable( void );
-	BOOL DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt );
+	BOOL DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal = 0 );
 	int DefaultReload( int iClipSize, int iAnim, float fDelay );
 
 	virtual void ItemPostFrame( void );	// called each frame by the player PostThink
@@ -326,10 +328,15 @@ public:
 	virtual int UpdateClientData( CBasePlayer *pPlayer );		// sends hud info to client dll, if things have changed
 	virtual void RetireWeapon( void );
 	virtual BOOL ShouldWeaponIdle( void ) {return FALSE; };
-	virtual void Holster( void );
-	
+	virtual void Holster( int skiplocal = 0 );
+	virtual BOOL UseDecrement( void ) { return FALSE; };
+
 	int	PrimaryAmmoIndex(); 
 	int	SecondaryAmmoIndex(); 
+
+	void PrintState( void );
+
+	virtual CBasePlayerItem *GetWeaponPtr( void ) { return (CBasePlayerItem *)this; };
 
 	float	m_flNextPrimaryAttack;								// soonest time ItemPostFrame will call PrimaryAttack
 	float	m_flNextSecondaryAttack;							// soonest time ItemPostFrame will call SecondaryAttack
@@ -446,5 +453,36 @@ public:
 	int m_cAmmoTypes;// how many ammo types packed into this box (if packed by a level designer)
 };
 
+class CGlock : public CBasePlayerWeapon
+{
+public:
+	void Spawn( void );
+	void Precache( void );
+	int iItemSlot( void ) { return 2; }
+	int GetItemInfo(ItemInfo *p);
+
+	void PrimaryAttack( void );
+	void SecondaryAttack( void );
+	void GlockFire( float flSpread, float flCycleTime, BOOL fUseAutoAim );
+	BOOL Deploy( void );
+	void Reload( void );
+	void WeaponIdle( void );
+
+	virtual BOOL UseDecrement( void )
+	{ 
+#if defined( CLIENT_WEAPONS )
+		return TRUE;
+#else
+		return FALSE;
+#endif
+	}
+
+private:
+	int m_iShell;
+	
+
+	unsigned short m_usFireGlock1;
+	unsigned short m_usFireGlock2;
+};
 
 #endif // WEAPONS_H

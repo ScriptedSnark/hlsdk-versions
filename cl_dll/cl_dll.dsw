@@ -3,10 +3,14 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "cl_dll"=".\cl_dll.dsp" - Package Owner=<4>
+Project: "cl_dll"=.\cl_dll.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
+    begin source code control
+    "$/HLStandardSDK/SourceCode/cl_dll", NUWHAAAA
+    .
+    end source code control
 }}}
 
 Package=<4>

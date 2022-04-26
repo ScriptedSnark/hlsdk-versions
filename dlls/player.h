@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -71,6 +71,8 @@ typedef enum
 class CBasePlayer : public CBaseMonster
 {
 public:
+	int					random_seed;    // See that is shared between client & server for shared weapons code
+
 	int					m_iPlayerSound;// the index of the sound list slot reserved for this player
 	int					m_iTargetVolume;// ideal sound volume. 
 	int					m_iWeaponVolume;// how loud the player's weapon is right now.
@@ -247,7 +249,6 @@ public:
 	void SendAmmoUpdate(void);
 
 	void WaterMove( void );
-	void CheckWaterJump( void );
 	void EXPORT PlayerDeathThink( void );
 	void PlayerUse( void );
 

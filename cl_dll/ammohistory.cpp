@@ -18,7 +18,7 @@
 
 
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include "parsemsg.h"
 
 #include <string.h>

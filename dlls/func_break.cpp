@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -155,6 +155,12 @@ void CBreakable::Spawn( void )
     m_angle			= pev->angles.y;
 	pev->angles.y	= 0;
 
+	// HACK:  matGlass can receive decals, we need the client to know about this
+	//  so use class to store the material flag
+	if ( m_Material == matGlass )
+	{
+		pev->playerclass = 1;
+	}
 	
 	SET_MODEL(ENT(pev), STRING(pev->model) );//set size and link into world.
 

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -618,9 +618,25 @@ void CBasePlayerItem::DefaultTouch( CBaseEntity *pOther )
 	SUB_UseTargets( pOther, USE_TOGGLE, 0 ); // UNDONE: when should this happen?
 }
 
+BOOL CanAttack( float attack_time, float curtime, BOOL isPredicted )
+{
+#if defined( CLIENT_WEAPONS )
+	if ( !isPredicted )
+#else
+	if ( 1 )
+#endif
+	{
+		return ( attack_time <= curtime ) ? TRUE : FALSE;
+	}
+	else
+	{
+		return ( attack_time <= 0.0 ) ? TRUE : FALSE;
+	}
+}
+
 void CBasePlayerWeapon::ItemPostFrame( void )
 {
-	if ((m_fInReload) && (m_pPlayer->m_flNextAttack <= gpGlobals->time))
+	if ((m_fInReload) && ( m_pPlayer->m_flNextAttack <= UTIL_WeaponTimeBase() ) )
 	{
 		// complete the reload. 
 		int j = min( iMaxClip() - m_iClip, m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]);	
@@ -632,7 +648,7 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 		m_fInReload = FALSE;
 	}
 
-	if ((m_pPlayer->pev->button & IN_ATTACK2) && (m_flNextSecondaryAttack <= gpGlobals->time))
+	if ((m_pPlayer->pev->button & IN_ATTACK2) && CanAttack( m_flNextSecondaryAttack, gpGlobals->time, UseDecrement() ) )
 	{
 		if ( pszAmmo2() && !m_pPlayer->m_rgAmmo[SecondaryAmmoIndex()] )
 		{
@@ -642,7 +658,7 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 		SecondaryAttack();
 		m_pPlayer->pev->button &= ~IN_ATTACK2;
 	}
-	else if ((m_pPlayer->pev->button & IN_ATTACK) && (m_flNextPrimaryAttack <= gpGlobals->time))
+	else if ((m_pPlayer->pev->button & IN_ATTACK) && CanAttack( m_flNextPrimaryAttack, gpGlobals->time, UseDecrement() ) )
 	{
 		if ( (m_iClip == 0 && pszAmmo1()) || (iMaxClip() == -1 && !m_pPlayer->m_rgAmmo[PrimaryAmmoIndex()] ) )
 		{
@@ -662,19 +678,19 @@ void CBasePlayerWeapon::ItemPostFrame( void )
 
 		m_fFireOnEmpty = FALSE;
 
-		if ( !IsUseable() && m_flNextPrimaryAttack < gpGlobals->time ) 
+		if ( !IsUseable() && m_flNextPrimaryAttack < ( UseDecrement() ? 0.0 : gpGlobals->time ) ) 
 		{
 			// weapon isn't useable, switch.
 			if ( !(iFlags() & ITEM_FLAG_NOAUTOSWITCHEMPTY) && g_pGameRules->GetNextBestWeapon( m_pPlayer, this ) )
 			{
-				m_flNextPrimaryAttack = gpGlobals->time + 0.3;
+				m_flNextPrimaryAttack = ( UseDecrement() ? 0.0 : gpGlobals->time ) + 0.3;
 				return;
 			}
 		}
 		else
 		{
 			// weapon is useable. Reload if empty and weapon has waited as long as it has to after firing
-			if ( m_iClip == 0 && !(iFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < gpGlobals->time )
+			if ( m_iClip == 0 && !(iFlags() & ITEM_FLAG_NOAUTORELOAD) && m_flNextPrimaryAttack < ( UseDecrement() ? 0.0 : gpGlobals->time ) )
 			{
 				Reload();
 				return;
@@ -724,7 +740,7 @@ void CBasePlayerItem::Kill( void )
 	pev->nextthink = gpGlobals->time + .1;
 }
 
-void CBasePlayerItem::Holster( void )
+void CBasePlayerItem::Holster( int skiplocal /* = 0 */ )
 { 
 	m_pPlayer->pev->viewmodel = 0; 
 	m_pPlayer->pev->weaponmodel = 0;
@@ -778,6 +794,7 @@ int CBasePlayerWeapon::AddToPlayer( CBasePlayer *pPlayer )
 
 int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer )
 {
+	BOOL bSend = FALSE;
 	int state = 0;
 	if ( pPlayer->m_pActiveItem == this )
 	{
@@ -787,7 +804,31 @@ int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer )
 			state = 1;
 	}
 
-	if ( !pPlayer->m_fWeapon || pPlayer->m_pActiveItem != pPlayer->m_pClientActiveItem || m_iClip != m_iClientClip || state != m_iClientWeaponState || pPlayer->m_iFOV != pPlayer->m_iClientFOV )
+	// Forcing send of all data!
+	if ( !pPlayer->m_fWeapon )
+	{
+		bSend = TRUE;
+	}
+	
+	// This is the current or last weapon, so the state will need to be updated
+	if ( this == pPlayer->m_pActiveItem ||
+		 this == pPlayer->m_pClientActiveItem )
+	{
+		if ( pPlayer->m_pActiveItem != pPlayer->m_pClientActiveItem )
+		{
+			bSend = TRUE;
+		}
+	}
+
+	// If the ammo, state, or fov has changed, update the weapon
+	if ( m_iClip != m_iClientClip || 
+		 state != m_iClientWeaponState || 
+		 pPlayer->m_iFOV != pPlayer->m_iClientFOV )
+	{
+		bSend = TRUE;
+	}
+	
+	if ( bSend )
 	{
 		MESSAGE_BEGIN( MSG_ONE, gmsgCurWeapon, NULL, pPlayer->pev );
 			WRITE_BYTE( state );
@@ -807,8 +848,15 @@ int CBasePlayerWeapon::UpdateClientData( CBasePlayer *pPlayer )
 }
 
 
-void CBasePlayerWeapon::SendWeaponAnim( int iAnim )
+void CBasePlayerWeapon::SendWeaponAnim( int iAnim, int skiplocal )
 {
+	m_pPlayer->pev->weaponanim = iAnim;
+
+#if defined( CLIENT_WEAPONS )
+	if ( skiplocal && ENGINE_CANSKIP( m_pPlayer->edict() ) )
+		return;
+#endif
+
 	MESSAGE_BEGIN( MSG_ONE, SVC_WEAPONANIM, NULL, m_pPlayer->pev );
 		WRITE_BYTE( iAnim );						// sequence number
 		WRITE_BYTE( pev->body );					// weaponmodel bodygroup.
@@ -919,7 +967,7 @@ BOOL CBasePlayerWeapon :: CanDeploy( void )
 	return TRUE;
 }
 
-BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt )
+BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel, int iAnim, char *szAnimExt, int skiplocal /* = 0 */ )
 {
 	if (!CanDeploy( ))
 		return FALSE;
@@ -927,10 +975,10 @@ BOOL CBasePlayerWeapon :: DefaultDeploy( char *szViewModel, char *szWeaponModel,
 	m_pPlayer->pev->viewmodel = MAKE_STRING(szViewModel);
 	m_pPlayer->pev->weaponmodel = MAKE_STRING(szWeaponModel);
 	strcpy( m_pPlayer->m_szAnimExtention, szAnimExt );
-	SendWeaponAnim( iAnim );
+	SendWeaponAnim( iAnim, skiplocal );
 
-	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
-	m_flTimeWeaponIdle = gpGlobals->time + 1.0;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
 
 	return TRUE;
 }
@@ -946,14 +994,14 @@ BOOL CBasePlayerWeapon :: DefaultReload( int iClipSize, int iAnim, float fDelay 
 	if (j == 0)
 		return FALSE;
 
-	m_pPlayer->m_flNextAttack = gpGlobals->time + fDelay;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + fDelay;
 
 	//!!UNDONE -- reload sound goes here !!!
-	SendWeaponAnim( iAnim );
+	SendWeaponAnim( iAnim, UseDecrement() ? 1 : 0 );
 
 	m_fInReload = TRUE;
 
-	m_flTimeWeaponIdle = gpGlobals->time + 3;
+	m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 3;
 	return TRUE;
 }
 
@@ -987,7 +1035,7 @@ int CBasePlayerWeapon::SecondaryAmmoIndex( void )
 	return -1;
 }
 
-void CBasePlayerWeapon::Holster( void )
+void CBasePlayerWeapon::Holster( int skiplocal /* = 0 */ )
 { 
 	m_fInReload = FALSE; // cancel any reload in progress.
 	m_pPlayer->pev->viewmodel = 0; 
@@ -1443,4 +1491,6 @@ void CWeaponBox::SetObjectCollisionBox( void )
 	pev->absmax = pev->origin + Vector(16, 16, 16); 
 }
 
-
+void CBasePlayerWeapon::PrintState( void )
+{
+}

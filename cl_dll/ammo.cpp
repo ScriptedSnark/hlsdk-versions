@@ -19,13 +19,14 @@
 //
 
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include "parsemsg.h"
 
 #include <string.h>
 #include <stdio.h>
 
 #include "ammohistory.h"
+#include "vgui_TeamFortressViewport.h"
 
 WEAPON *gpActiveSel;	// NULL means off, 1 means just the menu bar, otherwise
 						// this points to the active weapon menu item
@@ -34,6 +35,8 @@ WEAPON *gpLastSel;		// Last weapon menu selection
 client_sprite_t *GetSpriteList(client_sprite_t *pList, const char *psz, int iRes, int iCount);
 
 WeaponsResource gWR;
+
+int g_weaponselect = 0;
 
 void WeaponsResource :: LoadAllWeaponSprites( void )
 {
@@ -372,7 +375,10 @@ void CHudAmmo::Think(void)
 	if (gHUD.m_iKeyBits & IN_ATTACK)
 	{
 		if (gpActiveSel != (WEAPON *)1)
+		{
 			ServerCmd(gpActiveSel->szName);
+			g_weaponselect = gpActiveSel->iId;
+		}
 
 		gpLastSel = gpActiveSel;
 		gpActiveSel = NULL;
@@ -430,13 +436,14 @@ void WeaponsResource :: SelectSlot( int iSlot, int fAdvance, int iDirection )
 		return;
 
 	WEAPON *p = NULL;
+	bool fastSwitch = CVAR_GET_FLOAT( "hud_fastswitch" ) != 0;
 
 	if ( (gpActiveSel == NULL) || (gpActiveSel == (WEAPON *)1) || (iSlot != gpActiveSel->iSlot) )
 	{
 		PlaySound( "common/wpn_hudon.wav", 1 );
 		p = GetFirstPos( iSlot );
 
-		if ( p && CVAR_GET_FLOAT( "hud_fastswitch" ) > 0 ) // check for fast weapon switch mode
+		if ( p && fastSwitch ) // check for fast weapon switch mode
 		{
 			// if fast weapon switch is on, then weapons can be selected in a single keypress
 			// but only if there is only one item in the bucket
@@ -444,6 +451,7 @@ void WeaponsResource :: SelectSlot( int iSlot, int fAdvance, int iDirection )
 			if ( !p2 )
 			{	// only one active item in bucket, so change directly to weapon
 				ServerCmd( p->szName );
+				g_weaponselect = p->iId;
 				return;
 			}
 		}
@@ -458,12 +466,17 @@ void WeaponsResource :: SelectSlot( int iSlot, int fAdvance, int iDirection )
 	}
 
 	
-	if ( !p )  // if no selection found,  just display the weapon list
-		gpActiveSel = (WEAPON *)1;
+	if ( !p )  // no selection found
+	{
+		// just display the weapon list, unless fastswitch is on just ignore it
+		if ( !fastSwitch )
+			gpActiveSel = (WEAPON *)1;
+		else
+			gpActiveSel = NULL;
+	}
 	else 
 		gpActiveSel = p;
 }
-
 
 //------------------------------------------------------------------------
 // Message Handlers
@@ -653,55 +666,64 @@ int CHudAmmo::MsgFunc_WeaponList(const char *pszName, int iSize, void *pbuf )
 //------------------------------------------------------------------------
 // Command Handlers
 //------------------------------------------------------------------------
+// Slot button pressed
+void CHudAmmo::SlotInput( int iSlot )
+{
+	// Let the Viewport use it first, for menus
+	if ( gViewPort && gViewPort->SlotInput( iSlot ) )
+		return;
+
+	gWR.SelectSlot(iSlot, FALSE, 1);
+}
 
 void CHudAmmo::UserCmd_Slot1(void)
 {
-	gWR.SelectSlot(0, FALSE, 1);
+	SlotInput( 0 );
 }
 
 void CHudAmmo::UserCmd_Slot2(void)
 {
-	gWR.SelectSlot(1, FALSE, 1);
+	SlotInput( 1 );
 }
 
 void CHudAmmo::UserCmd_Slot3(void)
 {
-	gWR.SelectSlot(2, FALSE, 1);
+	SlotInput( 2 );
 }
 
 void CHudAmmo::UserCmd_Slot4(void)
 {
-	gWR.SelectSlot(3, FALSE, 1);
+	SlotInput( 3 );
 }
 
 void CHudAmmo::UserCmd_Slot5(void)
 {
-	gWR.SelectSlot(4, FALSE, 1);
+	SlotInput( 4 );
 }
 
 void CHudAmmo::UserCmd_Slot6(void)
 {
-	gWR.SelectSlot(5, FALSE, 1);
+	SlotInput( 5 );
 }
 
 void CHudAmmo::UserCmd_Slot7(void)
 {
-	gWR.SelectSlot(6, FALSE, 1);
+	SlotInput( 6 );
 }
 
 void CHudAmmo::UserCmd_Slot8(void)
 {
-	gWR.SelectSlot(7, FALSE, 1);
+	SlotInput( 7 );
 }
 
 void CHudAmmo::UserCmd_Slot9(void)
 {
-	gWR.SelectSlot(8, FALSE, 1);
+	SlotInput( 8 );
 }
 
 void CHudAmmo::UserCmd_Slot10(void)
 {
-	gWR.SelectSlot(9, FALSE, 1);
+	SlotInput( 9 );
 }
 
 void CHudAmmo::UserCmd_Close(void)

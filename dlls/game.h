@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -31,12 +31,16 @@ extern cvar_t	friendlyfir;
 extern cvar_t	falldamage;
 extern cvar_t	weaponstay;
 extern cvar_t	forcerespaw;
-extern cvar_t	footsteps;
 extern cvar_t	flashlight;
 extern cvar_t	aimcrosshair;
 extern cvar_t	decalfrequency;
 extern cvar_t	teamlist;
 extern cvar_t	teamoverride;
 extern cvar_t	defaultteam;
+
+// Engine Cvars
+extern cvar_t	*g_psv_gravity;
+extern cvar_t	*g_psv_aim;
+extern cvar_t	*g_footsteps;
 
 #endif		// GAME_H

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -51,9 +51,14 @@ CBaseEntity
 
 // C functions for external declarations that call the appropriate C++ methods
 
+#ifdef _WIN32
 #define EXPORT	_declspec( dllexport )
+#else
+#define EXPORT
+#endif
 
 extern "C" EXPORT int GetEntityAPI( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
+extern "C" EXPORT int GetEntityAPI2( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion );
 
 extern int DispatchSpawn( edict_t *pent );
 extern void DispatchKeyValue( edict_t *pentKeyvalue, KeyValueData *pkvd );
@@ -287,8 +292,10 @@ public:
 #ifdef _DEBUG
 	void FunctionCheck( void *pFunction, char *name ) 
 	{ 
+#ifdef _WIN32
 		if (pFunction && !NAME_FOR_FUNCTION((unsigned long)(pFunction)) )
 			ALERT( at_error, "No EXPORT: %s:%s (%08lx)\n", STRING(pev->classname), name, (unsigned long)pFunction );
+#endif // _WIN32
 	}
 
 	BASEPTR	ThinkSet( BASEPTR func, char *name ) 

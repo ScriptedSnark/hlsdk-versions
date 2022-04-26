@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -53,6 +53,8 @@ public:
 	void WeaponIdle( void );
 	float m_flNextAnimTime;
 	int m_iShell;
+private:
+	unsigned short m_usMP5;
 };
 LINK_ENTITY_TO_CLASS( weapon_mp5, CMP5 );
 LINK_ENTITY_TO_CLASS( weapon_9mmAR, CMP5 );
@@ -103,6 +105,8 @@ void CMP5::Precache( void )
 	PRECACHE_SOUND( "weapons/glauncher2.wav" );
 
 	PRECACHE_SOUND ("weapons/357_cock1.wav");
+
+	m_usMP5 = PRECACHE_EVENT( 1, "events/mp5.sc" );
 }
 
 int CMP5::GetItemInfo(ItemInfo *p)
@@ -157,41 +161,16 @@ void CMP5::PrimaryAttack()
 		return;
 	}
 
+	PLAYBACK_EVENT( 0, m_pPlayer->edict(), m_usMP5 );
+
 	m_pPlayer->m_iWeaponVolume = NORMAL_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_iClip--;
 
-	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
-
-
-	if (1 || m_flNextAnimTime < gpGlobals->time)
-	{
-		SendWeaponAnim( MP5_FIRE1 + RANDOM_LONG(0,2));
-		m_flNextAnimTime = gpGlobals->time + 0.2;
-	}
-
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	switch( RANDOM_LONG(0,1) )
-	{
-	case 0: EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/hks1.wav", 1, ATTN_NORM, 0, 94 + RANDOM_LONG(0,0xf)); break;
-	case 1: EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/hks2.wav", 1, ATTN_NORM, 0, 94 + RANDOM_LONG(0,0xf)); break;
-//	case 2: EMIT_SOUND(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/hks3.wav", 1, ATTN_NORM); break;
-	}
-
-	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
-
-	Vector	vecShellVelocity = m_pPlayer->pev->velocity 
-							 + gpGlobals->v_right * RANDOM_FLOAT(50,70) 
-							 + gpGlobals->v_up * RANDOM_FLOAT(100,150) 
-							 + gpGlobals->v_forward * 25;
-	EjectBrass ( pev->origin + m_pPlayer->pev->view_ofs
-					+ gpGlobals->v_up * -12 
-					+ gpGlobals->v_forward * 20 
-					+ gpGlobals->v_right * 4, vecShellVelocity, pev->angles.y, m_iShell, TE_BOUNCE_SHELL); 
-	
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	
@@ -215,11 +194,7 @@ void CMP5::PrimaryAttack()
 		m_flNextPrimaryAttack = gpGlobals->time + 0.1;
 
 	m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
-
-	m_pPlayer->pev->punchangle.x = RANDOM_FLOAT( -2, 2 );
 }
-
-
 
 void CMP5::SecondaryAttack( void )
 {

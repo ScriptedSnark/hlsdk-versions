@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -70,7 +70,7 @@ public:
 
 	BOOL Deploy( void );
 	BOOL CanHolster( void );
-	void Holster( void );
+	void Holster( int skiplocal = 0 );
 
 	void PrimaryAttack( void );
 	void SecondaryAttack( void );
@@ -511,11 +511,11 @@ BOOL CRpg::CanHolster( void )
 	return TRUE;
 }
 
-void CRpg::Holster( )
+void CRpg::Holster( int skiplocal /* = 0 */ )
 {
 	m_fInReload = FALSE;// cancel any reload in progress.
 
-	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	// m_flTimeWeaponIdle = gpGlobals->time + RANDOM_FLOAT ( 10, 15 );
 	SendWeaponAnim( RPG_HOLSTER1 );
 	if (m_pSpot)

@@ -21,10 +21,12 @@
 //
 
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include <string.h>
 #include <stdio.h>
 #include "parsemsg.h"
+
+#include "vgui_TeamFortressViewport.h"
 
 DECLARE_MESSAGE( m_TextMessage, TextMsg );
 
@@ -52,7 +54,7 @@ char *CHudTextMessage::LocaliseTextString( const char *msg, char *dst_buffer, in
 			// cut msg name out of string
 			static char word_buf[255];
 			char *wdst = word_buf, *word_start = src;
-			for ( ++src ; *src >= 'A' && *src <= 'z'; wdst++, src++ )
+			for ( ++src ; (*src >= 'A' && *src <= 'z') || (*src >= '0' && *src <= '9'); wdst++, src++ )
 			{
 				*wdst = *src;
 			}
@@ -90,8 +92,9 @@ char *CHudTextMessage::LocaliseTextString( const char *msg, char *dst_buffer, in
 // As above, but with a local static buffer
 char *CHudTextMessage::BufferedLocaliseTextString( const char *msg )
 {
-	char dst_buffer[1024];
-	return LocaliseTextString( msg, dst_buffer, 1024 );
+	static char dst_buffer[1024];
+	LocaliseTextString( msg, dst_buffer, 1024 );
+	return dst_buffer;
 }
 
 // Simplified version of LocaliseTextString;  assumes string is only one word
@@ -178,6 +181,9 @@ int CHudTextMessage::MsgFunc_TextMsg( const char *pszName, int iSize, void *pbuf
 	sstr4 = strcpy( szBuf[4], sstr4 );
 	StripEndNewlineFromString( sstr4 );
 	char *psz = szBuf[5];
+
+	if ( gViewPort && gViewPort->AllowedToPrintText() == FALSE )
+		return 1;
 
 	switch ( msg_dest )
 	{

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -366,7 +366,7 @@ public:
 
 	void PrimaryAttack( void );
 	BOOL Deploy( void );
-	void Holster( void );
+	void Holster( int skiplocal = 0 );
 	void WeaponIdle( void );
 };
 LINK_ENTITY_TO_CLASS( weapon_tripmine, CTripmine );
@@ -424,9 +424,9 @@ BOOL CTripmine::Deploy( )
 }
 
 
-void CTripmine::Holster( )
+void CTripmine::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 
 	if (!m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType])
 	{

@@ -16,10 +16,14 @@
 // status_icons.cpp
 //
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
+#include "const.h"
+#include "entity_state.h"
+#include "cl_entity.h"
 #include <string.h>
 #include <stdio.h>
 #include "parsemsg.h"
+#include "event_api.h"
 
 DECLARE_MESSAGE( m_StatusIcons, StatusIcon );
 
@@ -132,6 +136,13 @@ void CHudStatusIcons::EnableIcon( char *pszIconName, unsigned char red, unsigned
 	m_IconList[i].g = green;
 	m_IconList[i].b = blue;
 	strcpy( m_IconList[i].szSpriteName, pszIconName );
+
+	// Hack: Play Timer sound when a grenade icon is played (in 0.8 seconds)
+	if ( strstr(m_IconList[i].szSpriteName, "grenade") )
+	{
+		cl_entity_t *pthisplayer = gEngfuncs.GetLocalPlayer();
+		gEngfuncs.pEventAPI->EV_PlaySound( pthisplayer->index, pthisplayer->origin, CHAN_STATIC, "weapons/timer.wav", 1.0, ATTN_NORM, 0, PITCH_NORM );
+	}
 }
 
 void CHudStatusIcons::DisableIcon( char *pszIconName )

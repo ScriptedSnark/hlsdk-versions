@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -24,6 +24,10 @@ cvar_t  servercfgfile = {"servercfgfile","server.cfg"};
 cvar_t  lservercfgfile = {"lservercfgfile","listenserver.cfg"};
 
 // multiplayer server rules
+cvar_t	fragsleft	= {"mp_fragsleft","0", FCVAR_SERVER | FCVAR_UNLOGGED };	  // Don't spam console/log files/users with this changing
+cvar_t	timeleft	= {"mp_timeleft","0" , FCVAR_SERVER | FCVAR_UNLOGGED };	  // "      "
+
+// multiplayer server rules
 cvar_t	teamplay	= {"mp_teamplay","0", FCVAR_SERVER };
 cvar_t	fraglimit	= {"mp_fraglimit","0", FCVAR_SERVER };
 cvar_t	timelimit	= {"mp_timelimit","0", FCVAR_SERVER };
@@ -31,7 +35,6 @@ cvar_t	friendlyfire= {"mp_friendlyfire","0", FCVAR_SERVER };
 cvar_t	falldamage	= {"mp_falldamage","0", FCVAR_SERVER };
 cvar_t	weaponstay	= {"mp_weaponstay","0", FCVAR_SERVER };
 cvar_t	forcerespawn= {"mp_forcerespawn","1", FCVAR_SERVER };
-cvar_t	footsteps	= {"mp_footsteps","1", FCVAR_SERVER };
 cvar_t	flashlight	= {"mp_flashlight","0", FCVAR_SERVER };
 cvar_t	aimcrosshair= {"mp_autocrosshair","1", FCVAR_SERVER };
 cvar_t	decalfrequency = {"decalfrequency","30", FCVAR_SERVER };
@@ -39,6 +42,10 @@ cvar_t	teamlist = {"mp_teamlist","hgrunt;scientist", FCVAR_SERVER };
 cvar_t	teamoverride = {"mp_teamoverride","1" };
 cvar_t	defaultteam = {"mp_defaultteam","0" };
 cvar_t	allowmonsters={"mp_allowmonsters","0", FCVAR_SERVER };
+
+cvar_t 	*g_psv_gravity = NULL;
+cvar_t	*g_psv_aim = NULL;
+cvar_t	*g_footsteps = NULL;
 
 //CVARS FOR SKILL LEVEL SETTINGS
 // Agrunt
@@ -447,6 +454,9 @@ cvar_t	sk_player_leg3	= { "sk_player_leg3","1" };
 void GameDLLInit( void )
 {
 	// Register cvars here:
+	g_psv_gravity = CVAR_GET_POINTER( "sv_gravity" );
+	g_psv_aim = CVAR_GET_POINTER( "sv_aim" );
+	g_footsteps = CVAR_GET_POINTER( "mp_footsteps" );
 
 	CVAR_REGISTER (&displaysoundlist);
 	CVAR_REGISTER (&mapcyclefile);
@@ -457,11 +467,13 @@ void GameDLLInit( void )
 	CVAR_REGISTER (&fraglimit);
 	CVAR_REGISTER (&timelimit);
 
+	CVAR_REGISTER (&fragsleft);
+	CVAR_REGISTER (&timeleft);
+
 	CVAR_REGISTER (&friendlyfire);
 	CVAR_REGISTER (&falldamage);
 	CVAR_REGISTER (&weaponstay);
 	CVAR_REGISTER (&forcerespawn);
-	CVAR_REGISTER (&footsteps);
 	CVAR_REGISTER (&flashlight);
 	CVAR_REGISTER (&aimcrosshair);
 	CVAR_REGISTER (&decalfrequency);

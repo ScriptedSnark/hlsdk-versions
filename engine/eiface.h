@@ -18,7 +18,7 @@
 #ifdef HLDEMO_BUILD
 #define INTERFACE_VERSION       001
 #else  // !HLDEMO_BUILD, i.e., regular version of HL
-#define INTERFACE_VERSION		138
+#define INTERFACE_VERSION		140
 #endif // !HLDEMO_BUILD
 
 #include "custom.h"
@@ -33,8 +33,11 @@
 // This is conveniently done for them in extdll.h
 //
 
-
+#ifdef _WIN32
 #define DLLEXPORT __stdcall
+#else
+#define DLLEXPORT /* */
+#endif
 
 typedef enum
 	{
@@ -54,6 +57,13 @@ typedef enum
 	print_chat,
 	} PRINT_TYPE;
 
+// For integrity checking of content on clients
+typedef enum
+{
+	force_exactfile,			// File on client must exactly match server's file
+	force_model_samebounds,		// For model files only, the geometry must fit in the same bbox
+	force_model_specifybounds,	// For model files only, the geometry must fit in the specified bbox
+} FORCE_TYPE;
 
 // Returned by TraceLine
 typedef struct
@@ -84,7 +94,7 @@ typedef struct
 	int	fPlayTrack;
 } CDStatus;
 
-typedef unsigned long CRC32_t;
+#include "../common/crc.h"
 
 // Engine hands this to DLLs for functionality callbacks
 typedef struct enginefuncs_s
@@ -157,12 +167,12 @@ typedef struct enginefuncs_s
 	void		(*pfnFreeEntPrivateData)	(edict_t *pEdict);
 	const char*	(*pfnSzFromIndex)			(int iString);
 	int			(*pfnAllocString)			(const char *szValue);
-	entvars_t*	(*pfnGetVarsOfEnt)			(edict_t *pEdict);
+	struct entvars_s*	(*pfnGetVarsOfEnt)			(edict_t *pEdict);
 	edict_t*	(*pfnPEntityOfEntOffset)	(int iEntOffset);
 	int			(*pfnEntOffsetOfPEntity)	(const edict_t *pEdict);
 	int			(*pfnIndexOfEdict)			(const edict_t *pEdict);
 	edict_t*	(*pfnPEntityOfEntIndex)		(int iEntIndex);
-	edict_t*	(*pfnFindEntityByVars)		(entvars_t* pvars);
+	edict_t*	(*pfnFindEntityByVars)		(struct entvars_s* pvars);
 	void*		(*pfnGetModelPtr)			(edict_t* pEdict);
 	int			(*pfnRegUserMsg)			(const char *pszName, int iSize);
 	void		(*pfnAnimationAutomove)		(const edict_t* pEdict, float flTime);
@@ -205,8 +215,44 @@ typedef struct enginefuncs_s
 	int			(*pfnGetPlayerUserId)		(edict_t *e ); // returns the server assigned userid for this player.  useful for logging frags, etc.  returns -1 if the edict couldn't be found in the list of clients
 	void		(*pfnBuildSoundMsg)			(edict_t *entity, int channel, const char *sample, /*int*/float volume, float attenuation, int fFlags, int pitch, int msg_dest, int msg_type, const float *pOrigin, edict_t *ed);
 	int			(*pfnIsDedicatedServer)		(void);// is this a dedicated server?
+	cvar_t		*(*pfnCVarGetPointer)		(const char *szVarName);
+	unsigned int (*pfnGetPlayerWONId)		(edict_t *e); // returns the server assigned WONid for this player.  useful for logging frags, etc.  returns -1 if the edict couldn't be found in the list of clients
+
+	// YWB 8/1/99 TFF Physics additions
+	void		(*pfnInfo_RemoveKey)		( char *s, const char *key );
+	const char *(*pfnGetPhysicsKeyValue)	( const edict_t *pClient, const char *key );
+	void		(*pfnSetPhysicsKeyValue)	( const edict_t *pClient, const char *key, const char *value );
+	const char *(*pfnGetPhysicsInfoString)	( const edict_t *pClient );
+	unsigned short (*pfnPrecacheEvent)		( int type, const char*psz );
+	void		(*pfnPlaybackEvent)			( int flags, const edict_t *pInvoker, unsigned short eventindex, float delay, float *origin, float *angles, float fparam1, float fparam2, int iparam1, int iparam2, int bparam1, int bparam2 );
+
+	unsigned char *(*pfnSetFatPVS)			( float *org );
+	unsigned char *(*pfnSetFatPAS)			( float *org );
+
+	int			(*pfnCheckVisibility )		( const edict_t *entity, unsigned char *pset );
+
+	void		(*pfnDeltaSetField)			( struct delta_s *pFields, const char *fieldname );
+	void		(*pfnDeltaUnsetField)		( struct delta_s *pFields, const char *fieldname );
+	void		(*pfnDeltaAddEncoder)		( char *name, void (*conditionalencode)( struct delta_s *pFields, const unsigned char *from, const unsigned char *to ) );
+	int			(*pfnGetCurrentPlayer)		( void );
+	int			(*pfnCanSkipPlayer)			( const edict_t *player );
+	int			(*pfnDeltaFindField)		( struct delta_s *pFields, const char *fieldname );
+	void		(*pfnDeltaSetFieldByIndex)	( struct delta_s *pFields, int fieldNumber );
+	void		(*pfnDeltaUnsetFieldByIndex)( struct delta_s *pFields, int fieldNumber );
+
+	void		(*pfnSetGroupMask)			( int mask, int op );
+
+	int			(*pfnCreateInstancedBaseline) ( int classname, struct entity_state_s *baseline );
+	void		(*pfnCvar_DirectSet)		( struct cvar_s *var, char *value );
+
+	// Forces the client and server to be running with the same version of the specified file
+	//  ( e.g., a player model ).
+	// Calling this has no effect in single player
+	void		(*pfnForceUnmodified)		( FORCE_TYPE type, float *mins, float *maxs, const char *filename );
+
+	void		(*pfnGetPlayerStats)		( const edict_t *pClient, int *ping, int *packet_loss );
 } enginefuncs_t;
-// be sure to bump INTERFACE_VERSION if you add a new function
+// ONLY ADD NEW FUNCTIONS TO THE END OF THIS STRUCT.  INTERFACE VERSION IS FROZEN AT 138
 
 // Passed to pfnKeyValue
 typedef struct KeyValueData_s
@@ -244,7 +290,12 @@ typedef struct
 #define FENTTABLE_MOVEABLE		0x20000000
 #define FENTTABLE_GLOBAL		0x10000000
 
-typedef struct saverestore_s
+typedef struct saverestore_s SAVERESTOREDATA;
+
+#ifdef _WIN32
+typedef 
+#endif
+struct saverestore_s
 {
 	char		*pBaseData;		// Start of all entity save data
 	char		*pCurrentData;	// Current buffer pointer for sequential access
@@ -266,7 +317,11 @@ typedef struct saverestore_s
 	float		time;
 	char		szCurrentMapName[32];	// To check global entities
 
-} SAVERESTOREDATA;
+} 
+#ifdef _WIN32
+SAVERESTOREDATA 
+#endif
+;
 
 typedef enum _fieldtypes
 {
@@ -319,7 +374,8 @@ typedef struct
 
 typedef struct 
 {
-	void			(*pfnGameInit)			( void );				// Initialize the game (one-time call from Host_Init() )
+	// Initialize the game (one-time call after loading of game .dll )
+	void			(*pfnGameInit)			( void );				
 	int				(*pfnSpawn)				( edict_t *pent );
 	void			(*pfnThink)				( edict_t *pent );
 	void			(*pfnUse)				( edict_t *pentUsed, edict_t *pentOther );
@@ -338,13 +394,15 @@ typedef struct
 	void			(*pfnResetGlobalState)		( void );
 
 	qboolean		(*pfnClientConnect)		( edict_t *pEntity, const char *pszName, const char *pszAddress, char szRejectReason[ 128 ] );
+	
 	void			(*pfnClientDisconnect)	( edict_t *pEntity );
 	void			(*pfnClientKill)		( edict_t *pEntity );
 	void			(*pfnClientPutInServer)	( edict_t *pEntity );
-	void			(*pfnClientCommand)		( edict_t *pEntity ); // JOHN: client 'cmd' commands are passed through to the DLL
+	void			(*pfnClientCommand)		( edict_t *pEntity );
 	void			(*pfnClientUserInfoChanged)( edict_t *pEntity, char *infobuffer );
 
 	void			(*pfnServerActivate)	( edict_t *pEdictList, int edictCount, int clientMax );
+	void			(*pfnServerDeactivate)	( void );
 
 	void			(*pfnPlayerPreThink)	( edict_t *pEntity );
 	void			(*pfnPlayerPostThink)	( edict_t *pEntity );
@@ -353,20 +411,58 @@ typedef struct
 	void			(*pfnParmsNewLevel)		( void );
 	void			(*pfnParmsChangeLevel)	( void );
 
-	const char     *(*pfnGetGameDescription)( void );      // Returns string describing current .dll.  E.g., TeamFotrress 2, Half-Life
-	                                                       // More descriptive than just com_gamedir.
+	 // Returns string describing current .dll.  E.g., TeamFotrress 2, Half-Life
+	const char     *(*pfnGetGameDescription)( void );     
 
-	void            (*pfnPlayerCustomization) ( edict_t *pEntity, customization_t *pCustom );  // Notify dll about a player customization.
+	// Notify dll about a player customization.
+	void            (*pfnPlayerCustomization) ( edict_t *pEntity, customization_t *pCustom );  
 
 	// Spectator funcs
 	void			(*pfnSpectatorConnect)		( edict_t *pEntity );
 	void			(*pfnSpectatorDisconnect)	( edict_t *pEntity );
 	void			(*pfnSpectatorThink)		( edict_t *pEntity );
+
+	// Notify game .dll that engine is going to shut down.  Allows mod authors to set a breakpoint.
+	void			(*pfnSys_Error)			( const char *error_string );
+
+	void			(*pfnPM_Move) ( struct playermove_s *ppmove, qboolean server );
+	void			(*pfnPM_Init) ( struct playermove_s *ppmove );
+	char			(*pfnPM_FindTextureType)( char *name );
+	void			(*pfnSetupVisibility)( struct edict_s *pViewEntity, struct edict_s *pClient, unsigned char **pvs, unsigned char **pas );
+	void			(*pfnUpdateClientData) ( const struct edict_s *ent, int sendweapons, struct clientdata_s *cd );
+	int				(*pfnAddToFullPack)( struct entity_state_s *state, int e, edict_t *ent, edict_t *host, int hostflags, int player, unsigned char *pSet );
+	void			(*pfnCreateBaseline) ( int player, int eindex, struct entity_state_s *baseline, struct edict_s *entity, int playermodelindex, vec3_t player_mins, vec3_t player_maxs );
+	void			(*pfnRegisterEncoders)	( void );
+	int				(*pfnGetWeaponData)		( struct edict_s *player, struct weapon_data_s *info );
+
+	void			(*pfnCmdStart)			( const edict_t *player, const struct usercmd_s *cmd, unsigned int random_seed );
+	void			(*pfnCmdEnd)			( const edict_t *player );
+
+	// Return 1 if the packet is valid.  Set response_buffer_size if you want to send a response packet.  Incoming, it holds the max
+	//  size of the response_buffer, so you must zero it out if you choose not to respond.
+	int				(*pfnConnectionlessPacket )	( const struct netadr_s *net_from, const char *args, char *response_buffer, int *response_buffer_size );
+
+	// Enumerates player hulls.  Returns 0 if the hull number doesn't exist, 1 otherwise
+	int				(*pfnGetHullBounds)	( int hullnumber, float *mins, float *maxs );
+
+	// Create baselines for certain "unplaced" items.
+	void			(*pfnCreateInstancedBaselines) ( void );
+
+	// One of the pfnForceUnmodified files failed the consistency check for the specified player
+	// Return 0 to allow the client to continue, 1 to force immediate disconnection ( with an optional disconnect message of up to 256 characters )
+	int				(*pfnInconsistentFile)( const struct edict_s *player, const char *filename, char *disconnect_message );
+
+	// The game .dll should return 1 if lag compensation should be allowed ( could also just set
+	//  the sv_unlag cvar.
+	// Most games right now should return 0, until client-side weapon prediction code is written
+	//  and tested for them.
+	int				(*pfnAllowLagCompensation)( void );
 } DLL_FUNCTIONS;
 
 extern DLL_FUNCTIONS	gEntityInterface;
 
 typedef int	(*APIFUNCTION)( DLL_FUNCTIONS *pFunctionTable, int interfaceVersion );
+typedef int	(*APIFUNCTION2)( DLL_FUNCTIONS *pFunctionTable, int *interfaceVersion );
 
 
 #endif EIFACE_H

@@ -20,7 +20,7 @@
 //
 
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include "parsemsg.h"
 
 #include <string.h>
@@ -129,10 +129,10 @@ void CHudStatusBar :: ParseStatusString( int line_num )
 						switch ( valtype )
 						{
 						case 'p':  // player name
-							GetPlayerInfo( indexval, &gHUD.m_Scoreboard.m_PlayerInfoList[indexval] );
-							if ( gHUD.m_Scoreboard.m_PlayerInfoList[indexval].name != NULL )
+							GetPlayerInfo( indexval, &g_PlayerInfoList[indexval] );
+							if ( g_PlayerInfoList[indexval].name != NULL )
 							{
-								strncpy( szRepString, gHUD.m_Scoreboard.m_PlayerInfoList[indexval].name, MAX_PLAYER_NAME_LENGTH );
+								strncpy( szRepString, g_PlayerInfoList[indexval].name, MAX_PLAYER_NAME_LENGTH );
 							}
 							else
 							{
@@ -178,9 +178,9 @@ int CHudStatusBar :: Draw( float fTime )
 
 		int Y_START;
 		if ( ScreenHeight >= 480 )
-			Y_START = ScreenHeight - 45;
+			Y_START = ScreenHeight - 55;
 		else
-			Y_START = ScreenHeight - 35;
+			Y_START = ScreenHeight - 45;
 
 		int x = 5;
 		int y = Y_START - ( TextHeight * i ); // draw along bottom of screen

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -61,6 +61,9 @@ public:
 	float m_flNextReload;
 	int m_iShell;
 	float m_flPumpTime;
+private:
+	unsigned short m_usDoubleFire;
+	unsigned short m_usSingleFire;
 };
 LINK_ENTITY_TO_CLASS( weapon_shotgun, CShotgun );
 
@@ -110,6 +113,9 @@ void CShotgun::Precache( void )
 	
 	PRECACHE_SOUND ("weapons/357_cock1.wav"); // gun empty sound
 	PRECACHE_SOUND ("weapons/scock1.wav");	// cock gun
+
+	m_usSingleFire = PRECACHE_EVENT( 1, "events/shotgun1.sc" );
+	m_usDoubleFire = PRECACHE_EVENT( 1, "events/shotgun2.sc" );
 }
 
 int CShotgun::AddToPlayer( CBasePlayer *pPlayer )
@@ -168,28 +174,15 @@ void CShotgun::PrimaryAttack()
 		return;
 	}
 
+	PLAYBACK_EVENT( 0, m_pPlayer->edict(), m_usSingleFire );
+
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_iClip--;
-	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
-
-	SendWeaponAnim( SHOTGUN_FIRE );
 
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
-
-	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
-
-	Vector	vecShellVelocity = m_pPlayer->pev->velocity 
-							 + gpGlobals->v_right * RANDOM_FLOAT(50,70) 
-							 + gpGlobals->v_up * RANDOM_FLOAT(100,150) 
-							 + gpGlobals->v_forward * 25;
-
-	EjectBrass ( m_pPlayer->pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_up * -12 + gpGlobals->v_forward * 20 + gpGlobals->v_right * 4 , vecShellVelocity, pev->angles.y, m_iShell, TE_BOUNCE_SHOTSHELL); 
-
-	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/sbarrel1.wav", RANDOM_FLOAT(0.95, 1.0), ATTN_NORM, 0, 93 + RANDOM_LONG(0,0x1f));
-	
 
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
@@ -219,8 +212,6 @@ void CShotgun::PrimaryAttack()
 	else
 		m_flTimeWeaponIdle = 0.75;
 	m_fInReload = 0;
-
-	m_pPlayer->pev->punchangle.x -= 5;
 }
 
 
@@ -241,33 +232,16 @@ void CShotgun::SecondaryAttack( void )
 		return;
 	}
 
+	PLAYBACK_EVENT( 0, m_pPlayer->edict(), m_usDoubleFire );
+
 	m_pPlayer->m_iWeaponVolume = LOUD_GUN_VOLUME;
 	m_pPlayer->m_iWeaponFlash = NORMAL_GUN_FLASH;
 
 	m_iClip -= 2;
 
-	m_pPlayer->pev->effects = (int)(m_pPlayer->pev->effects) | EF_MUZZLEFLASH;
-
-	SendWeaponAnim( SHOTGUN_FIRE2 );
-
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	UTIL_MakeVectors( m_pPlayer->pev->v_angle + m_pPlayer->pev->punchangle );
-		
-	Vector vecShellVelocity = m_pPlayer->pev->velocity 
-							+ gpGlobals->v_right * RANDOM_FLOAT(50,70) 
-							+ gpGlobals->v_up * RANDOM_FLOAT(100,150) 
-							+ gpGlobals->v_forward * 25;
-	EjectBrass ( m_pPlayer->pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_up * -12 + gpGlobals->v_forward * 20 + gpGlobals->v_right * 4 , vecShellVelocity, pev->angles.y, m_iShell, TE_BOUNCE_SHOTSHELL); 
-	vecShellVelocity		= m_pPlayer->pev->velocity 
-							+ gpGlobals->v_right * RANDOM_FLOAT(50,70) 
-							+ gpGlobals->v_up * RANDOM_FLOAT(100,150) 
-							+ gpGlobals->v_forward * 25;
-	EjectBrass ( m_pPlayer->pev->origin + m_pPlayer->pev->view_ofs + gpGlobals->v_up * -12 + gpGlobals->v_forward * 20 + gpGlobals->v_right * 4 , vecShellVelocity, pev->angles.y, m_iShell, TE_BOUNCE_SHOTSHELL); 
-
-	EMIT_SOUND_DYN(ENT(m_pPlayer->pev), CHAN_WEAPON, "weapons/dbarrel1.wav", RANDOM_FLOAT(0.98, 1.0), ATTN_NORM, 0, 85 + RANDOM_LONG(0,0x1f));
-	
 	Vector vecSrc	 = m_pPlayer->GetGunPosition( );
 	Vector vecAiming = m_pPlayer->GetAutoaimVector( AUTOAIM_5DEGREES );
 	
@@ -298,8 +272,6 @@ void CShotgun::SecondaryAttack( void )
 		m_flTimeWeaponIdle = 1.5;
 
 	m_fInReload = 0;
-
-	m_pPlayer->pev->punchangle.x -= 10;
 }
 
 
@@ -320,7 +292,7 @@ void CShotgun::Reload( void )
 	{
 		SendWeaponAnim( SHOTGUN_START_RELOAD );
 		m_fInReload = 1;
-		m_pPlayer->m_flNextAttack = gpGlobals->time + 0.6;
+		m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.6;
 		m_flTimeWeaponIdle = gpGlobals->time + 0.6;
 		m_flNextPrimaryAttack = gpGlobals->time + 1.0;
 		m_flNextSecondaryAttack = gpGlobals->time + 1.0;

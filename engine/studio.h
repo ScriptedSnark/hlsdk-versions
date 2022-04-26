@@ -201,6 +201,8 @@ typedef struct
 } mstudioseqdesc_t;
 
 // events
+#include "studio_event.h"
+/*
 typedef struct 
 {
 	int 				frame;
@@ -208,7 +210,7 @@ typedef struct
 	int					type;
 	char				options[64];
 } mstudioevent_t;
-
+*/
 
 // pivots
 typedef struct 

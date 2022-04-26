@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -65,7 +65,7 @@ public:
 	int AddToPlayer( CBasePlayer *pPlayer );
 
 	BOOL Deploy( void );
-	void Holster( void );
+	void Holster( int skiplocal = 0 );
 
 	void CreateEffect( void );
 	void UpdateEffect( const Vector &startPoint, const Vector &endPoint, float timeBlend );
@@ -186,9 +186,9 @@ int CEgon::AddToPlayer( CBasePlayer *pPlayer )
 
 
 
-void CEgon::Holster( void )
+void CEgon::Holster( int skiplocal /* = 0 */ )
 {
-	m_pPlayer->m_flNextAttack = gpGlobals->time + 0.5;
+	m_pPlayer->m_flNextAttack = UTIL_WeaponTimeBase() + 0.5;
 	// m_flTimeWeaponIdle = gpGlobals->time + UTIL_RandomFloat ( 10, 15 );
 	SendWeaponAnim( EGON_HOLSTER );
 

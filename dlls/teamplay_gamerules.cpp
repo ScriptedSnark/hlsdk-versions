@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -66,9 +66,16 @@ CHalfLifeTeamplay :: CHalfLifeTeamplay()
 	RecountTeams();
 }
 
+extern cvar_t timeleft, fragsleft;
+
 void CHalfLifeTeamplay :: Think ( void )
 {
 	///// Check game rules /////
+	static int last_frags;
+	static int last_time;
+
+	int frags_remaining = 0;
+	int time_remaining = 0;
 
 	if ( g_fGameOver )   // someone else quit the game already
 	{
@@ -78,6 +85,8 @@ void CHalfLifeTeamplay :: Think ( void )
 
 	float flTimeLimit = CVAR_GET_FLOAT("mp_timelimit") * 60;
 	
+	time_remaining = (int)(flTimeLimit ? ( flTimeLimit - gpGlobals->time ) : 0);
+
 	if ( flTimeLimit != 0 && gpGlobals->time >= flTimeLimit )
 	{
 		GoToIntermission();
@@ -87,6 +96,9 @@ void CHalfLifeTeamplay :: Think ( void )
 	float flFragLimit = fraglimit.value;
 	if ( flFragLimit )
 	{
+		int bestfrags = 9999;
+		int remain;
+
 		// check if any team is over the frag limit
 		for ( int i = 0; i < num_teams; i++ )
 		{
@@ -95,8 +107,30 @@ void CHalfLifeTeamplay :: Think ( void )
 				GoToIntermission();
 				return;
 			}
+
+			remain = flFragLimit - team_scores[i];
+			if ( remain < bestfrags )
+			{
+				bestfrags = remain;
+			}
 		}
+		frags_remaining = bestfrags;
 	}
+
+	// Updates when frags change
+	if ( frags_remaining != last_frags )
+	{
+		g_engfuncs.pfnCvar_DirectSet( &fragsleft, UTIL_VarArgs( "%i", frags_remaining ) );
+	}
+
+	// Updates once per second
+	if ( timeleft.value != last_time )
+	{
+		g_engfuncs.pfnCvar_DirectSet( &timeleft, UTIL_VarArgs( "%i", time_remaining ) );
+	}
+
+	last_frags = frags_remaining;
+	last_time  = time_remaining;
 }
 
 //=========================================================

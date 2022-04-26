@@ -19,12 +19,22 @@
 //
 
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include <string.h>
 #include <stdio.h>
 #include "parsemsg.h"
+#include "hud_servers.h"
+#include "vgui_TeamFortressViewport.h"
+
+#include "demo.h"
+#include "demo_api.h"
 
 extern client_sprite_t *GetSpriteList(client_sprite_t *pList, const char *psz, int iRes, int iCount);
+
+extern cvar_t *sensitivity;
+cvar_t *cl_lw = NULL;
+
+void ShutdownInput (void);
 
 //DECLARE_MESSAGE(m_Logo, Logo)
 int __MsgFunc_Logo(const char *pszName, int iSize, void *pbuf)
@@ -59,7 +69,147 @@ int __MsgFunc_GameMode(const char *pszName, int iSize, void *pbuf )
 	return gHUD.MsgFunc_GameMode( pszName, iSize, pbuf );
 }
 
+// TFFree Command Menu
+void __CmdFunc_OpenCommandMenu(void)
+{
+	if ( gViewPort )
+	{
+		gViewPort->ShowCommandMenu();
+	}
+}
 
+// TFC "special" command
+void __CmdFunc_InputPlayerSpecial(void)
+{
+	if ( gViewPort )
+	{
+		gViewPort->InputPlayerSpecial();
+	}
+}
+
+void __CmdFunc_CloseCommandMenu(void)
+{
+	if ( gViewPort )
+	{
+		gViewPort->InputSignalHideCommandMenu();
+	}
+}
+
+void __CmdFunc_ForceCloseCommandMenu( void )
+{
+	if ( gViewPort )
+	{
+		gViewPort->HideCommandMenu();
+	}
+}
+
+void __CmdFunc_ToggleServerBrowser( void )
+{
+	if ( gViewPort )
+	{
+		gViewPort->ToggleServerBrowser();
+	}
+}
+
+// TFFree Command Menu Message Handlers
+int __MsgFunc_ValClass(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_ValClass( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_TeamNames(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_TeamNames( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_Feign(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_Feign( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_Detpack(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_Detpack( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_VGUIMenu(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_VGUIMenu( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_MOTD(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_MOTD( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_BuildSt(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_BuildSt( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_RandomPC(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_RandomPC( pszName, iSize, pbuf );
+	return 0;
+}
+ 
+int __MsgFunc_ServerName(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_ServerName( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_ScoreInfo(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_ScoreInfo( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_TeamScore(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_TeamScore( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_TeamInfo(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_TeamInfo( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_Spectator(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_Spectator( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_AllowSpec( pszName, iSize, pbuf );
+	return 0;
+}
+ 
 // This is called every time the DLL is loaded
 void CHud :: Init( void )
 {
@@ -70,11 +220,39 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( SetFOV );
 	HOOK_MESSAGE( Concuss );
 
+	// TFFree CommandMenu
+	HOOK_COMMAND( "+commandmenu", OpenCommandMenu );
+	HOOK_COMMAND( "-commandmenu", CloseCommandMenu );
+	HOOK_COMMAND( "ForceCloseCommandMenu", ForceCloseCommandMenu );
+	HOOK_COMMAND( "special", InputPlayerSpecial );
+	HOOK_COMMAND( "togglebrowser", ToggleServerBrowser );
+
+	HOOK_MESSAGE( ValClass );
+	HOOK_MESSAGE( TeamNames );
+	HOOK_MESSAGE( Feign );
+	HOOK_MESSAGE( Detpack );
+	HOOK_MESSAGE( MOTD );
+	HOOK_MESSAGE( BuildSt );
+	HOOK_MESSAGE( RandomPC );
+	HOOK_MESSAGE( ServerName );
+	HOOK_MESSAGE( ScoreInfo );
+	HOOK_MESSAGE( TeamScore );
+	HOOK_MESSAGE( TeamInfo );
+
+	HOOK_MESSAGE( Spectator );
+	HOOK_MESSAGE( AllowSpec );
+
+	// VGUI Menus
+	HOOK_MESSAGE( VGUIMenu );
+
 	m_iLogo = 0;
 	m_iFOV = 0;
 
 	CVAR_CREATE( "zoom_sensitivity_ratio", "1.2", 0 );
-	CVAR_CREATE( "default_fov", "90", 0 );
+	default_fov = CVAR_CREATE( "default_fov", "90", 0 );
+	m_pCvarStealMouse = CVAR_CREATE( "hud_capturemouse", "1", FCVAR_ARCHIVE );
+
+	cl_lw = gEngfuncs.pfnGetCvarPointer( "cl_lw" );
 
 	m_pSpriteList = NULL;
 
@@ -101,8 +279,6 @@ void CHud :: Init( void )
 	m_Battery.Init();
 	m_Flash.Init();
 	m_Message.Init();
-	m_Scoreboard.Init();
-	m_MOTD.Init();
 	m_StatusBar.Init();
 	m_DeathNotice.Init();
 	m_AmmoSecondary.Init();
@@ -111,6 +287,8 @@ void CHud :: Init( void )
 
 	m_SayText.Init();
 	m_Menu.Init();
+	
+	ServersInit();
 
 	MsgFunc_ResetHUD(0, 0, NULL );
 }
@@ -122,6 +300,20 @@ CHud :: ~CHud()
 	delete [] m_rghSprites;
 	delete [] m_rgrcRects;
 	delete [] m_rgszSpriteNames;
+
+	if ( m_pHudList )
+	{
+		HUDLIST *pList;
+		while ( m_pHudList )
+		{
+			pList = m_pHudList;
+			m_pHudList = m_pHudList->pNext;
+			free( pList );
+		}
+		m_pHudList = NULL;
+	}
+
+	ServersShutdown();
 }
 
 // GetSpriteIndex()
@@ -151,6 +343,7 @@ void CHud :: VidInit( void )
 //	m_hsprFont = LoadSprite("sprites/%d_font.spr");
 	
 	m_hsprLogo = 0;	
+	m_hsprCursor = 0;
 
 	if (ScreenWidth < 640)
 		m_iRes = 320;
@@ -231,8 +424,6 @@ void CHud :: VidInit( void )
 	m_Battery.VidInit();
 	m_Flash.VidInit();
 	m_Message.VidInit();
-	m_Scoreboard.VidInit();
-	m_MOTD.VidInit();
 	m_StatusBar.VidInit();
 	m_DeathNotice.VidInit();
 	m_SayText.VidInit();
@@ -252,12 +443,114 @@ int CHud::MsgFunc_Logo(const char *pszName,  int iSize, void *pbuf)
 	return 1;
 }
 
+float g_lastFOV = 0.0;
+
+/*
+============
+COM_FileBase
+============
+*/
+// Extracts the base name of a file (no path, no extension, assumes '/' as path separator)
+void COM_FileBase ( const char *in, char *out)
+{
+	int len, start, end;
+
+	len = strlen( in );
+	
+	// scan backward for '.'
+	end = len - 1;
+	while ( end && in[end] != '.' && in[end] != '/' && in[end] != '\\' )
+		end--;
+	
+	if ( in[end] != '.' )		// no '.', copy to end
+		end = len-1;
+	else 
+		end--;					// Found ',', copy to left of '.'
+
+
+	// Scan backward for '/'
+	start = len-1;
+	while ( start >= 0 && in[start] != '/' && in[start] != '\\' )
+		start--;
+
+	if ( in[start] != '/' && in[start] != '\\' )
+		start = 0;
+	else 
+		start++;
+
+	// Length of new sting
+	len = end - start + 1;
+
+	// Copy partial string
+	strncpy( out, &in[start], len );
+	// Terminate it
+	out[len] = 0;
+}
+
+/*
+=================
+HUD_IsGame
+
+=================
+*/
+int HUD_IsGame( const char *game )
+{
+	const char *gamedir;
+	char gd[ 1024 ];
+
+	gamedir = gEngfuncs.pfnGetGameDirectory();
+	if ( gamedir && gamedir[0] )
+	{
+		COM_FileBase( gamedir, gd );
+		if ( !stricmp( gd, game ) )
+			return 1;
+	}
+	return 0;
+}
+
+/*
+=====================
+HUD_GetFOV
+
+Returns last FOV
+=====================
+*/
+float HUD_GetFOV( void )
+{
+	if ( gEngfuncs.pDemoAPI->IsRecording() )
+	{
+		// Write it
+		int i = 0;
+		unsigned char buf[ 100 ];
+
+		// Active
+		*( float * )&buf[ i ] = g_lastFOV;
+		i += sizeof( float );
+
+		Demo_WriteBuffer( TYPE_ZOOM, i, buf );
+	}
+
+	if ( gEngfuncs.pDemoAPI->IsPlayingback() )
+	{
+		g_lastFOV = g_demozoom;
+	}
+	return g_lastFOV;
+}
+
 int CHud::MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf)
 {
 	BEGIN_READ( pbuf, iSize );
 
 	int newfov = READ_BYTE();
 	int def_fov = CVAR_GET_FLOAT( "default_fov" );
+
+	int tfc = 0;
+	tfc = HUD_IsGame( "tfc" );
+
+	if ( tfc && cl_lw && cl_lw->value )
+		return 1;
+
+	g_lastFOV = newfov;
 
 	if ( newfov == 0 )
 	{
@@ -279,7 +572,7 @@ int CHud::MsgFunc_SetFOV(const char *pszName,  int iSize, void *pbuf)
 	else
 	{  
 		// set a new sensitivity that is proportional to the change from the FOV default
-		m_flMouseSensitivity = CVAR_GET_FLOAT("sensitivity") * ((float)newfov / (float)def_fov) * CVAR_GET_FLOAT("zoom_sensitivity_ratio");
+		m_flMouseSensitivity = sensitivity->value * ((float)newfov / (float)def_fov) * CVAR_GET_FLOAT("zoom_sensitivity_ratio");
 	}
 
 	return 1;
@@ -314,6 +607,11 @@ void CHud::AddHudElem(CHudBase *phudelem)
 		ptemp = ptemp->pNext;
 
 	ptemp->pNext = pdl;
+}
+
+float CHud::GetSensitivity( void )
+{
+	return m_flMouseSensitivity;
 }
 
 

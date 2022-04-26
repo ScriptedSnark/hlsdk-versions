@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1999, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, 2000 Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -14,6 +14,10 @@
 ****/
 #ifndef ENGINECALLBACK_H
 #define ENGINECALLBACK_H
+#pragma once
+
+#include "event_flags.h"
+
 // Must be provided by user of this code
 extern enginefuncs_t g_engfuncs;
 
@@ -119,5 +123,36 @@ inline void *GET_PRIVATE( edict_t *pent )
 #define IS_MAP_VALID			(*g_engfuncs.pfnIsMapValid)
 #define NUMBER_OF_ENTITIES		(*g_engfuncs.pfnNumberOfEntities)
 #define IS_DEDICATED_SERVER		(*g_engfuncs.pfnIsDedicatedServer)
+
+#define CVAR_GET_POINTER (*g_engfuncs.pfnCVarGetPointer)
+
+#define PRECACHE_EVENT			(*g_engfuncs.pfnPrecacheEvent)
+#define PLAYBACK_EVENT_FULL		(*g_engfuncs.pfnPlaybackEvent)
+
+#define ENGINE_SET_PVS			(*g_engfuncs.pfnSetFatPVS)
+#define ENGINE_SET_PAS			(*g_engfuncs.pfnSetFatPAS)
+
+#define ENGINE_CHECK_VISIBILITY (*g_engfuncs.pfnCheckVisibility)
+
+#define DELTA_SET				( *g_engfuncs.pfnDeltaSetField )
+#define DELTA_UNSET				( *g_engfuncs.pfnDeltaUnsetField )
+#define DELTA_ADDENCODER		( *g_engfuncs.pfnDeltaAddEncoder )
+#define ENGINE_CURRENT_PLAYER   ( *g_engfuncs.pfnGetCurrentPlayer )
+
+#define	ENGINE_CANSKIP			( *g_engfuncs.pfnCanSkipPlayer )
+
+#define DELTA_FINDFIELD			( *g_engfuncs.pfnDeltaFindField )
+#define DELTA_SETBYINDEX		( *g_engfuncs.pfnDeltaSetFieldByIndex )
+#define DELTA_UNSETBYINDEX		( *g_engfuncs.pfnDeltaUnsetFieldByIndex )
+
+#define ENGINE_GETPHYSINFO		( *g_engfuncs.pfnGetPhysicsInfoString )
+
+#define ENGINE_SETGROUPMASK		( *g_engfuncs.pfnSetGroupMask )
+
+#define ENGINE_INSTANCE_BASELINE ( *g_engfuncs.pfnCreateInstancedBaseline )
+
+#define ENGINE_FORCE_UNMODIFIED	( *g_engfuncs.pfnForceUnmodified )
+
+#define PLAYER_CNX_STATS		( *g_engfuncs.pfnGetPlayerStats )
 
 #endif		//ENGINECALLBACK_H
