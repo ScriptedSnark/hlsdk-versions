@@ -7,7 +7,10 @@
 
 #ifndef VOICE_GAMEMGR_H
 #define VOICE_GAMEMGR_H
+
+#ifdef _WIN32
 #pragma once
+#endif
 
 
 #include "voice_common.h"

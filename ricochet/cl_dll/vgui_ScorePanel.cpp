@@ -28,6 +28,8 @@
 #include "vgui_ScorePanel.h"
 #include "vgui_helpers.h"
 #include "vgui_loadtga.h"
+//#include "ITrackerUser.h"
+//extern ITrackerUser *g_pTrackerUser;
 
 hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
 extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
@@ -57,7 +59,7 @@ public:
 
 SBColumnInfo g_ColumnInfo[NUM_COLUMNS] =
 {
-	{NULL,			24,			Label::a_east},		
+	{NULL,			24,			Label::a_east},		// tracker column
 	{NULL,			140,		Label::a_east},		// name
 	{"#QUEUE",		56,			Label::a_east},		// class
 	{"#WINS",		40,			Label::a_east},
@@ -103,6 +105,8 @@ ScorePanel::ScorePanel(int x,int y,int wide,int tall) : Panel(x,y,wide,tall)
 	setBgColor(0, 0, 0, 96);
 	m_pCurrentHighlightLabel = NULL;
 	m_iHighlightRow = -1;
+
+	m_pTrackerIcon = vgui_LoadTGANoInvertAlpha("gfx/vgui/640_scoreboardtracker.tga");
 
 	// Initialize the top title.
 	m_TitleLabel.setFont(tfont);
@@ -151,6 +155,7 @@ ScorePanel::ScorePanel(int x,int y,int wide,int tall) : Panel(x,y,wide,tall)
 			}
 			else if (i == 0)
 			{
+				// tracker icon cell
 				xwide -= 8;
 			}
 		}
@@ -260,6 +265,8 @@ extern int g_iArenaMode;
 //-----------------------------------------------------------------------------
 void ScorePanel::Update()
 {
+	int i;
+
 	// Set the title
 	if (gViewPort->m_szServerName)
 	{
@@ -285,10 +292,13 @@ void ScorePanel::Update()
 	}
 
 	// Clear out sorts
-	for (int i = 0; i < NUM_ROWS; i++)
+	for (i = 0; i < NUM_ROWS; i++)
 	{
 		m_iSortedRows[i] = 0;
 		m_iIsATeam[i] = TEAM_NO;
+	}
+	for (i = 0; i < MAX_PLAYERS; i++)
+	{
 		m_bHasBeenSorted[i] = false;
 	}
 
@@ -312,7 +322,8 @@ void ScorePanel::Update()
 void ScorePanel::SortTeams()
 {
 	// clear out team scores
-	for ( int i = 1; i <= m_iNumTeams; i++ )
+	int i;
+	for ( i = 1; i <= m_iNumTeams; i++ )
 	{
 		if ( !g_TeamInfo[i].scores_overriden )
 			g_TeamInfo[i].frags = g_TeamInfo[i].deaths = 0;
@@ -329,7 +340,8 @@ void ScorePanel::SortTeams()
 			continue; // skip over players who are not in a team
 
 		// find what team this player is in
-		for ( int j = 1; j <= m_iNumTeams; j++ )
+		int j;
+		for ( j = 1; j <= m_iNumTeams; j++ )
 		{
 			if ( !stricmp( g_PlayerExtraInfo[i].teamname, g_TeamInfo[j].name ) )
 				break;
@@ -471,7 +483,8 @@ void ScorePanel::SortPlayers( int iTeam, char *team )
 void ScorePanel::RebuildTeams()
 {
 	// clear out player counts from teams
-	for ( int i = 1; i <= m_iNumTeams; i++ )
+	int i;
+	for ( i = 1; i <= m_iNumTeams; i++ )
 	{
 		g_TeamInfo[i].players = 0;
 	}
@@ -488,7 +501,8 @@ void ScorePanel::RebuildTeams()
 			continue; // skip over players who are not in a team
 
 		// is this player in an existing team?
-		for ( int j = 1; j <= m_iNumTeams; j++ )
+		int j;
+		for ( j = 1; j <= m_iNumTeams; j++ )
 		{
 			if ( g_TeamInfo[j].name[0] == '\0' )
 				break;
@@ -551,7 +565,8 @@ void ScorePanel::FillGrid()
 
 	bool bNextRowIsGap = false;
 
-	for(int row=0; row < NUM_ROWS; row++)
+	int row;
+	for(row=0; row < NUM_ROWS; row++)
 	{
 		CGrid *pGridRow = &m_PlayerGrids[row];
 		pGridRow->SetRowUnderline(0, false, 0, 0, 0, 0, 0);
@@ -769,16 +784,24 @@ void ScorePanel::FillGrid()
 				switch (col)
 				{
 				case COLUMN_NAME:
-
+					/*
+					if (g_pTrackerUser)
+					{
+						int playerSlot = m_iSortedRows[row];
+						int trackerID = gEngfuncs.GetTrackerIDForPlayer(playerSlot);
+						const char *trackerName = g_pTrackerUser->GetUserName(trackerID);
+						if (trackerName && *trackerName)
+						{
+							sprintf(sz, "   (%s)", trackerName);
+							pLabel->setText2(sz);
+						}
+					}
+					*/
 					sprintf(sz, "%s  ", pl_info->name);
 					break;
 				case COLUMN_VOICE:
 					sz[0] = 0;
-					// in HLTV mode allow spectator to turn on/off commentator voice
-					if (!pl_info->thisplayer || gEngfuncs.IsSpectateOnly() )
-					{
-						GetClientVoiceMgr()->UpdateSpeakerImage(pLabel, m_iSortedRows[row]);
-					}
+					GetClientVoiceMgr()->UpdateSpeakerImage(pLabel, m_iSortedRows[row]);
 					break;
 				case COLUMN_CLASS:
 					
@@ -794,6 +817,19 @@ void ScorePanel::FillGrid()
 					break;
 
 				case COLUMN_TRACKER:
+						/*
+					if (g_pTrackerUser)
+					{
+						int playerSlot = m_iSortedRows[row];
+						int trackerID = gEngfuncs.GetTrackerIDForPlayer(playerSlot);
+
+						if (g_pTrackerUser->IsFriend(trackerID) && trackerID != g_pTrackerUser->GetTrackerID())
+						{
+							pLabel->setImage(m_pTrackerIcon);
+							pLabel->setFgColorAsImageColor(false);
+							m_pTrackerIcon->setColor(Color(255, 255, 255, 0));
+						}
+					}*/
 					break;
 
 				case COLUMN_KILLS: //Wins

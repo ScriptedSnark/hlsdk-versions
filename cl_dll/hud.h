@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -25,6 +25,10 @@
 #define RGB_REDISH 0x00FF1010 //255,160,0
 #define RGB_GREENISH 0x0000A000 //0,160,0
 
+#ifndef _WIN32
+#define _cdecl 
+#endif
+
 #include "wrect.h"
 #include "cl_dll.h"
 #include "ammo.h"
@@ -40,12 +44,7 @@ typedef struct {
 	int x, y;
 } POSITION;
 
-enum 
-{ 
-	MAX_PLAYERS = 64,
-	MAX_TEAMS = 64,
-	MAX_TEAM_NAME = 16,
-};
+#include "global_consts.h"
 
 typedef struct {
 	unsigned char r,g,b,a;
@@ -90,7 +89,7 @@ struct HUDLIST {
 //
 //-----------------------------------------------------
 //
-#include "..\game_shared\voice_status.h"
+#include "voice_status.h" // base voice handling class
 #include "hud_spectator.h"
 
 
@@ -206,30 +205,6 @@ private:
 //
 //-----------------------------------------------------
 //
-// REMOVED: Vgui has replaced this.
-//
-/*
-class CHudMOTD : public CHudBase
-{
-public:
-	int Init( void );
-	int VidInit( void );
-	int Draw( float flTime );
-	void Reset( void );
-
-	int MsgFunc_MOTD( const char *pszName, int iSize, void *pbuf );
-
-protected:
-	static int MOTD_DISPLAY_TIME;
-	char m_szMOTD[ MAX_MOTD_LENGTH ];
-	float m_flActiveRemaining;
-	int m_iLines;
-};
-*/
-
-//
-//-----------------------------------------------------
-//
 class CHudStatusBar : public CHudBase
 {
 public:
@@ -246,7 +221,7 @@ protected:
 	enum { 
 		MAX_STATUSTEXT_LENGTH = 128,
 		MAX_STATUSBAR_VALUES = 8,
-		MAX_STATUSBAR_LINES = 2,
+		MAX_STATUSBAR_LINES = 3,
 	};
 
 	char m_szStatusText[MAX_STATUSBAR_LINES][MAX_STATUSTEXT_LENGTH];  // a text string describing how the status bar is to be drawn
@@ -259,46 +234,13 @@ protected:
 	float *m_pflNameColors[MAX_STATUSBAR_LINES];
 };
 
-//
-//-----------------------------------------------------
-//
-// REMOVED: Vgui has replaced this.
-//
-/*
-class CHudScoreboard: public CHudBase
-{
-public:
-	int Init( void );
-	void InitHUDData( void );
-	int VidInit( void );
-	int Draw( float flTime );
-	int DrawPlayers( int xoffset, float listslot, int nameoffset = 0, char *team = NULL ); // returns the ypos where it finishes drawing
-	void UserCmd_ShowScores( void );
-	void UserCmd_HideScores( void );
-	int MsgFunc_ScoreInfo( const char *pszName, int iSize, void *pbuf );
-	int MsgFunc_TeamInfo( const char *pszName, int iSize, void *pbuf );
-	int MsgFunc_TeamScore( const char *pszName, int iSize, void *pbuf );
-	void DeathMsg( int killer, int victim );
-
-	int m_iNumTeams;
-
-	int m_iLastKilledBy;
-	int m_fLastKillTime;
-	int m_iPlayerNum;
-	int m_iShowscoresHeld;
-
-	void GetAllPlayersInfo( void );
-private:
-	struct cvar_s *cl_showpacketloss;
-
-};
-*/
-
 struct extra_player_info_t 
 {
 	short frags;
 	short deaths;
 	short playerclass;
+	short health; // UNUSED currently, spectator UI would like this
+	bool dead; // UNUSED currently, spectator UI would like this
 	short teamnumber;
 	char teamname[MAX_TEAM_NAME];
 };
@@ -317,11 +259,7 @@ struct team_info_t
 	int teamnumber;
 };
 
-extern hud_player_info_t	g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
-extern extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
-extern team_info_t			g_TeamInfo[MAX_TEAMS+1];
-extern int					g_IsSpectator[MAX_PLAYERS+1];
-
+#include "player_info.h"
 
 //
 //-----------------------------------------------------
@@ -398,6 +336,7 @@ private:
 	wrect_t *m_prc1;
 	wrect_t *m_prc2;
 	int	  m_iBat;	
+	int	  m_iBatMax;
 	float m_fFade;
 	int	  m_iHeight;		// width of the battery innards
 };
@@ -476,6 +415,7 @@ public:
 	int VidInit( void );
 	int Draw(float flTime);
 	int MsgFunc_HudText(const char *pszName, int iSize, void *pbuf);
+	int MsgFunc_HudTextPro(const char *pszName, int iSize, void *pbuf);
 	int MsgFunc_GameTitle(const char *pszName, int iSize, void *pbuf);
 
 	float FadeBlend( float fadein, float fadeout, float hold, float localTime );
@@ -542,7 +482,60 @@ private:
 //
 //-----------------------------------------------------
 //
+class CHudBenchmark : public CHudBase
+{
+public:
+	int Init( void );
+	int VidInit( void );
+	int Draw( float flTime );
 
+	void SetScore( float score );
+
+	void Think( void );
+
+	void StartNextSection( int section );
+
+	int MsgFunc_Bench(const char *pszName, int iSize, void *pbuf);
+
+	void CountFrame( float dt );
+
+	int GetObjects( void ) { return m_nObjects; };
+
+	void SetCompositeScore( void );
+
+	void Restart( void );
+
+	int Bench_ScoreForValue( int stage, float raw );
+
+private:
+	float	m_fDrawTime;
+	float	m_fDrawScore;
+	float	m_fAvgScore;
+
+	float   m_fSendTime;
+	float	m_fReceiveTime;
+
+	int		m_nFPSCount;
+	float	m_fAverageFT;
+	float	m_fAvgFrameRate;
+
+	int		m_nSentFinish;
+	float	m_fStageStarted;
+
+	float	m_StoredLatency;
+	float	m_StoredPacketLoss;
+	int		m_nStoredHopCount;
+	int		m_nTraceDone;
+
+	int		m_nObjects;
+
+	int		m_nScoreComputed;
+	int 	m_nCompositeScore;
+};
+
+//
+//-----------------------------------------------------
+//
 
 
 class CHud
@@ -617,6 +610,7 @@ public:
 	CHudAmmoSecondary	m_AmmoSecondary;
 	CHudTextMessage m_TextMessage;
 	CHudStatusIcons m_StatusIcons;
+	CHudBenchmark	m_Benchmark;
 
 	void Init( void );
 	void VidInit( void );
@@ -654,10 +648,7 @@ public:
 
 };
 
-class TeamFortressViewport;
-
 extern CHud gHUD;
-extern TeamFortressViewport *gViewPort;
 
 extern int g_iPlayerClass;
 extern int g_iTeamNumber;

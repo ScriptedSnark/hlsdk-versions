@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -17,6 +17,10 @@
 #include "event_flags.h"
 #include "DMC_BSPFile.h"
 #include "cl_util.h"
+
+#include "FileSystem.h"
+
+extern IFileSystem *g_pFileSystem;
 
 extern "C" playermove_t *pmove;
 extern int g_runfuncs;
@@ -260,22 +264,22 @@ Open the .bsp and read in the entity lump
 */
 char *Dmc_LoadEntityLump( const char *filename )
 {
-	FILE		*fp;
+	FileHandle_t fp;
 	int			i;
 	dheader_t	header;
 	int			size;
 	lump_t		*curLump;
 	char		*buffer = NULL;
 
-	fp = fopen( filename, "rb" );
+	fp = g_pFileSystem->Open( filename, "rb" );
 	if ( !fp )
 		return NULL;
 
 	// Read in the .bsp header
-	if ( fread(&header, sizeof(dheader_t), 1, fp) != 1 )
+	if ( g_pFileSystem->Read(&header, sizeof(dheader_t), fp) != sizeof(dheader_t) )
 	{
 		gEngfuncs.Con_Printf("Dmc_LoadEntityLump:  Could not read BSP header for map [%s].\n", filename);
-		fclose(fp);
+		g_pFileSystem->Close(fp);
 		return NULL;
 	}
 
@@ -283,7 +287,7 @@ char *Dmc_LoadEntityLump( const char *filename )
 	i = header.version;
 	if ( i != 29 && i != 30)
 	{
-		fclose(fp);
+		g_pFileSystem->Close(fp);
 		gEngfuncs.Con_Printf("Dmc_LoadEntityLump:  Map [%s] has incorrect BSP version (%i should be %i).\n", filename, i, BSPVERSION);
 		return NULL;
 	}
@@ -294,26 +298,26 @@ char *Dmc_LoadEntityLump( const char *filename )
 	size = curLump->filelen;
 
 	// Jump to it
-	fseek( fp, curLump->fileofs, SEEK_SET );
+	g_pFileSystem->Seek( fp, curLump->fileofs, FILESYSTEM_SEEK_HEAD );
 
 	// Allocate sufficient memmory
 	buffer = (char *)malloc( size + 1 );
 	if ( !buffer )
 	{
-		fclose(fp);
+		g_pFileSystem->Close(fp);
 		gEngfuncs.Con_Printf("Dmc_LoadEntityLump:  Couldn't allocate %i bytes\n", size + 1 );
 		return NULL;
 	}
 
 	// Read in the entity lump
-	fread( buffer, size, 1, fp );
+	g_pFileSystem->Read( buffer, size, fp );
 
 	// Terminate the string
 	buffer[ size ] = '\0';
 
 	if ( fp )
 	{
-		fclose(fp);
+		g_pFileSystem->Close(fp);
 	}
 
 	return buffer;
@@ -331,7 +335,7 @@ void Dmc_LoadTeleporters( const char *map )
 	char	*buffer = NULL;
 	char	filename[ 256 ];
 
-	sprintf( filename, "%s/%s", gEngfuncs.pfnGetGameDirectory(), map );
+	sprintf( filename, "%s", map );
 
 	// TODO:  Fix Slashes?
 
@@ -510,7 +514,7 @@ void Dmc_CheckTeleporters( struct local_state_s *from, struct local_state_s *to 
 		s_usTeleport = gEngfuncs.pfnPrecacheEvent( 1, "events/teleport.sc" );
 	}
 
-	// Run test
+	// Run test, only if we're not a spectator
 	if ( g_iUser1 == OBS_NONE )
 		Dmc_TouchTeleporters( to, s_teles, s_num_teles );
 }

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -30,8 +30,13 @@
 #ifdef CLIENT_DLL
 	// Spectator Mode
 	int		iJumpSpectator;
+#ifndef DISABLE_JUMP_ORIGIN
 	float	vJumpOrigin[3];
 	float	vJumpAngles[3];
+#else
+	extern float	vJumpOrigin[3];
+	extern float	vJumpAngles[3];
+#endif
 #endif
 
 static int pm_shared_initialized = 0;

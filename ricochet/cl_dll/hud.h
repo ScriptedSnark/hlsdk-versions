@@ -51,6 +51,9 @@ typedef struct {
 #define MAX_PLAYER_NAME_LENGTH		32
 #define	MAX_MOTD_LENGTH				1024
 
+#ifndef _WIN32
+#define _cdecl
+#endif
 //
 //-----------------------------------------------------
 //

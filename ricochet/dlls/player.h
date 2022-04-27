@@ -301,7 +301,7 @@ public:
 	float m_flFreezeTime;
 	EHANDLE m_hLastPlayerToHitMe;
 	float m_flLastDiscHit;
-	float m_flLastDiscBounces;
+	int m_iLastDiscBounces;
 	float m_flLastDiscHitTeleport;
 
 	Vector	m_vecOldVelocity;

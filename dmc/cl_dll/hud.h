@@ -55,6 +55,9 @@ typedef struct cvar_s cvar_t;
 
 #define	MAX_MOTD_LENGTH				1024
 
+#ifndef _WIN32
+#define _cdecl
+#endif
 
 enum 
 { 

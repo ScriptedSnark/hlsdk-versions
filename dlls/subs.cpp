@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -231,7 +231,7 @@ void CBaseDelay :: SUB_UseTargets( CBaseEntity *pActivator, USE_TYPE useType, fl
 
 		pTemp->pev->nextthink = gpGlobals->time + m_flDelay;
 
-		pTemp->SetThink( DelayThink );
+		pTemp->SetThink( &CBaseDelay::DelayThink );
 		
 		// Save the useType
 		pTemp->pev->button = (int)useType;
@@ -413,7 +413,7 @@ void CBaseToggle ::  LinearMove( Vector	vecDest, float flSpeed )
 
 	// set nextthink to trigger a call to LinearMoveDone when dest is reached
 	pev->nextthink = pev->ltime + flTravelTime;
-	SetThink( LinearMoveDone );
+	SetThink( &CBaseToggle::LinearMoveDone );
 
 	// scale the destdelta vector by the time spent traveling to get velocity
 	pev->velocity = vecDestDelta / flTravelTime;
@@ -427,6 +427,14 @@ After moving, set origin to exact final destination, call "move done" function
 */
 void CBaseToggle :: LinearMoveDone( void )
 {
+	Vector delta = m_vecFinalDest - pev->origin;
+	float error = delta.Length();
+	if ( error > 0.03125 )
+	{
+		LinearMove( m_vecFinalDest, 100 );
+		return;
+	}
+
 	UTIL_SetOrigin(pev, m_vecFinalDest);
 	pev->velocity = g_vecZero;
 	pev->nextthink = -1;
@@ -473,7 +481,7 @@ void CBaseToggle :: AngularMove( Vector vecDestAngle, float flSpeed )
 
 	// set nextthink to trigger a call to AngularMoveDone when dest is reached
 	pev->nextthink = pev->ltime + flTravelTime;
-	SetThink( AngularMoveDone );
+	SetThink( &CBaseToggle::AngularMoveDone );
 
 	// scale the destdelta vector by the time spent traveling to get velocity
 	pev->avelocity = vecDestDelta / flTravelTime;

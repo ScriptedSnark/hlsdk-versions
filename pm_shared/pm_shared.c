@@ -30,8 +30,13 @@
 #ifdef CLIENT_DLL
 	// Spectator Mode
 	int		iJumpSpectator;
+#ifndef DISABLE_JUMP_ORIGIN
 	float	vJumpOrigin[3];
 	float	vJumpAngles[3];
+#else
+	extern float	vJumpOrigin[3];
+	extern float	vJumpAngles[3];
+#endif
 #endif
 
 static int pm_shared_initialized = 0;
@@ -68,18 +73,18 @@ typedef struct hull_s
 } hull_t;
 
 // Ducking time
-#define TIME_TO_DUCK	0.4
+#define TIME_TO_DUCK		0.4
 #define VEC_DUCK_HULL_MIN	-18
 #define VEC_DUCK_HULL_MAX	18
 #define VEC_DUCK_VIEW		12
 #define PM_DEAD_VIEWHEIGHT	-8
-#define MAX_CLIMB_SPEED	200
-#define STUCK_MOVEUP 1
-#define STUCK_MOVEDOWN -1
+#define MAX_CLIMB_SPEED		200
+#define STUCK_MOVEUP		1
+#define STUCK_MOVEDOWN		-1
 #define VEC_HULL_MIN		-36
 #define VEC_HULL_MAX		36
 #define VEC_VIEW			28
-#define	STOP_EPSILON	0.1
+#define	STOP_EPSILON		0.1
 
 #define CTEXTURESMAX		512			// max number of textures loaded
 #define CBTEXTURENAMEMAX	13			// only load first n chars of name
@@ -113,6 +118,8 @@ typedef struct hull_s
 #define PLAYER_FALL_PUNCH_THRESHHOLD (float)350 // won't punch player's screen/make scrape noise unless player falling at least this fast.
 
 #define PLAYER_LONGJUMP_SPEED 350 // how fast we longjump
+
+#define PLAYER_DUCKING_MULTIPLIER 0.333
 
 // double to float warning
 #pragma warning(disable : 4244)
@@ -1773,9 +1780,9 @@ void PM_SpectatorMove (void)
 			iJumpSpectator	= 0;
 			return;
 		}
-		#endif
+#endif
 		// Move around in normal spectator method
-
+	
 		speed = Length (pmove->velocity);
 		if (speed < 1)
 		{
@@ -1986,9 +1993,9 @@ void PM_Duck( void )
 
 	if ( pmove->flags & FL_DUCKING )
 	{
-		pmove->cmd.forwardmove *= 0.333;
-		pmove->cmd.sidemove    *= 0.333;
-		pmove->cmd.upmove      *= 0.333;
+		pmove->cmd.forwardmove *= PLAYER_DUCKING_MULTIPLIER;
+		pmove->cmd.sidemove    *= PLAYER_DUCKING_MULTIPLIER;
+		pmove->cmd.upmove      *= PLAYER_DUCKING_MULTIPLIER;
 	}
 
 	if ( ( pmove->cmd.buttons & IN_DUCK ) || ( pmove->bInDuck ) || ( pmove->flags & FL_DUCKING ) )
@@ -2057,6 +2064,12 @@ void PM_LadderMove( physent_t *pLadder )
 
 	if ( pmove->movetype == MOVETYPE_NOCLIP )
 		return;
+	
+#if defined( _TFC )
+	// this is how TFC freezes players, so we don't want them climbing ladders
+	if ( pmove->maxspeed <= 1.0 )
+		return;
+#endif
 
 	pmove->PM_GetModelBounds( pLadder->model, modelmins, modelmaxs );
 
@@ -2081,16 +2094,37 @@ void PM_LadderMove( physent_t *pLadder )
 	{
 		float forward = 0, right = 0;
 		vec3_t vpn, v_right;
+		float flSpeed = MAX_CLIMB_SPEED;
+
+		// they shouldn't be able to move faster than their maxspeed
+		if ( flSpeed > pmove->maxspeed )
+		{
+			flSpeed = pmove->maxspeed;
+		}
 
 		AngleVectors( pmove->angles, vpn, v_right, NULL );
+
+		if ( pmove->flags & FL_DUCKING )
+		{
+			flSpeed *= PLAYER_DUCKING_MULTIPLIER;
+		}
+
 		if ( pmove->cmd.buttons & IN_BACK )
-			forward -= MAX_CLIMB_SPEED;
+		{
+			forward -= flSpeed;
+		}
 		if ( pmove->cmd.buttons & IN_FORWARD )
-			forward += MAX_CLIMB_SPEED;
+		{
+			forward += flSpeed;
+		}
 		if ( pmove->cmd.buttons & IN_MOVELEFT )
-			right -= MAX_CLIMB_SPEED;
+		{
+			right -= flSpeed;
+		}
 		if ( pmove->cmd.buttons & IN_MOVERIGHT )
-			right += MAX_CLIMB_SPEED;
+		{
+			right += flSpeed;
+		}
 
 		if ( pmove->cmd.buttons & IN_JUMP )
 		{
@@ -2987,11 +3021,13 @@ void PM_PlayerMove ( qboolean server )
 		}
 	}
 
+#if !defined( _TFC )
 	// Slow down, I'm pulling it! (a box maybe) but only when I'm standing on ground
 	if ( ( pmove->onground != -1 ) && ( pmove->cmd.buttons & IN_USE) )
 	{
 		VectorScale( pmove->velocity, 0.3, pmove->velocity );
 	}
+#endif
 
 	// Handle movement
 	switch ( pmove->movetype )

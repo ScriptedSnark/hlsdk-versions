@@ -308,9 +308,6 @@ void CHudAmmo::Reset(void)
 
 	gWR.Reset();
 	gHR.Reset();
-
-	//	VidInit();
-
 }
 
 int CHudAmmo::VidInit(void)
@@ -674,7 +671,6 @@ int CHudAmmo::MsgFunc_WeaponList(const char *pszName, int iSize, void *pbuf )
 // Slot button pressed
 void CHudAmmo::SlotInput( int iSlot )
 {
-	// Let the Viewport use it first, for menus
 	if ( gViewPort && gViewPort->SlotInput( iSlot ) )
 		return;
 
@@ -740,7 +736,7 @@ void CHudAmmo::UserCmd_Close(void)
 		PlaySound("common/wpn_hudoff.wav", 1);
 	}
 	else
-		ClientCmd("escape");
+		EngineClientCmd("escape");
 }
 
 

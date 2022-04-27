@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -167,7 +167,7 @@ void CHgun::PrimaryAttack()
 	// player "shoot" animation
 	m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
 
-	m_flNextPrimaryAttack = m_flNextPrimaryAttack + 0.25;
+	m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
 
 	if (m_flNextPrimaryAttack < UTIL_WeaponTimeBase() )
 	{
@@ -235,7 +235,7 @@ void CHgun::SecondaryAttack( void )
 	pHornet->pev->velocity = gpGlobals->v_forward * 1200;
 	pHornet->pev->angles = UTIL_VecToAngles( pHornet->pev->velocity );
 
-	pHornet->SetThink( CHornet::StartDart );
+	pHornet->SetThink( &CHornet::StartDart );
 
 	m_flRechargeTime = gpGlobals->time + 0.5;
 #endif

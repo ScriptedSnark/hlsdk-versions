@@ -115,7 +115,7 @@ public:
 
 	void DoCancel( void )
 	{
-		ClientCmd( "togglebrowser\n" );
+		EngineClientCmd( "togglebrowser\n" );
 	}
 
 	void DoConnect( void )
@@ -133,7 +133,7 @@ public:
 
 		sprintf( sz, "connect %s\n", address );
 
-		ClientCmd( sz );
+		EngineClientCmd( sz );
 
 		DoCancel();
 	}

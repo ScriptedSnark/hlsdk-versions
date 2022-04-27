@@ -29,9 +29,10 @@
 
 #include "demo.h"
 #include "demo_api.h"
-#include "vgui_scorepanel.h"
+#include "vgui_ScorePanel.h"
 
-
+hud_player_info_t	 g_PlayerInfoList[MAX_PLAYERS+1];	   // player info from the engine
+extra_player_info_t  g_PlayerExtraInfo[MAX_PLAYERS+1];   // additional player info sent directly to the client dll
 
 class CHLVoiceStatusHelper : public IVoiceStatusHelper
 {
@@ -258,13 +259,27 @@ int __MsgFunc_Spectator(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 
+int __MsgFunc_SpecFade(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_SpecFade( pszName, iSize, pbuf );
+	return 0;
+}
+
+int __MsgFunc_ResetFade(const char *pszName, int iSize, void *pbuf)
+{
+	if (gViewPort)
+		return gViewPort->MsgFunc_ResetFade( pszName, iSize, pbuf );
+	return 0;
+}
+
 int __MsgFunc_AllowSpec(const char *pszName, int iSize, void *pbuf)
 {
 	if (gViewPort)
 		return gViewPort->MsgFunc_AllowSpec( pszName, iSize, pbuf );
 	return 0;
 }
- 
+
 // This is called every time the DLL is loaded
 void CHud :: Init( void )
 {
@@ -297,6 +312,9 @@ void CHud :: Init( void )
 
 	HOOK_MESSAGE( Spectator );
 	HOOK_MESSAGE( AllowSpec );
+	
+	HOOK_MESSAGE( SpecFade );
+	HOOK_MESSAGE( ResetFade );
 
 	// VGUI Menus
 	HOOK_MESSAGE( VGUIMenu );
@@ -423,7 +441,8 @@ void CHud :: VidInit( void )
 			// count the number of sprites of the appropriate res
 			m_iSpriteCount = 0;
 			client_sprite_t *p = m_pSpriteList;
-			for ( int j = 0; j < m_iSpriteCountAllRes; j++ )
+			int j;
+			for ( j = 0; j < m_iSpriteCountAllRes; j++ )
 			{
 				if ( p->iRes == m_iRes )
 					m_iSpriteCount++;

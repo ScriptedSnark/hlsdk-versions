@@ -119,7 +119,8 @@ void CDiscArena::StartBattle( void )
 	m_iTeamOneScore = m_iTeamTwoScore = 0;
 
 	// First, set all players in this arena to "didn't play"
-	for ( int i = 1; i <= gpGlobals->maxClients; i++ )
+	int i;
+	for ( i = 1; i <= gpGlobals->maxClients; i++ )
 	{
 		CBasePlayer *pPlayer = (CBasePlayer *)UTIL_PlayerByIndex( i );
 
@@ -232,7 +233,7 @@ void CDiscArena::StartRound( void )
 	// Start counting down
 	m_iArenaState = ARENA_COUNTDOWN;
 	pev->nextthink = gpGlobals->time + 0.1;
-	SetThink( CountDownThink );
+	SetThink( &CDiscArena::CountDownThink );
 }
 
 //-----------------------------------------------------------------------------
@@ -280,7 +281,7 @@ void CDiscArena::BattleThink( void )
 	if ( gpGlobals->time >= m_flTimeLimitOver - 1.0 )
 	{
 		pev->nextthink = gpGlobals->time + 1.0;
-		SetThink( TimeOver );
+		SetThink( &CDiscArena::TimeOver );
 		return;
 	}
 
@@ -349,7 +350,7 @@ void CDiscArena::CountDownThink( void )
 		}
 
 		pev->nextthink = gpGlobals->time + 1.0;
-		SetThink( BattleThink );
+		SetThink( &CDiscArena::BattleThink );
 	}
 }
 
@@ -364,7 +365,7 @@ void CDiscArena::PlayerKilled( CBasePlayer *pPlayer )
 		if ( !CheckBattleOver() )
 		{
 			pev->nextthink = gpGlobals->time + 0.5;
-			SetThink( CheckOverThink );
+			SetThink( &CDiscArena::CheckOverThink );
 		}
 	}
 }
@@ -425,7 +426,7 @@ void CDiscArena::MoveToSpectator( CBasePlayer *pPlayer )
 void CDiscArena::BattleOver( void )
 {
 	pev->nextthink = gpGlobals->time + 3;
-	SetThink( FinishedThink );
+	SetThink( &CDiscArena::FinishedThink );
 
 	m_iSecondsTillStart = ARENA_TIME_VIEWSCORES;
 	m_iArenaState = ARENA_SHOWING_SCORES;
@@ -477,7 +478,8 @@ bool CDiscArena::CheckBattleOver( void )
 	bool bTeamTwoAlive = false;
 
 	// See if the battle is finished
-	for ( int i = 0; i < (m_iPlayersPerTeam * 2); i++ )
+	int i;
+	for ( i = 0; i < (m_iPlayersPerTeam * 2); i++ )
 	{
 		if ( m_hCombatants[i] != NULL && ((CBasePlayer*)(CBaseEntity*)m_hCombatants[i])->IsAlive() )
 		{
@@ -590,12 +592,12 @@ void CDiscArena::CheckOverThink( void )
 		if ( m_iArenaState == ARENA_COUNTDOWN )
 		{
 			pev->nextthink = gpGlobals->time + 0.1;
-			SetThink( CountDownThink );
+			SetThink( &CDiscArena::CountDownThink );
 		}
 		else
 		{
 			pev->nextthink = gpGlobals->time + 0.1;
-			SetThink( BattleThink );
+			SetThink( &CDiscArena::BattleThink );
 		}
 	}
 }
@@ -720,7 +722,7 @@ void CDiscArena::AddClient( CBasePlayer *pPlayer, BOOL bCheckStart )
 		if ( (m_iArenaState == ARENA_WAITING_FOR_PLAYERS) && ( m_iPlayers >= (m_iPlayersPerTeam * 2) ) )
 		{
 			// Start a battle in a second to let the clients learn about this new player
-			SetThink( StartBattleThink );
+			SetThink( &CDiscArena::StartBattleThink );
 			pev->nextthink = gpGlobals->time + 1.0;
 		}
 		else
@@ -961,7 +963,8 @@ void ShufflePlayers( void )
 	int iArenaNum = 0;
 
 	// Reset all Arenas
-	for ( int i = 0; i < MAX_ARENAS; i++)
+	int i;
+	for ( i = 0; i < MAX_ARENAS; i++)
 	{
 		g_pArenaList[i]->Reset();
 	}
@@ -1013,7 +1016,8 @@ void CDiscArena::PostBattle( void )
 {
 	int iOtherGame = -1;
 	// First, see if there are any other games going on in other arenas
-	for (int i = 0; i < MAX_ARENAS; i++)
+	int i;
+	for ( i = 0; i < MAX_ARENAS; i++)
 	{
 		if ( g_pArenaList[i]->m_iArenaState != ARENA_WAITING_FOR_PLAYERS && g_pArenaList[i] != this )
 		{

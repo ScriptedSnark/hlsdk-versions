@@ -44,7 +44,7 @@
 #include "camera.h"
 #include "in_defs.h"
 #include "parsemsg.h"
-#include "../engine/keydefs.h"
+#include "keydefs.h"
 #include "demo.h"
 #include "demo_api.h"
 #include "ammohistory.h"
@@ -585,7 +585,7 @@ void TeamFortressViewport::Initialize( void )
 		strcpy(m_sTeamNames[i], "");
 	}
 
-	App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::SchemeCursor::scu_none) );
+	App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::scu_none) );
 }
 
 class CException;
@@ -612,8 +612,10 @@ void TeamFortressViewport::CreateCommandMenu( void )
 		return;
 	}
 
+#ifdef _WIN32
 try
 {
+#endif
 	// First, read in the localisation strings
 
 	// Detpack strings
@@ -794,6 +796,7 @@ try
 
 		pfile = gEngfuncs.COM_ParseFile(pfile, token);
 	}
+#ifdef _WIN32
 }
 catch( CException *e )
 {
@@ -803,6 +806,7 @@ catch( CException *e )
 	m_iInitialized = false;
 	return;
 }
+#endif
 
 	SetCurrentMenu( NULL );
 	SetCurrentCommandMenu( NULL );
@@ -1664,7 +1668,7 @@ void TeamFortressViewport::UpdateCursorState()
 	if ( m_pCurrentMenu || m_pServerBrowser->isVisible() || GetClientVoiceMgr()->IsInSquelchMode() )
 	{
 		g_iVisibleMouse = true;
-		App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::SchemeCursor::scu_arrow) );
+		App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::scu_arrow) );
 		return;
 	}
 	else if ( m_pCurrentCommandMenu )
@@ -1673,14 +1677,14 @@ void TeamFortressViewport::UpdateCursorState()
 		if ( gHUD.m_pCvarStealMouse->value != 0.0f )
 		{
 			g_iVisibleMouse = true;
-			App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::SchemeCursor::scu_arrow) );
+			App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::scu_arrow) );
 			return;
 		}
 	}
 
 	IN_ResetMouse();
 	g_iVisibleMouse = false;
-	App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::SchemeCursor::scu_none) );
+	App::getInstance()->setCursorOveride( App::getInstance()->getScheme()->getCursor(Scheme::scu_none) );
 }
 
 void TeamFortressViewport::UpdateHighlights()
@@ -1702,6 +1706,10 @@ void TeamFortressViewport::GetAllPlayersInfo( void )
 
 void TeamFortressViewport::paintBackground()
 {
+	int wide, tall;
+	getParent()->getSize( wide, tall );
+	setSize( wide, tall );
+
 	if (m_pScoreBoard)
 	{
 		int x, y;
@@ -2070,7 +2078,8 @@ int TeamFortressViewport::MsgFunc_TeamScore( const char *pszName, int iSize, voi
 	char *TeamName = READ_STRING();
 
 	// find the team matching the name
-	for ( int i = 1; i <= m_pScoreBoard->m_iNumTeams; i++ )
+	int i;
+	for ( i = 1; i <= m_pScoreBoard->m_iNumTeams; i++ )
 	{
 		if ( !stricmp( TeamName, g_TeamInfo[i].name ) )
 			break;

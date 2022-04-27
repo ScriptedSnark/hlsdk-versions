@@ -15,6 +15,7 @@
 #ifndef EXTDLL_H
 #define EXTDLL_H
 
+#include "archtypes.h"     // DAL
 
 //
 // Global header file for extension DLLs
@@ -39,13 +40,15 @@
 #define NOSERVICE
 #define NOMCX
 #define NOIME
+#include "winsani_in.h"
 #include "windows.h"
+#include "winsani_out.h"
 
 #else // _WIN32
 #define FALSE 0
 #define TRUE (!FALSE)
 
-typedef unsigned long ULONG;
+typedef uint32 ULONG;
 typedef unsigned char BYTE;
 typedef int BOOL;
 
@@ -53,6 +56,7 @@ typedef int BOOL;
 
 #include <limits.h>
 #include <stdarg.h>
+#include <string.h>
 
 #ifndef min
 #define min(a,b)  (((a) < (b)) ? (a) : (b))
@@ -73,8 +77,8 @@ typedef int BOOL;
 #include "math.h"
 
 // Header file containing definition of globalvars_t and entvars_t
-typedef int	func_t;					//
-typedef int	string_t;				// from engine's pr_comp.h;
+typedef unsigned int	func_t;					//
+typedef unsigned int	string_t;				// from engine's pr_comp.h;
 typedef float vec_t;				// needed before including progdefs.h
 
 // Vector class

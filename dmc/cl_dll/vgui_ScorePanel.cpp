@@ -1,4 +1,4 @@
-//=========== (C) Copyright 1996-2002, Valve, L.L.C. All rights reserved. ===========
+//=========== (C) Copyright 1999 Valve, L.L.C. All rights reserved. ===========
 //
 // The copyright to the contents herein is the property of Valve, L.L.C.
 // The contents may be used and/or copied only with the written permission of
@@ -55,7 +55,7 @@ public:
 
 SBColumnInfo g_ColumnInfo[NUM_COLUMNS] =
 {
-	{NULL,			24,			Label::a_east},		// blank column
+	{NULL,			24,			Label::a_east},		// tracker column
 	{NULL,			140,		Label::a_west},		// name
 	{"#SCORE",		80,			Label::a_east},
 	{"#DEATHS",		46,			Label::a_east},
@@ -147,6 +147,7 @@ ScorePanel::ScorePanel(int x,int y,int wide,int tall) : Panel(x,y,wide,tall)
 			}
 			else if (i == 0)
 			{
+				// tracker icon cell
 				xwide -= 8;
 			}
 		}
@@ -245,6 +246,8 @@ bool HACK_GetPlayerUniqueID( int iPlayer, char playerID[16] )
 //-----------------------------------------------------------------------------
 void ScorePanel::Update()
 {
+	int i;
+
 	// Set the title
 	if (gViewPort->m_szServerName)
 	{
@@ -257,10 +260,13 @@ void ScorePanel::Update()
 	gViewPort->GetAllPlayersInfo();
 
 	// Clear out sorts
-	for (int i = 0; i < NUM_ROWS; i++)
+	for (i = 0; i < NUM_ROWS; i++)
 	{
 		m_iSortedRows[i] = 0;
 		m_iIsATeam[i] = TEAM_NO;
+	}
+	for (i = 0; i < MAX_PLAYERS; i++)
+	{
 		m_bHasBeenSorted[i] = false;
 	}
 
@@ -282,7 +288,8 @@ void ScorePanel::Update()
 void ScorePanel::SortTeams()
 {
 	// clear out team scores
-	for ( int i = 1; i <= m_iNumTeams; i++ )
+	int i;
+	for ( i = 1; i <= m_iNumTeams; i++ )
 	{
 		if ( !g_TeamInfo[i].scores_overriden )
 			g_TeamInfo[i].frags = g_TeamInfo[i].deaths = 0;
@@ -299,7 +306,8 @@ void ScorePanel::SortTeams()
 			continue; // skip over players who are not in a team
 
 		// find what team this player is in
-		for ( int j = 1; j <= m_iNumTeams; j++ )
+		int j;
+		for ( j = 1; j <= m_iNumTeams; j++ )
 		{
 			if ( !stricmp( g_PlayerExtraInfo[i].teamname, g_TeamInfo[j].name ) )
 				break;
@@ -441,7 +449,8 @@ void ScorePanel::SortPlayers( int iTeam, char *team )
 void ScorePanel::RebuildTeams()
 {
 	// clear out player counts from teams
-	for ( int i = 1; i <= m_iNumTeams; i++ )
+	int i;
+	for ( i = 1; i <= m_iNumTeams; i++ )
 	{
 		g_TeamInfo[i].players = 0;
 	}
@@ -458,7 +467,8 @@ void ScorePanel::RebuildTeams()
 			continue; // skip over players who are not in a team
 
 		// is this player in an existing team?
-		for ( int j = 1; j <= m_iNumTeams; j++ )
+		int j;
+		for ( j = 1; j <= m_iNumTeams; j++ )
 		{
 			if ( g_TeamInfo[j].name[0] == '\0' )
 				break;
@@ -521,7 +531,8 @@ void ScorePanel::FillGrid()
 
 	bool bNextRowIsGap = false;
 
-	for(int row=0; row < NUM_ROWS; row++)
+	int row;
+	for(row=0; row < NUM_ROWS; row++)
 	{
 		CGrid *pGridRow = &m_PlayerGrids[row];
 		pGridRow->SetRowUnderline(0, false, 0, 0, 0, 0, 0);
@@ -709,11 +720,7 @@ void ScorePanel::FillGrid()
 					break;
 				case COLUMN_VOICE:
 					sz[0] = 0;
-					// in HLTV mode allow spectator to turn on/off commentator voice
-					if (!pl_info->thisplayer || gEngfuncs.IsSpectateOnly() )
-					{
-						GetClientVoiceMgr()->UpdateSpeakerImage(pLabel, m_iSortedRows[row]);
-					}
+					GetClientVoiceMgr()->UpdateSpeakerImage(pLabel, m_iSortedRows[row]);
 					break;
 				case COLUMN_KILLS:
 						sprintf(sz, "%d",  g_PlayerExtraInfo[ m_iSortedRows[row] ].frags );
@@ -724,7 +731,6 @@ void ScorePanel::FillGrid()
 				case COLUMN_LATENCY:
 						sprintf(sz, "%d", g_PlayerInfoList[ m_iSortedRows[row] ].ping );
 					break;
-				case COLUMN_TRACKER:
 				default:
 					break;
 				}

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -27,6 +27,10 @@
 #include	"items.h"
 #include	"voice_gamemgr.h"
 #include	"hltv.h"
+
+#if !defined ( _WIN32 )
+#include <ctype.h>
+#endif
 
 extern DLL_GLOBAL CGameRules	*g_pGameRules;
 extern DLL_GLOBAL BOOL	g_fGameOver;
@@ -86,17 +90,7 @@ CHalfLifeMultiplay :: CHalfLifeMultiplay()
 	// share a single config file. (sjb)
 	if ( IS_DEDICATED_SERVER() )
 	{
-		// dedicated server
-		char *servercfgfile = (char *)CVAR_GET_STRING( "servercfgfile" );
-
-		if ( servercfgfile && servercfgfile[0] )
-		{
-			char szCommand[256];
-			
-			ALERT( at_console, "Executing dedicated server config file\n" );
-			sprintf( szCommand, "exec %s\n", servercfgfile );
-			SERVER_COMMAND( szCommand );
-		}
+		// this code has been moved into engine, to only run server.cfg once
 	}
 	else
 	{

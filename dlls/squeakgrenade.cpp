@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -120,8 +120,8 @@ void CSqueakGrenade :: Spawn( void )
 	UTIL_SetSize(pev, Vector( -4, -4, 0), Vector(4, 4, 8));
 	UTIL_SetOrigin( pev, pev->origin );
 
-	SetTouch( SuperBounceTouch );
-	SetThink( HuntThink );
+	SetTouch( &CSqueakGrenade::SuperBounceTouch );
+	SetThink( &CSqueakGrenade::HuntThink );
 	pev->nextthink = gpGlobals->time + 0.1;
 	m_flNextHunt = gpGlobals->time + 1E6;
 
@@ -162,7 +162,7 @@ void CSqueakGrenade::Precache( void )
 void CSqueakGrenade :: Killed( entvars_t *pevAttacker, int iGib )
 {
 	pev->model = iStringNull;// make invisible
-	SetThink( SUB_Remove );
+	SetThink( &CSqueakGrenade::SUB_Remove );
 	SetTouch( NULL );
 	pev->nextthink = gpGlobals->time + 0.1;
 
@@ -483,7 +483,7 @@ void CSqueak::Holster( int skiplocal /* = 0 */ )
 	if ( !m_pPlayer->m_rgAmmo[ m_iPrimaryAmmoType ] )
 	{
 		m_pPlayer->pev->weapons &= ~(1<<WEAPON_SNARK);
-		SetThink( DestroyItem );
+		SetThink( &CSqueak::DestroyItem );
 		pev->nextthink = gpGlobals->time + 0.1;
 		return;
 	}
@@ -545,7 +545,7 @@ void CSqueak::PrimaryAttack()
 
 			m_fJustThrown = 1;
 
-			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.3;
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.3);
 			m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.0;
 		}
 	}

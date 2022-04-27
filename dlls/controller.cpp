@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -1170,8 +1170,8 @@ void CControllerHeadBall :: Spawn( void )
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
 	UTIL_SetOrigin( pev, pev->origin );
 
-	SetThink( HuntThink );
-	SetTouch( BounceTouch );
+	SetThink( &CControllerHeadBall::HuntThink );
+	SetTouch( &CControllerHeadBall::BounceTouch );
 
 	m_vecIdeal = Vector( 0, 0, 0 );
 
@@ -1257,7 +1257,7 @@ void CControllerHeadBall :: HuntThink( void  )
 
 		m_flNextAttack = gpGlobals->time + 3.0;
 
-		SetThink( DieThink );
+		SetThink( &CControllerHeadBall::DieThink );
 		pev->nextthink = gpGlobals->time + 0.3;
 	}
 
@@ -1364,8 +1364,8 @@ void CControllerZapBall :: Spawn( void )
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
 	UTIL_SetOrigin( pev, pev->origin );
 
-	SetThink( AnimateThink );
-	SetTouch( ExplodeTouch );
+	SetThink( &CControllerZapBall::AnimateThink );
+	SetTouch( &CControllerZapBall::ExplodeTouch );
 
 	m_hOwner = Instance( pev->owner );
 	pev->dmgtime = gpGlobals->time; // keep track of when ball spawned

@@ -606,7 +606,7 @@ void CBasePlayer::Killed( entvars_t *pevAttacker, int iGib )
 	pev->angles.x = 0;
 	pev->angles.z = 0;
 
-	SetThink(PlayerDeathThink);
+	SetThink(&CBasePlayer::PlayerDeathThink);
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -2630,9 +2630,6 @@ void CBasePlayer::PostThink()
 	StudioFrameAdvance( );
 	CheckPowerups(pev);
 
-	// Track button info so we can detect 'pressed' and 'released' buttons next frame
-	m_afButtonLast = pev->button;
-
 pt_end:
 		// Decay timers on weapons
 	// go through all of the weapons and make a list of the ones to pack
@@ -2667,6 +2664,9 @@ pt_end:
 	m_flNextAttack -= gpGlobals->frametime;
 	if ( m_flNextAttack < -0.001 )
 		m_flNextAttack = -0.001;
+
+	// Track button info so we can detect 'pressed' and 'released' buttons next frame
+	m_afButtonLast = pev->button;
 }
 
 BOOL IsSpawnPointValid( CBaseEntity *pPlayer, CBaseEntity *pSpot )
@@ -3245,7 +3245,7 @@ void CBloodSplat::Spawn ( entvars_t *pevOwner )
 	pev->angles = pevOwner->v_angle;
 	pev->owner = ENT(pevOwner);
 
-	SetThink ( Spray );
+	SetThink ( &CBloodSplat::Spray );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -3260,7 +3260,7 @@ void CBloodSplat::Spray ( void )
 
 		UTIL_BloodDecalTrace( &tr, BLOOD_COLOR_RED );
 	}
-	SetThink ( SUB_Remove );
+	SetThink ( &CBloodSplat::SUB_Remove );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -3625,7 +3625,7 @@ void CBasePlayer::CheatImpulseCommands( int iImpulse )
 		if ( pEntity )
 		{
 			if ( pEntity->pev->takedamage )
-				pEntity->SetThink(SUB_Remove);
+				pEntity->SetThink(&CBaseEntity::SUB_Remove);
 		}
 		break;
 	}
@@ -3981,7 +3981,10 @@ void CBasePlayer :: UpdateClientData( void )
 
 	if (pev->health != m_iClientHealth)
 	{
-		int iHealth = max( pev->health, 0 );  // make sure that no negative health values are sent
+#define clamp( val, min, max ) ( ((val) > (max)) ? (max) : ( ((val) < (min)) ? (min) : (val) ) )
+		int iHealth = clamp( pev->health, 0, 255 );  // make sure that no negative health values are sent
+		if ( pev->health > 0.0f && pev->health <= 1.0f )
+			iHealth = 1;
 
 		// send "health" update message
 		MESSAGE_BEGIN( MSG_ONE, gmsgHealth, NULL, pev );
@@ -4819,7 +4822,7 @@ void CRevertSaved :: Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 {
 	UTIL_ScreenFadeAll( pev->rendercolor, Duration(), HoldTime(), pev->renderamt, FFADE_OUT );
 	pev->nextthink = gpGlobals->time + MessageTime();
-	SetThink( MessageThink );
+	SetThink( &CRevertSaved::MessageThink );
 }
 
 
@@ -4830,7 +4833,7 @@ void CRevertSaved :: MessageThink( void )
 	if ( nextThink > 0 ) 
 	{
 		pev->nextthink = gpGlobals->time + nextThink;
-		SetThink( LoadThink );
+		SetThink( &CRevertSaved::LoadThink );
 	}
 	else
 		LoadThink();

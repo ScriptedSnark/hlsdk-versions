@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1999, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -26,7 +26,15 @@
 #include	"items.h"
 #include	"hltv.h"
 
+#if !defined ( _WIN32 )
+#include <ctype.h>
+#endif
+
 #define INTERMISSION_TIME		60
+
+#if defined( THREEWAVE )
+char* GetTeamName( int team );
+#endif
 
 class CDMCGameMgrHelper : public IVoiceGameMgrHelper
 {
@@ -421,11 +429,21 @@ void CHalfLifeMultiplay :: InitHUD( CBasePlayer *pl )
 	UTIL_ClientPrintAll( HUD_PRINTNOTIFY, UTIL_VarArgs( "%s has joined the game\n", 
 		( pl->pev->netname && STRING(pl->pev->netname)[0] != 0 ) ? STRING(pl->pev->netname) : "unconnected" ) );
 
+#if !defined( THREEWAVE )
+	
 	UTIL_LogPrintf( "\"%s<%i><%s><%i>\" entered the game\n",  
 		STRING( pl->pev->netname ), 
 		GETPLAYERUSERID( pl->edict() ),
 		GETPLAYERAUTHID( pl->edict() ),
 		GETPLAYERUSERID( pl->edict() ) );
+#else
+
+	UTIL_LogPrintf( "\"%s<%i><%s><%s>\" entered the game\n",  
+		STRING( pl->pev->netname ), 
+		GETPLAYERUSERID( pl->edict() ),
+		GETPLAYERAUTHID( pl->edict() ),
+		GetTeamName( pl->pev->team ) );
+#endif
 
 	UpdateGameMode( pl );
 
@@ -476,11 +494,20 @@ void CHalfLifeMultiplay :: ClientDisconnected( edict_t *pClient )
 		{
 			FireTargets( "game_playerleave", pPlayer, pPlayer, USE_TOGGLE, 0 );
 
+#if !defined( THREEWAVE )
+
 			UTIL_LogPrintf( "\"%s<%i><%s><%i>\" disconnected\n",  
 				STRING( pPlayer->pev->netname ), 
 				GETPLAYERUSERID( pPlayer->edict() ),
 				GETPLAYERAUTHID( pPlayer->edict() ),
 				GETPLAYERUSERID( pPlayer->edict() ) );
+#else
+			UTIL_LogPrintf( "\"%s<%i><%s><%s>\" disconnected\n",  
+				STRING( pPlayer->pev->netname ), 
+				GETPLAYERUSERID( pPlayer->edict() ),
+				GETPLAYERAUTHID( pPlayer->edict() ),
+				GetTeamName( pPlayer->pev->team ) );
+#endif
 
 			pPlayer->RemoveAllItems( TRUE );// destroy all of the players weapons and items
 		}
@@ -738,15 +765,25 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 	if ( pVictim->pev == pKiller )  
 	{  
 		// killed self
+#if !defined( THREEWAVE )
 		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" committed suicide with \"%s\"\n",  
 			STRING( pVictim->pev->netname ), 
 			GETPLAYERUSERID( pVictim->edict() ),
 			GETPLAYERAUTHID( pVictim->edict() ),
 			GETPLAYERUSERID( pVictim->edict() ),
 			killer_weapon_name );		
+#else
+		UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\"\n",  
+			STRING( pVictim->pev->netname ), 
+			GETPLAYERUSERID( pVictim->edict() ),
+			GETPLAYERAUTHID( pVictim->edict() ),
+			GetTeamName( pVictim->pev->team ),
+			killer_weapon_name );		
+#endif
 	}
 	else if ( pKiller->flags & FL_CLIENT )
 	{
+#if !defined( THREEWAVE )
 		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" killed \"%s<%i><%s><%i>\" with \"%s\"\n",  
 			STRING( pKiller->netname ),
 			GETPLAYERUSERID( ENT(pKiller) ),
@@ -757,16 +794,37 @@ void CHalfLifeMultiplay::DeathNotice( CBasePlayer *pVictim, entvars_t *pKiller, 
 			GETPLAYERAUTHID( pVictim->edict() ),
 			GETPLAYERUSERID( pVictim->edict() ),
 			killer_weapon_name );
+#else
+		UTIL_LogPrintf( "\"%s<%i><%s><%s>\" killed \"%s<%i><%s><%s>\" with \"%s\"\n",  
+			STRING( pKiller->netname ),
+			GETPLAYERUSERID( ENT(pKiller) ),
+			GETPLAYERAUTHID( ENT(pKiller) ),
+			GetTeamName( pKiller->team ),
+			STRING( pVictim->pev->netname ),
+			GETPLAYERUSERID( pVictim->edict() ),
+			GETPLAYERAUTHID( pVictim->edict() ),
+			GetTeamName( pVictim->pev->team ),
+			killer_weapon_name );
+#endif
 	}
 	else
 	{  
 		// killed by the world
+#if !defined( THREEWAVE )
 		UTIL_LogPrintf( "\"%s<%i><%s><%i>\" committed suicide with \"%s\" (world)\n",
 			STRING( pVictim->pev->netname ), 
 			GETPLAYERUSERID( pVictim->edict() ), 
 			GETPLAYERAUTHID( pVictim->edict() ),
 			GETPLAYERUSERID( pVictim->edict() ),
 			killer_weapon_name );				
+#else
+		UTIL_LogPrintf( "\"%s<%i><%s><%s>\" committed suicide with \"%s\" (world)\n",
+			STRING( pVictim->pev->netname ), 
+			GETPLAYERUSERID( pVictim->edict() ), 
+			GETPLAYERAUTHID( pVictim->edict() ),
+			GetTeamName( pVictim->pev->team ),
+			killer_weapon_name );				
+#endif
 	}
 
 	g_szDeathType = NULL;

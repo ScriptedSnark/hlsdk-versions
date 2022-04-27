@@ -1,4 +1,4 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
+//========= Copyright © 1996-2001, Valve LLC, All rights reserved. ============
 //
 // Purpose: 
 //
@@ -554,10 +554,9 @@ void CHudSpectator::DirectorMessage( int iSize, void *pbuf )
 							// gEngfuncs.Con_DPrintf("GUI: Banner %s\n",READ_STRING() ); // name of banner tga eg gfx/temp/7454562234563475.tga
 							gViewPort->m_pSpectatorPanel->m_TopBanner->LoadImage( READ_STRING() );
 							gViewPort->UpdateSpectatorPanel();
-							break; */
-
+							break; 
 		case DRC_CMD_FADE:		
-							/*{
+							{
 								screenfade_t sf;
 								
 								sf.fader = 255;
@@ -574,8 +573,9 @@ void CHudSpectator::DirectorMessage( int iSize, void *pbuf )
 								stream->ReadLong();	// color	RGB
 
 								CallEnghudSetScreenFade( &sf );
-							}*/
+							}
 							break;
+*/
 
 		case DRC_CMD_STUFFTEXT:
 							ClientCmd( READ_STRING() );
@@ -1059,7 +1059,7 @@ void CHudSpectator::DrawOverviewLayer()
 	if ( hasMapImage)
 	{
 		i = m_MapSprite->numframes / (4*3);
-		i = sqrt(i);
+		i = sqrt((float)i);
 		xTiles = i*4;
 		yTiles = i*3;
 	}

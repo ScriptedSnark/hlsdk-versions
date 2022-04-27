@@ -78,7 +78,7 @@ void CFrictionModifier :: Spawn( void )
 	pev->solid = SOLID_TRIGGER;
 	SET_MODEL(ENT(pev), STRING(pev->model));    // set size and link into world
 	pev->movetype = MOVETYPE_NONE;
-	SetTouch( ChangeFriction );
+	SetTouch( &CFrictionModifier::ChangeFriction );
 }
 
 
@@ -349,8 +349,8 @@ void CMultiManager :: KeyValue( KeyValueData *pkvd )
 void CMultiManager :: Spawn( void )
 {
 	pev->solid = SOLID_NOT;
-	SetUse ( ManagerUse );
-	SetThink ( ManagerThink);
+	SetUse ( &CMultiManager::ManagerUse );
+	SetThink ( &CMultiManager::ManagerThink);
 
 	// Sort targets
 	// Quick and dirty bubble sort
@@ -408,7 +408,7 @@ void CMultiManager :: ManagerThink ( void )
 			UTIL_Remove( this );
 			return;
 		}
-		SetUse ( ManagerUse );// allow manager re-use 
+		SetUse ( &CMultiManager::ManagerUse );// allow manager re-use 
 	}
 	else
 		pev->nextthink = m_startTime + m_flTargetDelay[ m_index ];
@@ -449,7 +449,7 @@ void CMultiManager :: ManagerUse ( CBaseEntity *pActivator, CBaseEntity *pCaller
 
 	SetUse( NULL );// disable use until all targets have fired
 
-	SetThink ( ManagerThink );
+	SetThink ( &CMultiManager::ManagerThink );
 	pev->nextthink = gpGlobals->time;
 }
 
@@ -606,7 +606,7 @@ void CTriggerMonsterJump :: Spawn ( void )
 	{// if targetted, spawn turned off
 		pev->solid = SOLID_NOT;
 		UTIL_SetOrigin( pev, pev->origin ); // Unlink from trigger list
-		SetUse( ToggleUse );
+		SetUse( &CTriggerMonsterJump::ToggleUse );
 	}
 }
 
@@ -700,7 +700,7 @@ void PlayCDTrack( int iTrack )
 
 	if ( iTrack == -1 )
 	{
-		CLIENT_COMMAND ( pClient, "cd pause\n");
+		CLIENT_COMMAND ( pClient, "cd stop\n");
 	}
 	else
 	{
@@ -796,11 +796,11 @@ void CTargetCDAudio::Play( void )
 void CTriggerHurt :: Spawn( void )
 {
 	InitTrigger();
-	SetTouch ( HurtTouch );
+	SetTouch ( &CTriggerHurt::HurtTouch );
 
 	if ( !FStringNull ( pev->targetname ) )
 	{
-		SetUse ( ToggleUse );
+		SetUse ( &CTriggerHurt::ToggleUse );
 	}
 	else
 	{
@@ -809,7 +809,7 @@ void CTriggerHurt :: Spawn( void )
 
 	if (m_bitsDamageInflict & DMG_RADIATION)
 	{
-		SetThink ( RadiationThink );
+		SetThink ( &CTriggerHurt::RadiationThink );
 		pev->nextthink = gpGlobals->time + RANDOM_FLOAT(0.0, 0.5); 
 	}
 
@@ -1068,7 +1068,7 @@ void CTriggerMultiple :: Spawn( void )
 //		}
 //	else
 		{
-			SetTouch( MultiTouch );
+			SetTouch( &CTriggerMultiple::MultiTouch );
 		}
 	}
 
@@ -1165,7 +1165,7 @@ void CBaseTrigger :: ActivateMultiTrigger( CBaseEntity *pActivator )
 
 	if (m_flWait > 0)
 	{
-		SetThink( MultiWaitOver );
+		SetThink( &CBaseTrigger::MultiWaitOver );
 		pev->nextthink = gpGlobals->time + m_flWait;
 	}
 	else
@@ -1174,7 +1174,7 @@ void CBaseTrigger :: ActivateMultiTrigger( CBaseEntity *pActivator )
 		// called while C code is looping through area links...
 		SetTouch( NULL );
 		pev->nextthink = gpGlobals->time + 0.1;
-		SetThink(  SUB_Remove );
+		SetThink(  &CBaseTrigger::SUB_Remove );
 	}
 }
 
@@ -1254,7 +1254,7 @@ void CTriggerCounter :: Spawn( void )
 
 	if (m_cTriggersLeft == 0)
 		m_cTriggersLeft = 2;
-	SetUse( CounterUse );
+	SetUse( &CTriggerCounter::CounterUse );
 }
 
 // ====================== TRIGGER_CHANGELEVEL ================================
@@ -1399,11 +1399,11 @@ void CChangeLevel :: Spawn( void )
 
 	if (!FStringNull ( pev->targetname ) )
 	{
-		SetUse ( UseChangeLevel );
+		SetUse ( &CChangeLevel::UseChangeLevel );
 	}
 	InitTrigger();
 	if ( !(pev->spawnflags & SF_CHANGELEVEL_USEONLY) )
-		SetTouch( TouchChangeLevel );
+		SetTouch( &CChangeLevel::TouchChangeLevel );
 //	ALERT( at_console, "TRANSITION: %s (%s)\n", m_szMapName, m_szLandmarkName );
 }
 
@@ -1720,7 +1720,7 @@ void NextLevel( void )
 	
 	if (pChange->pev->nextthink < gpGlobals->time)
 	{
-		pChange->SetThink( CChangeLevel::ExecuteChangeLevel );
+		pChange->SetThink( &CChangeLevel::ExecuteChangeLevel );
 		pChange->pev->nextthink = gpGlobals->time + 0.1;
 	}
 }
@@ -1804,7 +1804,7 @@ void CTriggerPush :: Spawn( )
 	if ( FBitSet (pev->spawnflags, SF_TRIGGER_PUSH_START_OFF) )// if flagged to Start Turned Off, make trigger nonsolid.
 		pev->solid = SOLID_NOT;
 
-	SetUse( ToggleUse );
+	SetUse( &CTriggerPush::ToggleUse );
 
 	UTIL_SetOrigin( pev, pev->origin );		// Link into the list
 }
@@ -1947,7 +1947,7 @@ void CTriggerTeleport :: Spawn( void )
 {
 	InitTrigger();
 
-	SetTouch( TeleportTouch );
+	SetTouch( &CTriggerTeleport::TeleportTouch );
 }
 
 
@@ -1972,7 +1972,7 @@ void CTriggerSave::Spawn( void )
 	}
 
 	InitTrigger();
-	SetTouch( SaveTouch );
+	SetTouch( &CTriggerSave::SaveTouch );
 }
 
 void CTriggerSave::SaveTouch( CBaseEntity *pOther )
@@ -2027,10 +2027,10 @@ void CTriggerEndSection::Spawn( void )
 
 	InitTrigger();
 
-	SetUse ( EndSectionUse );
+	SetUse ( &CTriggerEndSection::EndSectionUse );
 	// If it is a "use only" trigger, then don't set the touch function.
 	if ( ! (pev->spawnflags & SF_ENDSECTION_USEONLY) )
-		SetTouch( EndSectionTouch );
+		SetTouch( &CTriggerEndSection::EndSectionTouch );
 }
 
 void CTriggerEndSection::EndSectionTouch( CBaseEntity *pOther )
@@ -2073,7 +2073,7 @@ LINK_ENTITY_TO_CLASS( trigger_gravity, CTriggerGravity );
 void CTriggerGravity::Spawn( void )
 {
 	InitTrigger();
-	SetTouch( GravityTouch );
+	SetTouch( &CTriggerGravity::GravityTouch );
 }
 
 void CTriggerGravity::GravityTouch( CBaseEntity *pOther )
@@ -2330,7 +2330,7 @@ void CTriggerCamera::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYP
 	SET_MODEL(ENT(pev), STRING(pActivator->pev->model) );
 
 	// follow the player down
-	SetThink( FollowTarget );
+	SetThink( &CTriggerCamera::FollowTarget );
 	pev->nextthink = gpGlobals->time;
 
 	m_moveDistance = 0;
@@ -2478,7 +2478,7 @@ void CDiscTarget::Spawn( void )
 	SET_MODEL(ENT(pev), STRING(pev->model));    // set size and link into world
 
 	m_iState = 0;
-	SetTouch( DiscToggleTouch );
+	SetTouch( &CDiscTarget::DiscToggleTouch );
 }
 
 void CDiscTarget::Reset( void )
@@ -2555,7 +2555,7 @@ void CPlatToggleRemove::Spawn( void )
 	pev->movetype = MOVETYPE_PUSH;
 	SET_MODEL(ENT(pev), STRING(pev->model));
 
-	SetUse( PlatToggleRemoveUse );
+	SetUse( &CPlatToggleRemove::PlatToggleRemoveUse );
 }
 
 void CPlatToggleRemove::Reset( void )
@@ -2576,7 +2576,7 @@ void CPlatToggleRemove::PlatToggleRemoveUse( CBaseEntity *pActivator, CBaseEntit
 	if ( value == LAST_HITBY_ENEMY )
 	{
 		// Make it fade out
-		SetThink( PlatRemoveThink );
+		SetThink( &CPlatToggleRemove::PlatRemoveThink );
 		pev->nextthink = pev->ltime + 0.1;
 		m_flRemoveAt = gpGlobals->time + PLAT_FADE_TIME;
 
@@ -2617,8 +2617,8 @@ void CTriggerJump::Spawn( void )
 {
 	Precache();
 	InitTrigger();
-	SetTouch( JumpTouch );
-	SetUse( JumpUse );
+	SetTouch( &CTriggerJump::JumpTouch );
+	SetUse( &CTriggerJump::JumpUse );
 
 	if (!m_flHeight)
 		m_flHeight = 150;
@@ -2666,7 +2666,7 @@ void CTriggerJump::JumpUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_T
 	if ( m_iState == 0 )
 	{
 		m_iState = 1;
-		SetTouch( JumpTouch );
+		SetTouch( &CTriggerJump::JumpTouch );
 	}
 	else
 	{
@@ -2726,7 +2726,7 @@ void CTriggerDiscReturn::Spawn( void )
 {
 	Precache();
 	InitTrigger();
-	SetTouch( DiscReturnTouch );
+	SetTouch( &CTriggerDiscReturn::DiscReturnTouch );
 }
 
 void CTriggerDiscReturn::Precache( void )
@@ -2761,7 +2761,7 @@ void CTriggerFall::Spawn( void )
 {
 	Precache();
 	InitTrigger();
-	SetTouch( FallTouch );
+	SetTouch( &CTriggerFall::FallTouch );
 }
 
 void CTriggerFall::FallTouch( CBaseEntity *pOther )

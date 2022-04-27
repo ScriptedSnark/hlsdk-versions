@@ -565,22 +565,6 @@ void UTIL_ParticleLine( CBasePlayer *player, float *start, float *end, float lif
 
 /*
 =====================
-CBasePlayerWeapon::PrintState
-
-For debugging, print out state variables to log file
-=====================
-*/
-void CBasePlayerWeapon::PrintState( void )
-{
-	COM_Log( "c:\\hl.log", "%.4f ", gpGlobals->time );
-	COM_Log( "c:\\hl.log", "%.4f ", m_pPlayer->m_flNextAttack );
-	COM_Log( "c:\\hl.log", "%.4f ", m_flNextPrimaryAttack );
-	COM_Log( "c:\\hl.log", "%.4f ", m_flTimeWeaponIdle - gpGlobals->time);
-	COM_Log( "c:\\hl.log", "%i ", m_iClip );
-}
-
-/*
-=====================
 HUD_InitClientWeapons
 
 Set up weapons, player and functions needed to run weapons code client-side.
@@ -867,7 +851,7 @@ void HUD_WeaponsPostThink( local_state_s *from, local_state_s *to, usercmd_t *cm
 		 ( ( CRpg * )player.m_pActiveItem)->m_cActiveRockets = (int)from->client.vuser2[ 2 ];
 	}
 	
-	// Don't go firing anything if we have died.
+	// Don't go firing anything if we have died or are spectating
 	// Or if we don't have a weapon model deployed
 	if ( ( player.pev->deadflag != ( DEAD_DISCARDBODY + 1 ) ) && 
 		 !CL_IsDead() && player.pev->viewmodel && !g_iUser1 )
@@ -1067,8 +1051,10 @@ runfuncs is 1 if this is the first time we've predicted this command.  If so, so
 be ignored
 =====================
 */
-void _DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s *to, struct usercmd_s *cmd, int runfuncs, double time, unsigned int random_seed )
+void CL_DLLEXPORT HUD_PostRunCmd( struct local_state_s *from, struct local_state_s *to, struct usercmd_s *cmd, int runfuncs, double time, unsigned int random_seed )
 {
+//	RecClPostRunCmd(from, to, cmd, runfuncs, time, random_seed);
+
 	g_runfuncs = runfuncs;
 
 #if defined( CLIENT_WEAPONS )

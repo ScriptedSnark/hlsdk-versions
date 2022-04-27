@@ -69,7 +69,7 @@ CTeamMenuPanel::CTeamMenuPanel(int iTrans, int iRemoveMe, int x,int y,int wide,i
 	pSchemes->getBgColor( hTitleScheme, r, g, b, a );
 	pLabel->setBgColor( r, g, b, a );
 	pLabel->setContentAlignment( vgui::Label::a_west );
-	pLabel->setText(gHUD.m_TextMessage.BufferedLocaliseTextString("#Title_SelectYourTeam"));
+	pLabel->setText( "%s", gHUD.m_TextMessage.BufferedLocaliseTextString("#Title_SelectYourTeam"));
 
 	// Create the Info Window
 	m_pTeamWindow  = new CTransparentPanel( 255, TEAMMENU_WINDOW_X, TEAMMENU_WINDOW_Y, TEAMMENU_WINDOW_SIZE_X, TEAMMENU_WINDOW_SIZE_Y );
@@ -286,7 +286,7 @@ void CTeamMenuPanel::Update( void )
 			strcpy( szTitle, ch+1 );
 			ch = strchr( szTitle, '.' );
 			*ch = '\0';
-			m_pMapTitle->setText( szTitle );
+			m_pMapTitle->setText( "%s", szTitle );
 			*ch = '.';
 
 			// Update the map briefing

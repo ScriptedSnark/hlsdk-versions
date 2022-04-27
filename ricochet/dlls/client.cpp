@@ -39,6 +39,11 @@
 #include "netadr.h"
 #include "game.h"
 #include "disc_objects.h"
+
+#if !defined ( _WIN32 )
+#include <ctype.h>
+#endif
+
 edict_t *EntSelectSpawnPoint( CBaseEntity *pPlayer );
 
 #include "discwar.h"
@@ -351,7 +356,8 @@ void Host_Say( edict_t *pEntity, int teamonly )
 	}
 
 // make sure the text has content
-	for ( char *pc = p; pc != NULL && *pc != 0; pc++ )
+	char *pc;
+	for ( pc = p; pc != NULL && *pc != 0; pc++ )
 	{
 		if ( isprint( *pc ) && !isspace( *pc ) )
 		{
@@ -1021,7 +1027,7 @@ int AddToFullPack( struct entity_state_s *state, int e, edict_t *ent, edict_t *h
 	int					i;
 
 	// don't send if flagged for NODRAW and it's not the host getting the message
-	if ( ( ent->v.effects == EF_NODRAW ) &&
+	if ( ( ent->v.effects & EF_NODRAW ) &&
 		 ( ent != host ) )
 		return 0;
 

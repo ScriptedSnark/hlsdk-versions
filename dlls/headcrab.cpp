@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -385,7 +385,7 @@ void CHeadCrab :: StartTask ( Task_t *pTask )
 		{
 			EMIT_SOUND_DYN( edict(), CHAN_WEAPON, pAttackSounds[0], GetSoundVolue(), ATTN_IDLE, 0, GetVoicePitch() );
 			m_IdealActivity = ACT_RANGE_ATTACK1;
-			SetTouch ( LeapTouch );
+			SetTouch ( &CHeadCrab::LeapTouch );
 			break;
 		}
 	default:

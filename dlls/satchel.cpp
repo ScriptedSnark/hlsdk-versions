@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -77,9 +77,9 @@ void CSatchelCharge :: Spawn( void )
 	UTIL_SetSize(pev, Vector( -4, -4, -4), Vector(4, 4, 4));	// Uses point-sized, and can be stepped over
 	UTIL_SetOrigin( pev, pev->origin );
 
-	SetTouch( SatchelSlide );
-	SetUse( DetonateUse );
-	SetThink( SatchelThink );
+	SetTouch( &CSatchelCharge::SatchelSlide );
+	SetUse( &CSatchelCharge::DetonateUse );
+	SetThink( &CSatchelCharge::SatchelThink );
 	pev->nextthink = gpGlobals->time + 0.1;
 
 	pev->gravity = 0.5;
@@ -322,7 +322,7 @@ void CSatchel::Holster( int skiplocal /* = 0 */ )
 	if ( !m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType] && !m_chargeReady )
 	{
 		m_pPlayer->pev->weapons &= ~(1<<WEAPON_SATCHEL);
-		SetThink( DestroyItem );
+		SetThink( &CSatchel::DestroyItem );
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 }
@@ -359,7 +359,7 @@ void CSatchel::PrimaryAttack()
 		}
 
 		m_chargeReady = 2;
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.5;
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 0.5;
 		break;
@@ -411,7 +411,7 @@ void CSatchel::Throw( void )
 		
 		m_pPlayer->m_rgAmmo[m_iPrimaryAmmoType]--;
 
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 1.0;
+		m_flNextPrimaryAttack = GetNextAttackDelay(1.0);
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 	}
 }
@@ -454,7 +454,7 @@ void CSatchel::WeaponIdle( void )
 		// use tripmine animations
 		strcpy( m_pPlayer->m_szAnimExtention, "trip" );
 
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.5;
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 		m_flNextSecondaryAttack = UTIL_WeaponTimeBase() + 0.5;
 		m_chargeReady = 0;
 		break;

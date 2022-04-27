@@ -28,7 +28,7 @@
 #include "demo.h"
 #include "demo_api.h"
 #include "voice_status.h"
-#include "vgui_scorepanel.h"
+#include "vgui_ScorePanel.h"
 
 
 class CDMCVoiceStatusHelper : public IVoiceStatusHelper
@@ -159,6 +159,30 @@ int __MsgFunc_TeamInfo(const char *pszName, int iSize, void *pbuf)
 	return 0;
 }
 
+void __CmdFunc_OpenCommandMenu(void)
+{
+	if ( gViewPort )
+	{
+		gViewPort->ShowCommandMenu( gViewPort->m_StandardMenu );
+	}
+}
+
+void __CmdFunc_CloseCommandMenu(void)
+{
+	if ( gViewPort )
+	{
+		gViewPort->InputSignalHideCommandMenu();
+	}
+}
+
+void __CmdFunc_ForceCloseCommandMenu( void )
+{
+	if ( gViewPort )
+	{
+		gViewPort->HideCommandMenu();
+	}
+}
+
 // This is called every time the DLL is loaded
 void CHud :: Init( void )
 {
@@ -173,6 +197,10 @@ void CHud :: Init( void )
 	HOOK_MESSAGE( ServerName );
 
 	HOOK_COMMAND( "togglebrowser", ToggleServerBrowser );
+
+	HOOK_COMMAND( "+commandmenu", OpenCommandMenu );
+	HOOK_COMMAND( "-commandmenu", CloseCommandMenu );
+	HOOK_COMMAND( "ForceCloseCommandMenu", ForceCloseCommandMenu );
 
 	// QUAKECLASSIC
 	HOOK_MESSAGE( QItems );
@@ -311,7 +339,8 @@ void CHud :: VidInit( void )
 			// count the number of sprites of the appropriate res
 			m_iSpriteCount = 0;
 			client_sprite_t *p = m_pSpriteList;
-			for ( int j = 0; j < m_iSpriteCountAllRes; j++ )
+			int j;
+			for ( j = 0; j < m_iSpriteCountAllRes; j++ )
 			{
 				if ( p->iRes == m_iRes )
 					m_iSpriteCount++;
@@ -383,8 +412,6 @@ void CHud :: VidInit( void )
 	m_AmmoSecondary.VidInit();
 	m_TextMessage.VidInit();
 	m_StatusIcons.VidInit();
-
-	m_Spectator.VidInit();
 
 	GetClientVoiceMgr()->VidInit();
 }

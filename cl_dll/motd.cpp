@@ -19,13 +19,13 @@
 //
 
 #include "hud.h"
-#include "util.h"
+#include "cl_util.h"
 #include "parsemsg.h"
 
 #include <string.h>
 #include <stdio.h>
 
-DECLARE_MESSAGE( m_MOTD, MOTD );
+//DECLARE_MESSAGE( m_MOTD, MOTD );
 
 int CHudMOTD::MOTD_DISPLAY_TIME;
 
@@ -33,9 +33,9 @@ int CHudMOTD :: Init( void )
 {
 	gHUD.AddHudElem( this );
 
-	HOOK_MESSAGE( MOTD );
+	// HOOK_MESSAGE( MOTD );
 
-	CVAR_CREATE( "motd_display_time", "6", 0 );
+	CVAR_CREATE( "motd_display_time", "15", 0 );
 
 	m_iFlags &= ~HUD_ACTIVE;  // start out inactive
 	m_szMOTD[0] = 0;
@@ -55,25 +55,39 @@ void CHudMOTD :: Reset( void )
 	m_iFlags &= ~HUD_ACTIVE;  // start out inactive
 	m_szMOTD[0] = 0;
 	m_iLines = 0;
-	m_flActiveTill = 0;
+	m_flActiveRemaining = 0;
 }
 
 #define LINE_HEIGHT  13
 
 int CHudMOTD :: Draw( float fTime )
 {
-	// Draw MOTD line-by-line
+	static float sfLastTime;
+	float fElapsed;
 
-	if ( m_flActiveTill < gHUD.m_flTime )
-	{ // finished with MOTD, disable it
+	// Draw MOTD line-by-line
+	if ( m_flActiveRemaining <= 0.0 )
+	{ 
+		// finished with MOTD, disable it
 		m_szMOTD[0] = 0;
 		m_iLines = 0;
 		m_iFlags &= ~HUD_ACTIVE;
+		m_flActiveRemaining = 0.0;
 		return 1;
 	}
 
-	// cap activetill time to the display time
-	m_flActiveTill = min( gHUD.m_flTime + MOTD_DISPLAY_TIME, m_flActiveTill );
+	fElapsed = gHUD.m_flTime - sfLastTime;
+
+	// Don't let time go negative ( level transition? )
+	fElapsed = max( 0.0, fElapsed );
+	// Don't let time go hugely positive ( first connection to active server ? )
+	fElapsed = min( 1.0, fElapsed );
+
+	// Remember last timestamp
+	sfLastTime = gHUD.m_flTime;
+
+	// Remove a bit of time
+	m_flActiveRemaining -= fElapsed;
 
 	// find the top of where the MOTD should be drawn,  so the whole thing is centered in the screen
 	int ypos = max(((ScreenHeight - (m_iLines * LINE_HEIGHT)) / 2) - 40, 30 ); // shift it up slightly
@@ -125,9 +139,9 @@ int CHudMOTD :: MsgFunc_MOTD( const char *pszName, int iSize, void *pbuf )
 	{
 		m_iFlags |= HUD_ACTIVE;
 
-		MOTD_DISPLAY_TIME = CVAR_GET_FLOAT( "motd_display_time" );
+		MOTD_DISPLAY_TIME = max( 10, CVAR_GET_FLOAT( "motd_display_time" ) );
 
-		m_flActiveTill = gHUD.m_flTime + MOTD_DISPLAY_TIME;
+		m_flActiveRemaining = MOTD_DISPLAY_TIME;
 
 		for ( char *sz = m_szMOTD; *sz != 0; sz++ )  // count the number of lines in the MOTD
 		{

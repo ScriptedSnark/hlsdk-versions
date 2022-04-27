@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -80,7 +80,7 @@ void CLaserSpot::Suspend( float flSuspendTime )
 {
 	pev->effects |= EF_NODRAW;
 	
-	SetThink( Revive );
+	SetThink( &CLaserSpot::Revive );
 	pev->nextthink = gpGlobals->time + flSuspendTime;
 }
 
@@ -110,7 +110,7 @@ CRpgRocket *CRpgRocket::CreateRpgRocket( Vector vecOrigin, Vector vecAngles, CBa
 	UTIL_SetOrigin( pRocket->pev, vecOrigin );
 	pRocket->pev->angles = vecAngles;
 	pRocket->Spawn();
-	pRocket->SetTouch( CRpgRocket::RocketTouch );
+	pRocket->SetTouch( &CRpgRocket::RocketTouch );
 	pRocket->m_pLauncher = pLauncher;// remember what RPG fired me. 
 	pRocket->m_pLauncher->m_cActiveRockets++;// register this missile as active for the launcher
 	pRocket->pev->owner = pOwner->edict();
@@ -133,8 +133,8 @@ void CRpgRocket :: Spawn( void )
 
 	pev->classname = MAKE_STRING("rpg_rocket");
 
-	SetThink( IgniteThink );
-	SetTouch( ExplodeTouch );
+	SetThink( &CRpgRocket::IgniteThink );
+	SetTouch( &CRpgRocket::ExplodeTouch );
 
 	pev->angles.x -= 30;
 	UTIL_MakeVectors( pev->angles );
@@ -200,7 +200,7 @@ void CRpgRocket :: IgniteThink( void  )
 	m_flIgniteTime = gpGlobals->time;
 
 	// set to follow laser spot
-	SetThink( FollowThink );
+	SetThink( &CRpgRocket::FollowThink );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -305,7 +305,7 @@ void CRpg::Reload( void )
 	// Set the next attack time into the future so that WeaponIdle will get called more often
 	// than reload, allowing the RPG LTD to be updated
 	
-	m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.5;
+	m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 
 	if ( m_cActiveRockets && m_fSpotActive )
 	{
@@ -479,7 +479,7 @@ void CRpg::PrimaryAttack()
 
 		m_iClip--; 
 				
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 1.5;
+		m_flNextPrimaryAttack = GetNextAttackDelay(1.5);
 		m_flTimeWeaponIdle = UTIL_WeaponTimeBase() + 1.5;
 	}
 	else

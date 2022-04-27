@@ -103,8 +103,8 @@ void CDisc::Spawn( void )
 	UTIL_SetSize(pev, Vector( -4,-4,-4 ), Vector(4, 4, 4));
 
 	UTIL_SetOrigin( pev, pev->origin );
-	SetTouch( DiscTouch );
-	SetThink( DiscThink );
+	SetTouch( &CDisc::DiscTouch );
+	SetThink( &CDisc::DiscThink );
 
 	m_iBounces = 0;
 	m_fDontTouchOwner = gpGlobals->time + 0.2;
@@ -282,7 +282,7 @@ void CDisc::DiscTouch ( CBaseEntity *pOther )
 
 					((CBasePlayer*)pOther)->m_hLastPlayerToHitMe = m_hOwner;
 					((CBasePlayer*)pOther)->m_flLastDiscHit = gpGlobals->time;
-					((CBasePlayer*)pOther)->m_flLastDiscBounces = m_iBounces;
+					((CBasePlayer*)pOther)->m_iLastDiscBounces = m_iBounces;
 					if ( m_bTeleported )
 						((CBasePlayer*)pOther)->m_flLastDiscHitTeleport = gpGlobals->time;
 
@@ -518,7 +518,7 @@ void CDiscWeapon::Holster( int skiplocal /* = 0 */ )
 	{
 		// no more grenades!
 		m_pPlayer->pev->weapons &= ~(1<<WEAPON_DISC);
-		SetThink( DestroyItem );
+		SetThink( &CDiscWeapon::DestroyItem );
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 

@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -147,7 +147,7 @@ void CCrowbar::PrimaryAttack()
 {
 	if (! Swing( 1 ))
 	{
-		SetThink( SwingAgain );
+		SetThink( &CCrowbar::SwingAgain );
 		pev->nextthink = gpGlobals->time + 0.1;
 	}
 }
@@ -203,7 +203,7 @@ int CCrowbar::Swing( int fFirst )
 		if (fFirst)
 		{
 			// miss
-			m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.5;
+			m_flNextPrimaryAttack = GetNextAttackDelay(0.5);
 			
 			// player "shoot" animation
 			m_pPlayer->SetAnimation( PLAYER_ATTACK1 );
@@ -304,9 +304,9 @@ int CCrowbar::Swing( int fFirst )
 
 		m_pPlayer->m_iWeaponVolume = flVol * CROWBAR_WALLHIT_VOLUME;
 #endif
-		m_flNextPrimaryAttack = UTIL_WeaponTimeBase() + 0.25;
+		m_flNextPrimaryAttack = GetNextAttackDelay(0.25);
 		
-		SetThink( Smack );
+		SetThink( &CCrowbar::Smack );
 		pev->nextthink = UTIL_WeaponTimeBase() + 0.2;
 
 		

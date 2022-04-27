@@ -1,9 +1,3 @@
-//========= Copyright © 1996-2002, Valve LLC, All rights reserved. ============
-//
-// Purpose: 
-//
-// $NoKeywords: $
-//=============================================================================
 
 #ifndef TEAMFORTRESSVIEWPORT_H
 #define TEAMFORTRESSVIEWPORT_H
@@ -32,8 +26,21 @@
 #include "vgui_SchemeManager.h"
 
 #define TF_DEFS_ONLY
-#include "tf_defs.h"
-
+#ifdef _TFC
+#include "../tfc/tf_defs.h"
+#else
+#define PC_LASTCLASS 10
+#define PC_UNDEFINED 0
+#define MENU_DEFAULT				1
+#define MENU_TEAM 					2
+#define MENU_CLASS 					3
+#define MENU_MAPBRIEFING			4
+#define MENU_INTRO 					5
+#define MENU_CLASSHELP				6
+#define MENU_CLASSHELP2 			7
+#define MENU_REPEATHELP 			8
+#define MENU_SPECHELP				9
+#endif
 using namespace vgui;
 
 class Cursor;
@@ -50,6 +57,7 @@ class DragNDropPanel;
 class CTransparentPanel;
 class CClassMenuPanel;
 class CTeamMenuPanel;
+class TeamFortressViewport;
 
 char* GetVGUITGAName(const char *pszName);
 BitmapTGA *LoadTGAForRes(const char* pImageName);
@@ -59,8 +67,8 @@ extern int sTFValidClassInts[];
 extern char *sLocalisedClasses[];
 extern int iTeamColors[5][3];
 extern int iNumberOfTeamColors;
+extern TeamFortressViewport *gViewPort;
 
-#define MAX_SERVERNAME_LENGTH	32
 
 // Command Menu positions 
 #define MAX_MENUS				80
@@ -74,7 +82,7 @@ extern int iNumberOfTeamColors;
 
 #define CMENU_TOP				(BUTTON_SIZE_Y * 4)
 
-#define MAX_TEAMNAME_SIZE		64
+//#define MAX_TEAMNAME_SIZE		64
 #define MAX_BUTTON_SIZE			32
 
 // Map Briefing Window
@@ -377,6 +385,7 @@ public:
 		m_iDirection = 0;
 	}
 
+
 	CCommandMenu( CCommandMenu *pParentMenu, int direction, int x,int y,int wide,int tall ) : Panel(x,y,wide,tall)
 	{
 		m_pParentMenu = pParentMenu;
@@ -402,10 +411,79 @@ public:
 
 	void		ClearButtonsOfArmedState( void );
 
+	void		RemoveAllButtons(void);
+
 
 	bool		KeyInput( int keyNum );
 
 	virtual void paintBackground();
+};
+
+//==============================================================================
+// Command menu root button (drop down box style)
+
+class DropDownButton : public ColorButton
+{
+private:
+	CImageLabel *m_pOpenButton;
+
+public:
+
+		DropDownButton( const char* text,int x,int y,int wide,int tall, bool bNoHighlight, bool bFlat ) : 
+						ColorButton( text, x, y, wide, tall, bNoHighlight, bFlat  ) 
+	  {
+			// Put a > to show it's a submenu
+			m_pOpenButton = new CImageLabel( "arrowup", XRES( CMENU_SIZE_X-2 ) , YRES( BUTTON_SIZE_Y-2 ) );
+			m_pOpenButton->setParent(this);
+	
+			int textwide, texttall;
+			getSize( textwide, texttall);
+		
+			// Reposition
+			m_pOpenButton->setPos( textwide-(m_pOpenButton->getImageWide()+6), -2 /*(tall - m_pOpenButton->getImageTall()*2) / 2*/ );
+			m_pOpenButton->setVisible(true);
+
+	  }
+
+	virtual void   setVisible(bool state)
+	{
+		m_pOpenButton->setVisible(state);
+		ColorButton::setVisible(state);
+	}
+	
+
+};
+
+//==============================================================================
+// Button with image instead of text
+
+class CImageButton : public ColorButton
+{
+private:
+	CImageLabel *m_pOpenButton;
+
+public:
+
+		CImageButton( const char* text,int x,int y,int wide,int tall, bool bNoHighlight, bool bFlat ) : 
+						ColorButton( " ", x, y, wide, tall, bNoHighlight, bFlat  ) 
+	  {
+			m_pOpenButton = new CImageLabel( text,1,1,wide-2 , tall-2 );
+			m_pOpenButton->setParent(this);
+	
+			// Reposition
+		//	m_pOpenButton->setPos( x+1,y+1 );
+		//	m_pOpenButton->setSize(wide-2,tall-2);
+
+			m_pOpenButton->setVisible(true);
+	  }
+
+	virtual void   setVisible(bool state)
+	{
+		m_pOpenButton->setVisible(state);
+		ColorButton::setVisible(state);
+	}
+	
+
 };
 
 //==============================================================================
@@ -467,6 +545,10 @@ private:
 	char		m_sDetpackStrings[3][MAX_BUTTON_SIZE];
 
 	char		m_sMapName[64];
+
+	// helper function to update the player menu entries
+	void UpdatePlayerMenu(int menuIndex);
+
 public:
 	TeamFortressViewport(int x,int y,int wide,int tall);
 	void Initialize( void );
@@ -535,6 +617,8 @@ public:
 	int MsgFunc_TeamInfo( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_Spectator( const char *pszName, int iSize, void *pbuf );
 	int MsgFunc_AllowSpec( const char *pszName, int iSize, void *pbuf );
+	int MsgFunc_SpecFade( const char *pszName, int iSize, void *pbuf );	
+	int MsgFunc_ResetFade( const char *pszName, int iSize, void *pbuf );	
 
 	// Input
 	bool SlotInput( int iSlot );
@@ -553,6 +637,7 @@ public:
 	int						m_StandardMenu;	// indexs in m_pCommandMenus
 	int						m_SpectatorOptionsMenu;
 	int						m_SpectatorCameraMenu;
+	int						m_PlayerMenu; // a list of current player
 	CClassMenuPanel	*m_pClassMenu;
 	ScorePanel		*m_pScoreBoard;
 	SpectatorPanel *		m_pSpectatorPanel;
@@ -751,11 +836,37 @@ public:
 		else
 			m_cvar->value = 1.0f;
 
+		// hide the menu 
+		gViewPort->HideCommandMenu();
+
 		gViewPort->UpdateSpectatorPanel();
 	}
 
 	
 };
+
+
+
+class CMenuHandler_SpectateFollow : public ActionSignal
+{
+protected:
+	char	m_szplayer[MAX_COMMAND_SIZE];
+public:
+	CMenuHandler_SpectateFollow( char *player )
+	{
+		strncpy( m_szplayer, player, MAX_COMMAND_SIZE);
+		m_szplayer[MAX_COMMAND_SIZE-1] = '\0';
+	}
+
+	virtual void actionPerformed(Panel* panel)
+	{
+		gHUD.m_Spectator.FindPlayer(m_szplayer);
+		gViewPort->HideCommandMenu();
+	}
+};
+
+
+
 class CDragNDropHandler : public InputSignal
 {
 private:
@@ -922,12 +1033,13 @@ public:
 	virtual int IsNotValid()
 	{
 		// Only visible for spies
+#ifdef _TFC
 		if (g_iPlayerClass != PC_SPY)
 			return true;
+#endif
 
 		if (m_iFeignState == gViewPort->GetIsFeigning())
 			return false;
-
 		return true;
 	}
 };
@@ -967,9 +1079,11 @@ public:
 
 	virtual int IsNotValid()
 	{
+#ifdef _TFC
 		// Only visible for spies
 		if ( g_iPlayerClass != PC_SPY )
 			return true;
+#endif
 
 		// if it's not tied to a specific team, then always show (for spies)
 		if ( !m_iValidTeamsBits )
@@ -979,7 +1093,6 @@ public:
 		int iTmp = 1 << (gViewPort->GetNumberOfTeams() - 1);
 		if ( m_iValidTeamsBits & iTmp )
 			return false;
-
 		return true;
 	}
 };
@@ -996,9 +1109,11 @@ public:
 
 	virtual int IsNotValid()
 	{
+#ifdef _TFC
 		// Only visible for demomen
 		if (g_iPlayerClass != PC_DEMOMAN)
 			return true;
+#endif
 
 		if (m_iDetpackState == gViewPort->GetIsSettingDetpack())
 			return false;
@@ -1008,10 +1123,10 @@ public:
 };
 
 extern int iBuildingCosts[];
-#define BUILDSTATE_HASBUILDING		(1<<0)		// Data is building ID (1 = Dispenser, 2 = Sentry)
+#define BUILDSTATE_HASBUILDING		(1<<0)		// Data is building ID (1 = Dispenser, 2 = Sentry, 3 = Entry Teleporter, 4 = Exit Teleporter)
 #define BUILDSTATE_BUILDING			(1<<1)
 #define BUILDSTATE_BASE				(1<<2)
-#define BUILDSTATE_CANBUILD			(1<<3)		// Data is building ID (0 = Dispenser, 1 = Sentry)
+#define BUILDSTATE_CANBUILD			(1<<3)		// Data is building ID (1 = Dispenser, 2 = Sentry, 3 = Entry Teleporter, 4 = Exit Teleporter)
 
 class BuildButton : public CommandButton
 {
@@ -1024,6 +1139,8 @@ public:
 	{
 		DISPENSER = 0,
 		SENTRYGUN = 1,
+		ENTRY_TELEPORTER = 2,
+		EXIT_TELEPORTER = 3
 	};
 
 	BuildButton( int iState, int iData, const char* text,int x,int y,int wide,int tall ) : CommandButton( text,x,y,wide,tall)
@@ -1034,6 +1151,7 @@ public:
 
 	virtual int IsNotValid()
 	{
+#ifdef _TFC
 		// Only visible for engineers
 		if (g_iPlayerClass != PC_ENGINEER)
 			return true;
@@ -1055,7 +1173,7 @@ public:
 		if (m_iBuildState & BUILDSTATE_BASE)
 		{
 			// Only appear if we've got enough metal to build something, or something already built
-			if ( gViewPort->GetBuildState() & (BS_HAS_SENTRYGUN | BS_HAS_DISPENSER | BS_CANB_SENTRYGUN | BS_CANB_DISPENSER) )
+			if ( gViewPort->GetBuildState() & (BS_HAS_SENTRYGUN | BS_HAS_DISPENSER | BS_CANB_SENTRYGUN | BS_CANB_DISPENSER | BS_HAS_ENTRY_TELEPORTER | BS_HAS_EXIT_TELEPORTER | BS_CANB_ENTRY_TELEPORTER | BS_CANB_EXIT_TELEPORTER) )
 				return false;
 
 			return true;
@@ -1068,6 +1186,10 @@ public:
 				return true;
 			if ( m_iBuildData == BuildButton::SENTRYGUN && !(gViewPort->GetBuildState() & BS_HAS_SENTRYGUN) )
 				return true;
+			if ( m_iBuildData == BuildButton::ENTRY_TELEPORTER && !(gViewPort->GetBuildState() & BS_HAS_ENTRY_TELEPORTER) )
+				return true;
+			if ( m_iBuildData == BuildButton::EXIT_TELEPORTER && !(gViewPort->GetBuildState() & BS_HAS_EXIT_TELEPORTER) )
+				return true;
 		}
 
 		// Can build something
@@ -1078,10 +1200,14 @@ public:
 				return false;
 			if ( m_iBuildData == BuildButton::SENTRYGUN && (gViewPort->GetBuildState() & BS_CANB_SENTRYGUN) )
 				return false;
+			if ( m_iBuildData == BuildButton::ENTRY_TELEPORTER && (gViewPort->GetBuildState() & BS_CANB_ENTRY_TELEPORTER) )
+				return false;
+			if ( m_iBuildData == BuildButton::EXIT_TELEPORTER && (gViewPort->GetBuildState() & BS_CANB_EXIT_TELEPORTER) )
+				return false;
 
 			return true;
 		}
-
+#endif
 		return false;
 	}
 };
@@ -1131,29 +1257,6 @@ public:
 			return true;
 
 		return CommandButton::IsNotValid();
-	}
-
-	virtual void paintBackground()
-	{
-		if ( isArmed() )
-		{
-			drawSetColor( 143,143, 54, 125 ); 
-			drawFilledRect( 5, 0,_size[0] - 5,_size[1]);
-		}
-	}
-	
-	virtual void paint( void )
-	{
-		if ( isArmed() )
-		{ 
-			setFgColor( 194, 202, 54, 0 );
-		}
-		else
-		{
-			setFgColor( 143, 143, 54, 15 );
-		}
-
-		Button::paint();
 	}
 };
 

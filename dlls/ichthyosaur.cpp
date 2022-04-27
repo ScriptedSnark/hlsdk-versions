@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -494,8 +494,8 @@ void CIchthyosaur :: Spawn()
 
 	MonsterInit();
 
-	SetTouch( BiteTouch );
-	SetUse( CombatUse );
+	SetTouch( &CIchthyosaur::BiteTouch );
+	SetUse( &CIchthyosaur::CombatUse );
 
 	m_idealDist = 384;
 	m_flMinSpeed = 80;

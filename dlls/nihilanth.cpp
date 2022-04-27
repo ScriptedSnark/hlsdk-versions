@@ -1,6 +1,6 @@
 /***
 *
-*	Copyright (c) 1996-2002, Valve LLC. All rights reserved.
+*	Copyright (c) 1996-2001, Valve LLC. All rights reserved.
 *	
 *	This product contains software technology licensed from Id 
 *	Software, Inc. ("Id Technology").  Id Technology (c) 1996 Id Software, Inc. 
@@ -300,7 +300,7 @@ void CNihilanth :: Spawn( void )
 
 	InitBoneControllers();
 
-	SetThink( StartupThink );
+	SetThink( &CNihilanth::StartupThink );
 	pev->nextthink = gpGlobals->time + 0.1;
 
 	m_vecDesired = Vector( 1, 0, 0 );
@@ -378,9 +378,9 @@ void CNihilanth::NullThink( void )
 
 void CNihilanth::StartupUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE useType, float value )
 {
-	SetThink( HuntThink );
+	SetThink( &CNihilanth::HuntThink );
 	pev->nextthink = gpGlobals->time + 0.1;
-	SetUse( CommandUse );
+	SetUse( &CNihilanth::CommandUse );
 }
 
 
@@ -410,8 +410,8 @@ void CNihilanth::StartupThink( void )
 	}
 	m_hRecharger = NULL;
 
-	SetThink( HuntThink);
-	SetUse( CommandUse );
+	SetThink( &CNihilanth::HuntThink);
+	SetUse( &CNihilanth::CommandUse );
 	pev->nextthink = gpGlobals->time + 0.1;
 }
 
@@ -846,7 +846,7 @@ void CNihilanth :: HuntThink( void )
 	// if dead, force cancelation of current animation
 	if (pev->health <= 0)
 	{
-		SetThink( DyingThink );
+		SetThink( &CNihilanth::DyingThink );
 		m_fSequenceFinished = TRUE;
 		return;
 	}
@@ -1019,7 +1019,8 @@ BOOL CNihilanth :: EmitSphere( void )
 void CNihilanth :: 	TargetSphere( USE_TYPE useType, float value )
 {
 	CBaseMonster *pSphere;
-	for (int i = 0; i < N_SPHERES; i++)
+	int i;
+	for (i = 0; i < N_SPHERES; i++)
 	{
 		if (m_hSphere[i] != NULL)
 		{
@@ -1196,9 +1197,24 @@ void CNihilanth::CommandUse( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_
 	{
 	case USE_OFF:
 		{
-		CBaseEntity *pTouch = UTIL_FindEntityByTargetname( NULL, m_szDeadTouch );
-		if ( pTouch && m_hEnemy != NULL )
-			pTouch->Touch( m_hEnemy );
+			CBaseEntity *pTouch = UTIL_FindEntityByTargetname( NULL, m_szDeadTouch );
+
+			if ( pTouch )
+			{
+				if ( m_hEnemy != NULL )
+				{
+					pTouch->Touch( m_hEnemy );
+				}
+				// if the player is using "notarget", the ending sequence won't fire unless we catch it here
+				else
+				{
+					CBaseEntity *pEntity = UTIL_FindEntityByClassname( NULL, "player" );				
+					if ( pEntity != NULL && pEntity->IsAlive() )
+					{
+						pTouch->Touch( pEntity );
+					}
+				}
+			}
 		}
 		break;
 	case USE_ON:
@@ -1330,8 +1346,8 @@ void CNihilanthHVR :: CircleInit( CBaseEntity *pTarget )
 	UTIL_SetSize(pev, Vector( 0, 0, 0), Vector(0, 0, 0));
 	UTIL_SetOrigin( pev, pev->origin );
 
-	SetThink( HoverThink );
-	SetTouch( BounceTouch );
+	SetThink( &CNihilanthHVR::HoverThink );
+	SetTouch( &CNihilanthHVR::BounceTouch );
 	pev->nextthink = gpGlobals->time + 0.1;
 	
 	m_hTargetEnt = pTarget;
@@ -1433,8 +1449,8 @@ void CNihilanthHVR :: ZapInit( CBaseEntity *pEnemy )
 	pev->velocity = (pEnemy->pev->origin - pev->origin).Normalize() * 200;
 
 	m_hEnemy = pEnemy;
-	SetThink( ZapThink );
-	SetTouch( ZapTouch );
+	SetThink( &CNihilanthHVR::ZapThink );
+	SetTouch( &CNihilanthHVR::ZapTouch );
 	pev->nextthink = gpGlobals->time + 0.1;
 
 	EMIT_SOUND_DYN( edict(), CHAN_WEAPON, "debris/zap4.wav", 1, ATTN_NORM, 0, 100 );
@@ -1559,8 +1575,8 @@ void CNihilanthHVR :: TeleportInit( CNihilanth *pOwner, CBaseEntity *pEnemy, CBa
 	m_hTargetEnt = pTarget;
 	m_hTouch = pTouch;
 
-	SetThink( TeleportThink );
-	SetTouch( TeleportTouch );
+	SetThink( &CNihilanthHVR::TeleportThink );
+	SetTouch( &CNihilanthHVR::TeleportTouch );
 	pev->nextthink = gpGlobals->time + 0.1;
 
 	EMIT_SOUND_DYN( edict(), CHAN_WEAPON, "x/x_teleattack1.wav", 1, 0.2, 0, 100 );
@@ -1579,7 +1595,7 @@ void CNihilanthHVR :: GreenBallInit( )
 
 	SET_MODEL(edict(), "sprites/exit1.spr");
 
-	SetTouch( RemoveTouch );
+	SetTouch( &CNihilanthHVR::RemoveTouch );
 }
 
 
@@ -1631,7 +1647,7 @@ void CNihilanthHVR :: TeleportThink( void  )
 
 void CNihilanthHVR :: AbsorbInit( void  )
 {
-	SetThink( DissipateThink );
+	SetThink( &CNihilanthHVR::DissipateThink );
 	pev->renderamt = 255;
 
 	MESSAGE_BEGIN( MSG_BROADCAST, SVC_TEMPENTITY );
