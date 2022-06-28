@@ -1,0 +1,3 @@
+# Force CRLF for Windows files:
+*.dsp text eol=crlf
+*.dsw text eol=crlf
